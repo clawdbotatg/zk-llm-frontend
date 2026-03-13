@@ -8,8 +8,8 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 
 export const metadata = getMetadata({
-  title: 'Scaffold-ETH 2 App',
-  description: 'Built with 🏗 Scaffold-ETH 2'
+  title: 'ZK LLM — Private AI Credits',
+  description: 'Private LLM API access via ZK proofs. No account. No API key. Just a proof.'
 });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
