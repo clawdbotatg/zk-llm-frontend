@@ -19,6 +19,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aztec/bb.js@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "@aztec/bb.js@npm:4.0.4"
+  dependencies:
+    comlink: ^4.4.1
+    commander: ^12.1.0
+    idb-keyval: ^6.2.1
+    msgpackr: ^1.11.2
+    pako: ^2.1.0
+    tslib: ^2.4.0
+  bin:
+    bb: dest/node/bin/index.js
+  checksum: 6ccb6a1eb3cae1c7bc80671dfe8b62b4fff0048f43e6485bc3faf390646b66ec8957ada95439a192805e9d3b663421048d7b19a7b5f9926fdf858647e876fd56
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.22.13, @babel/code-frame@npm:^7.28.6":
   version: 7.29.0
   resolution: "@babel/code-frame@npm:7.29.0"
@@ -1505,6 +1521,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-darwin-arm64@npm:3.0.3"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-darwin-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-darwin-x64@npm:3.0.3"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-linux-arm64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-arm64@npm:3.0.3"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-linux-arm@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-arm@npm:3.0.3"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-linux-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-linux-x64@npm:3.0.3"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@msgpackr-extract/msgpackr-extract-win32-x64@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@msgpackr-extract/msgpackr-extract-win32-x64@npm:3.0.3"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@multiformats/blake2@npm:^2.0.2":
   version: 2.0.2
   resolution: "@multiformats/blake2@npm:2.0.2"
@@ -1819,6 +1877,41 @@ __metadata:
     "@nodelib/fs.scandir": 2.1.5
     fastq: ^1.6.0
   checksum: 190c643f156d8f8f277bf2a6078af1ffde1fd43f498f187c2db24d35b4b4b5785c02c7dc52e356497b9a1b65b13edc996de08de0b961c32844364da02986dc53
+  languageName: node
+  linkType: hard
+
+"@noir-lang/acvm_js@npm:1.0.0-beta.9-e7fb7f3.nightly":
+  version: 1.0.0-beta.9-e7fb7f3.nightly
+  resolution: "@noir-lang/acvm_js@npm:1.0.0-beta.9-e7fb7f3.nightly"
+  checksum: 338ba27bc34756d4243e8cc9614b33f5dee43a7dba4344c8be2938c8ed8aa1efee7f1ea2f7b69390558ec808b1603d17d25c0d03014c4b82a9669168fafe636b
+  languageName: node
+  linkType: hard
+
+"@noir-lang/noir_js@npm:^1.0.0-beta.19":
+  version: 1.0.0-beta.9-e7fb7f3.nightly
+  resolution: "@noir-lang/noir_js@npm:1.0.0-beta.9-e7fb7f3.nightly"
+  dependencies:
+    "@noir-lang/acvm_js": 1.0.0-beta.9-e7fb7f3.nightly
+    "@noir-lang/noirc_abi": 1.0.0-beta.9-e7fb7f3.nightly
+    "@noir-lang/types": 1.0.0-beta.9-e7fb7f3.nightly
+    pako: ^2.1.0
+  checksum: 3cfc31891467f64bdb5162046a880801174a28046f8565ada37deaf1a59248f1a199cdf0063e3fba03802db41571df8d4964c5560480161d04282d2237061499
+  languageName: node
+  linkType: hard
+
+"@noir-lang/noirc_abi@npm:1.0.0-beta.9-e7fb7f3.nightly":
+  version: 1.0.0-beta.9-e7fb7f3.nightly
+  resolution: "@noir-lang/noirc_abi@npm:1.0.0-beta.9-e7fb7f3.nightly"
+  dependencies:
+    "@noir-lang/types": 1.0.0-beta.9-e7fb7f3.nightly
+  checksum: 0f6250ac5c5223692712047a9cd020872c4f513479ca1fec4e602a12c2abb82d75a8aca9cb89810729e51e656f378163e8834df2ba61928475c1d235a644484f
+  languageName: node
+  linkType: hard
+
+"@noir-lang/types@npm:1.0.0-beta.9-e7fb7f3.nightly":
+  version: 1.0.0-beta.9-e7fb7f3.nightly
+  resolution: "@noir-lang/types@npm:1.0.0-beta.9-e7fb7f3.nightly"
+  checksum: 891adb5bf3251c49a460ab1dd137d67c4a532e9149d4442c9987c7be2017bef1b39f0dc279bfa9edf6f2b4a10e05731b733464490b4e38924ac7ba244b9fe6dc
   languageName: node
   linkType: hard
 
@@ -2553,7 +2646,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@se-2/nextjs@workspace:packages/nextjs"
   dependencies:
+    "@aztec/bb.js": ^4.0.4
     "@heroicons/react": ~2.1.5
+    "@noir-lang/noir_js": ^1.0.0-beta.19
     "@rainbow-me/rainbowkit": 2.2.9
     "@react-native-async-storage/async-storage": ~2.2.0
     "@scaffold-ui/components": ^0.1.8
@@ -6223,6 +6318,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"comlink@npm:^4.4.1":
+  version: 4.4.2
+  resolution: "comlink@npm:4.4.2"
+  checksum: 35313f26fdd78c202be21be49a7607f57e9e91963399b524676742ee0cf7db589be500d923ed0809b53f37996461186fb345bf867d93236be22bfae3cb7bd07e
+  languageName: node
+  linkType: hard
+
 "commander@npm:14.0.2":
   version: 14.0.2
   resolution: "commander@npm:14.0.2"
@@ -6234,6 +6336,13 @@ __metadata:
   version: 10.0.1
   resolution: "commander@npm:10.0.1"
   checksum: 436901d64a818295803c1996cd856621a74f30b9f9e28a588e726b2b1670665bccd7c1a77007ebf328729f0139838a88a19265858a0fa7a8728c4656796db948
+  languageName: node
+  linkType: hard
+
+"commander@npm:^12.1.0":
+  version: 12.1.0
+  resolution: "commander@npm:12.1.0"
+  checksum: 68e9818b00fc1ed9cdab9eb16905551c2b768a317ae69a5e3c43924c2b20ac9bb65b27e1cab36aeda7b6496376d4da908996ba2c0b5d79463e0fb1e77935d514
   languageName: node
   linkType: hard
 
@@ -6658,7 +6767,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detect-libc@npm:^2.0.0, detect-libc@npm:^2.0.3":
+"detect-libc@npm:^2.0.0, detect-libc@npm:^2.0.1, detect-libc@npm:^2.0.3":
   version: 2.1.2
   resolution: "detect-libc@npm:2.1.2"
   checksum: 471740d52365084c4b2ae359e507b863f2b1d79b08a92835ebdf701918e08fc9cfba175b3db28483ca33b155e1311a91d69dc42c6d192b476f41a9e1f094ce6a
@@ -10811,6 +10920,49 @@ __metadata:
   languageName: node
   linkType: hard
 
+"msgpackr-extract@npm:^3.0.2":
+  version: 3.0.3
+  resolution: "msgpackr-extract@npm:3.0.3"
+  dependencies:
+    "@msgpackr-extract/msgpackr-extract-darwin-arm64": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-darwin-x64": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-linux-arm": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-linux-arm64": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-linux-x64": 3.0.3
+    "@msgpackr-extract/msgpackr-extract-win32-x64": 3.0.3
+    node-gyp: latest
+    node-gyp-build-optional-packages: 5.2.2
+  dependenciesMeta:
+    "@msgpackr-extract/msgpackr-extract-darwin-arm64":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-darwin-x64":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-linux-arm":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-linux-arm64":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-linux-x64":
+      optional: true
+    "@msgpackr-extract/msgpackr-extract-win32-x64":
+      optional: true
+  bin:
+    download-msgpackr-prebuilds: bin/download-prebuilds.js
+  checksum: 3b5ae152821feff843380f0b091afbebd80bd224e644f4410abd33d05da3159eb8b0d45c7dcf7d5226ce1d5c71cd68052f066788f46ea7a3cd8791a1c740a079
+  languageName: node
+  linkType: hard
+
+"msgpackr@npm:^1.11.2":
+  version: 1.11.9
+  resolution: "msgpackr@npm:1.11.9"
+  dependencies:
+    msgpackr-extract: ^3.0.2
+  dependenciesMeta:
+    msgpackr-extract:
+      optional: true
+  checksum: df3e9f20f5551b13ad008abcdfd58b64e2b464e117b69cf340d26f523dbd96c23bd71f77e75ae5b7210d5ea0c953de2ac532b34da3069ab82b4ed2aa9cee7ccf
+  languageName: node
+  linkType: hard
+
 "multiformats@npm:^13.0.0, multiformats@npm:^13.0.1, multiformats@npm:^13.1.0, multiformats@npm:^13.3.1, multiformats@npm:^13.3.6, multiformats@npm:^13.3.7, multiformats@npm:^13.4.0":
   version: 13.4.2
   resolution: "multiformats@npm:13.4.2"
@@ -11050,6 +11202,19 @@ __metadata:
     encoding:
       optional: true
   checksum: d76d2f5edb451a3f05b15115ec89fc6be39de37c6089f1b6368df03b91e1633fd379a7e01b7ab05089a25034b2023d959b47e59759cb38d88341b2459e89d6e5
+  languageName: node
+  linkType: hard
+
+"node-gyp-build-optional-packages@npm:5.2.2":
+  version: 5.2.2
+  resolution: "node-gyp-build-optional-packages@npm:5.2.2"
+  dependencies:
+    detect-libc: ^2.0.1
+  bin:
+    node-gyp-build-optional-packages: bin.js
+    node-gyp-build-optional-packages-optional: optional.js
+    node-gyp-build-optional-packages-test: build-test.js
+  checksum: 3c10d7380901ab5febcd153d2632917fe7507edb15a3405e9ef19801834a4c2162459a67b9944887f737f8718baeb4aaf0002c829a8214011930f2de80e4b42f
   languageName: node
   linkType: hard
 
@@ -11903,6 +12068,13 @@ __metadata:
   bin:
     pacote: bin/index.js
   checksum: 2854cf43b86efed7b06e5568c2f2acf2be0ae1d1a75afb9b598b2d54be6613e09de62778f1c33219c280f8bb4543e7aa46ffd81babe88d52ae07cd24f82abdcd
+  languageName: node
+  linkType: hard
+
+"pako@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "pako@npm:2.1.0"
+  checksum: 71666548644c9a4d056bcaba849ca6fd7242c6cf1af0646d3346f3079a1c7f4a66ffec6f7369ee0dc88f61926c10d6ab05da3e1fca44b83551839e89edd75a3e
   languageName: node
   linkType: hard
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 
 interface StoredCredit {
@@ -81,11 +81,12 @@ const ChatPage: NextPage = () => {
       const circuit = await circuitRes.json();
 
       setProofStatus("Initializing proof system...");
-      const { Noir } = await import(/* webpackIgnore: true */ "@noir-lang/noir_js");
-      const { UltraHonkBackend } = await import(/* webpackIgnore: true */ "@aztec/bb.js");
+      const { Noir } = await import("@noir-lang/noir_js");
+      const { UltraHonkBackend, Barretenberg } = await import("@aztec/bb.js");
 
+      const bb = await Barretenberg.new();
       const noir = new Noir(circuit);
-      const backend = new UltraHonkBackend(circuit.bytecode);
+      const backend = new UltraHonkBackend(circuit.bytecode, bb);
 
       setProofStatus("Generating ZK proof (takes 10-30s)...");
 
@@ -138,14 +139,11 @@ const ChatPage: NextPage = () => {
       setMessages(prev => [...prev, { role: "assistant", content: assistantMessage }]);
 
       // Mark credit as spent
-      const updatedCredits = credits.map(c =>
-        c.commitment === creditToUse.commitment ? { ...c, spent: true } : c,
-      );
+      const updatedCredits = credits.map(c => (c.commitment === creditToUse.commitment ? { ...c, spent: true } : c));
       setCredits(updatedCredits);
       localStorage.setItem("zk-credits", JSON.stringify(updatedCredits));
 
       setProofStatus("");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       console.error("Chat error:", e);
       setError(e?.message || "Failed to send message");
@@ -195,10 +193,7 @@ const ChatPage: NextPage = () => {
           )}
 
           {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`chat ${msg.role === "user" ? "chat-end" : "chat-start"}`}
-            >
+            <div key={i} className={`chat ${msg.role === "user" ? "chat-end" : "chat-start"}`}>
               <div className="chat-header text-xs text-base-content/50 mb-1">
                 {msg.role === "user" ? "You" : selectedModel}
               </div>
@@ -239,9 +234,7 @@ const ChatPage: NextPage = () => {
           <textarea
             className="textarea textarea-bordered flex-1 min-h-[52px] max-h-[150px]"
             placeholder={
-              availableCredits.length === 0
-                ? "No credits available — go to Stake to get some"
-                : "Type your message..."
+              availableCredits.length === 0 ? "No credits available — go to Stake to get some" : "Type your message..."
             }
             value={message}
             onChange={e => {
@@ -261,11 +254,7 @@ const ChatPage: NextPage = () => {
             disabled={isSending || !message.trim() || availableCredits.length === 0}
             onClick={handleSend}
           >
-            {isSending ? (
-              <span className="loading loading-spinner loading-sm"></span>
-            ) : (
-              "Send"
-            )}
+            {isSending ? <span className="loading loading-spinner loading-sm"></span> : "Send"}
           </button>
         </div>
       </div>
