@@ -178,10 +178,17 @@ const StakePage: NextPage = () => {
       const secretMod = secret % FIELD_MODULUS;
 
       // Compute commitment using bb.js Poseidon2 (Noir/Barretenberg compatible)
-      const { Barretenberg, Fr } = await import("@aztec/bb.js");
+      const { Barretenberg } = await import("@aztec/bb.js");
       const bbInstance = await Barretenberg.new({ threads: 1 });
-      const frToBigInt = (fr: { value: Uint8Array }) => BigInt("0x" + Array.from(fr.value).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
-      const commitment = frToBigInt(await bbInstance.poseidon2Hash([new Fr(nullifierMod), new Fr(secretMod)]));
+      const bigIntToFr = (n: bigint): Uint8Array => {
+        const buf = new Uint8Array(32);
+        let tmp = n;
+        for (let i = 31; i >= 0; i--) { buf[i] = Number(tmp & 0xffn); tmp >>= 8n; }
+        return buf;
+      };
+      const frToBigInt = (fr: Uint8Array) => BigInt("0x" + Array.from(fr).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
+      const hashResult = await bbInstance.poseidon2Hash({ inputs: [bigIntToFr(nullifierMod), bigIntToFr(secretMod)] });
+      const commitment = frToBigInt(hashResult.hash);
       await bbInstance.destroy();
 
       // Send register tx
