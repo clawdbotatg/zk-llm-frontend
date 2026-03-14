@@ -1,5 +1,7 @@
 "use client";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.zkllmapi.com";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
@@ -39,7 +41,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     const fetchHealth = async () => {
       try {
-        const res = await fetch("https://zkllmapi.com/health");
+        const res = await fetch(`${API_URL}/health`);
         const data = await res.json();
         setHealthData(data);
       } catch (e) {

@@ -1,5 +1,7 @@
 "use client";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.zkllmapi.com";
+
 import { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 
@@ -71,7 +73,7 @@ const ChatPage: NextPage = () => {
     try {
       // Step 1: Fetch current root from health endpoint
       setProofStatus("Fetching current root...");
-      const healthRes = await fetch("https://zkllmapi.com/health");
+      const healthRes = await fetch(`${API_URL}/health`);
       const healthData = await healthRes.json();
 
       // Step 2: Load circuit and generate proof
@@ -97,7 +99,7 @@ const ChatPage: NextPage = () => {
       const currentRoot = healthData.currentRoot || healthData.root;
 
       // Fetch merkle path from the API
-      const pathRes = await fetch(`https://zkllmapi.com/merkle-path/${creditToUse.commitment}`);
+      const pathRes = await fetch(`${API_URL}/merkle-path/${creditToUse.commitment}`);
       let merkleData: any = {};
       if (pathRes.ok) {
         merkleData = await pathRes.json();
@@ -117,7 +119,7 @@ const ChatPage: NextPage = () => {
       setProofStatus("Sending to API...");
 
       // Step 3: POST to API
-      const apiRes = await fetch("https://zkllmapi.com/v1/chat", {
+      const apiRes = await fetch(`${API_URL}/v1/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
