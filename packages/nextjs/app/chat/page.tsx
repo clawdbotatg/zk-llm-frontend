@@ -26,7 +26,7 @@ const MODELS = [
 ];
 
 const CIRCUIT_URL =
-  "https://raw.githubusercontent.com/clawdbotatg/zk-api-credits/main/packages/circuits/target/api_credits.json";
+  `${API_URL}/circuit`;
 
 const ChatPage: NextPage = () => {
   const [credits, setCredits] = useState<StoredCredit[]>([]);
