@@ -68,7 +68,17 @@ const ChatPage: NextPage = () => {
     setMessage("");
     setMessages(prev => [...prev, { role: "user", content: userMessage }]);
 
-    const creditToUse = availableCredits[0];
+    // Find first credit that exists on-chain (skip stale localStorage credits)
+    let creditToUse = availableCredits[0];
+    for (const credit of availableCredits) {
+      const check = await fetch(`${API_URL}/merkle-path/${credit.commitment}`);
+      if (check.ok) { creditToUse = credit; break; }
+    }
+    if (!creditToUse) {
+      setError("No valid on-chain credits found. Please register a new credit on the Stake page.");
+      setIsSending(false);
+      return;
+    }
 
     try {
       // Step 1: Fetch current root from health endpoint
@@ -105,7 +115,7 @@ const ChatPage: NextPage = () => {
       const nhResult = await bb.poseidon2Hash({ inputs: [bigIntToFr(nullifierBig)] });
       const nullifierHash = frToBigInt(nhResult.hash);
 
-      // Fetch merkle path from the API
+      // Fetch merkle path from the API (already verified ok above)
       const pathRes = await fetch(`${API_URL}/merkle-path/${creditToUse.commitment}`);
       if (!pathRes.ok) throw new Error("Failed to fetch merkle path");
       const merkleData = await pathRes.json();

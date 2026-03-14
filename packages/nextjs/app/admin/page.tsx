@@ -226,10 +226,14 @@ const AdminPage: NextPage = () => {
     }
   };
 
-  // Determine root match
+  // Determine root match — normalize both to decimal for comparison
   const onChainRoot = treeData ? treeData.root.toString() : null;
   const apiRoot = healthData.onChainRoot || healthData.currentRoot || null;
-  const rootsMatch = onChainRoot && apiRoot ? onChainRoot === apiRoot : null;
+  const normalizeRoot = (r: string | null) => {
+    if (!r) return null;
+    try { return BigInt(r).toString(); } catch { return r; }
+  };
+  const rootsMatch = onChainRoot && apiRoot ? normalizeRoot(onChainRoot) === normalizeRoot(apiRoot) : null;
 
   return (
     <div className="flex items-center flex-col grow pt-6 pb-12">
