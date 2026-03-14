@@ -94,26 +94,19 @@ const ChatPage: NextPage = () => {
 
       setProofStatus("Initializing proof system...");
       const { Noir } = await import("@noir-lang/noir_js");
-      const { UltraHonkBackend, Barretenberg } = await import("@aztec/bb.js");
+      const { UltraHonkBackend, Barretenberg, Fr } = await import("@aztec/bb.js");
 
       const bb = await Barretenberg.new({ threads: 1 });
       const noir = new Noir(circuit);
-      const backend = new UltraHonkBackend(circuit.bytecode, bb);
+      const backend = new UltraHonkBackend(circuit.bytecode);
 
-      // Helper: bigint → 32-byte big-endian Uint8Array (field element)
-      const bigIntToFr = (n: bigint): Uint8Array => {
-        const buf = new Uint8Array(32);
-        let tmp = n;
-        for (let i = 31; i >= 0; i--) { buf[i] = Number(tmp & 0xffn); tmp >>= 8n; }
-        return buf;
-      };
-      const frToBigInt = (fr: Uint8Array) =>
-        BigInt("0x" + Array.from(fr).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
+      // Helper: Fr → BigInt
+      const frToBigInt = (fr: { value: Uint8Array }) =>
+        BigInt("0x" + Array.from(fr.value).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
 
       // Compute nullifier hash = poseidon2(nullifier)
       const nullifierBig = BigInt(creditToUse.nullifier);
-      const nhResult = await bb.poseidon2Hash({ inputs: [bigIntToFr(nullifierBig)] });
-      const nullifierHash = frToBigInt(nhResult.hash);
+      const nullifierHash = frToBigInt(await bb.poseidon2Hash([new Fr(nullifierBig)]));
 
       // Fetch merkle path from the API (already verified ok above)
       const pathRes = await fetch(`${API_URL}/merkle-path/${creditToUse.commitment}`);

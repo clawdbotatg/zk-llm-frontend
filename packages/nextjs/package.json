@@ -16,7 +16,7 @@
     "vercel:login": "vercel login"
   },
   "dependencies": {
-    "@aztec/bb.js": "^4.0.4",
+    "@aztec/bb.js": "0.72.1",
     "@heroicons/react": "~2.1.5",
     "@noir-lang/noir_js": "^1.0.0-beta.19",
     "@rainbow-me/rainbowkit": "2.2.9",
