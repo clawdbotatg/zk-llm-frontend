@@ -88,7 +88,7 @@ const ChatPage: NextPage = () => {
 
       const bb = await Barretenberg.new({ threads: 1 });
       const noir = new Noir(circuit);
-      const backend = new UltraHonkBackend(circuit.bytecode);
+      const backend = new UltraHonkBackend(circuit.bytecode, bb);
 
       // Helper: bigint → 32-byte big-endian Uint8Array (field element)
       const bigIntToFr = (n: bigint): Uint8Array => {
