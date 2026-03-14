@@ -10,7 +10,7 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import externalContracts from "~~/contracts/externalContracts";
 
-const API_CREDITS_ADDRESS = "0x9991f959040De3c5df0515FFCe8B38b72cB7F26c";
+const API_CREDITS_ADDRESS = "0x234d536e1623546F394707D6dB700f9c8CD29476";
 const CLAWD_ADDRESS = "0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07";
 
 const apiCreditsAbi = externalContracts[8453].APICredits.abi;
