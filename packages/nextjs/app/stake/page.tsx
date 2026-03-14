@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import type { NextPage } from "next";
 import { formatEther, parseEther } from "viem";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from "wagmi";
 import { Address } from "@scaffold-ui/components";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
@@ -16,6 +16,17 @@ const CLAWD_ADDRESS = "0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07";
 const apiCreditsAbi = externalContracts[8453].APICredits.abi;
 const clawdAbi = externalContracts[8453].CLAWDToken.abi;
 
+/** Map contract revert reasons to friendly messages */
+const parseContractError = (e: any): string => {
+  const msg = e?.shortMessage || e?.message || "";
+  if (msg.includes("InsufficientStake") || msg.includes("insufficient")) return "Not enough CLAWD staked. Stake at least 1000 CLAWD first.";
+  if (msg.includes("CommitmentAlreadyRegistered")) return "This commitment is already registered.";
+  if (msg.includes("AlreadyUsed") || msg.includes("nullifier")) return "This credit has already been spent.";
+  if (msg.includes("rejected") || msg.includes("denied")) return "Transaction rejected.";
+  if (msg.includes("InsufficientBalance") || msg.includes("ERC20")) return "Insufficient CLAWD balance.";
+  return msg || "Transaction failed. Please try again.";
+};
+
 interface StoredCredit {
   nullifier: string;
   secret: string;
@@ -27,6 +38,7 @@ interface StoredCredit {
 const StakePage: NextPage = () => {
   const { address: connectedAddress, chain } = useAccount();
   const { targetNetwork } = useTargetNetwork();
+  const { switchChain } = useSwitchChain();
   const [stakeAmount, setStakeAmount] = useState("");
   const [isApproving, setIsApproving] = useState(false);
   const [isStaking, setIsStaking] = useState(false);
@@ -34,8 +46,33 @@ const StakePage: NextPage = () => {
   const [txError, setTxError] = useState<string | null>(null);
   const [registeredCredit, setRegisteredCredit] = useState<StoredCredit | null>(null);
   const [savedCredits, setSavedCredits] = useState<StoredCredit[]>([]);
+  const [clawdPriceUsd, setClawdPriceUsd] = useState<number | null>(null);
+  const [approveTxHash, setApproveTxHash] = useState<`0x${string}` | undefined>(undefined);
 
   const wrongNetwork = chain?.id !== 8453;
+
+  // Fetch CLAWD price from DexScreener
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const res = await fetch("https://api.dexscreener.com/latest/dex/tokens/0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07");
+        const data = await res.json();
+        const pair = data?.pairs?.[0];
+        if (pair?.priceUsd) {
+          setClawdPriceUsd(parseFloat(pair.priceUsd));
+        }
+      } catch (e) {
+        console.error("Failed to fetch CLAWD price:", e);
+      }
+    };
+    fetchPrice();
+  }, []);
+
+  const formatUsd = (clawdAmount: bigint | undefined): string => {
+    if (!clawdAmount || clawdPriceUsd === null) return "";
+    const amount = Number(formatEther(clawdAmount)) * clawdPriceUsd;
+    return `(~$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`;
+  };
 
   // Read CLAWD balance
   const { data: clawdBalance, refetch: refetchBalance } = useReadContract({
@@ -77,6 +114,21 @@ const StakePage: NextPage = () => {
 
   const { writeContractAsync } = useWriteContract();
 
+  // Wait for approve tx confirmation
+  const { isLoading: isApproveConfirming, isSuccess: isApproveConfirmed } = useWaitForTransactionReceipt({
+    hash: approveTxHash,
+  });
+
+  // When approve tx is confirmed, refetch allowance and clear state
+  useEffect(() => {
+    if (isApproveConfirmed && approveTxHash) {
+      refetchAllowance();
+      setIsApproving(false);
+      setApproveTxHash(undefined);
+      notification.success("Approval confirmed!");
+    }
+  }, [isApproveConfirmed, approveTxHash, refetchAllowance]);
+
   // Load saved credits from localStorage
   useEffect(() => {
     try {
@@ -104,25 +156,17 @@ const StakePage: NextPage = () => {
     setIsApproving(true);
     setTxError(null);
     try {
-      await writeContractAsync({
+      const hash = await writeContractAsync({
         address: CLAWD_ADDRESS,
         abi: clawdAbi,
         functionName: "approve",
         args: [API_CREDITS_ADDRESS, stakeAmountBigInt],
       });
+      setApproveTxHash(hash);
       notification.success("Approval submitted! Waiting for confirmation...");
-      // Wait a bit then refetch
-      setTimeout(() => {
-        refetchAllowance();
-      }, 5000);
     } catch (e: any) {
       console.error(e);
-      if (e?.message?.includes("User rejected")) {
-        setTxError("Transaction rejected by user");
-      } else {
-        setTxError("Approval failed: " + (e?.shortMessage || e?.message || "Unknown error"));
-      }
-    } finally {
+      setTxError(parseContractError(e));
       setIsApproving(false);
     }
   };
@@ -147,11 +191,7 @@ const StakePage: NextPage = () => {
       }, 5000);
     } catch (e: any) {
       console.error(e);
-      if (e?.message?.includes("User rejected")) {
-        setTxError("Transaction rejected by user");
-      } else {
-        setTxError("Staking failed: " + (e?.shortMessage || e?.message || "Unknown error"));
-      }
+      setTxError(parseContractError(e));
     } finally {
       setIsStaking(false);
     }
@@ -214,15 +254,14 @@ const StakePage: NextPage = () => {
       }, 5000);
     } catch (e: any) {
       console.error(e);
-      if (e?.message?.includes("User rejected")) {
-        setTxError("Transaction rejected by user");
-      } else {
-        setTxError("Registration failed: " + (e?.shortMessage || e?.message || "Unknown error"));
-      }
+      setTxError(parseContractError(e));
     } finally {
       setIsRegistering(false);
     }
   };
+
+  // Approve button shows spinner while tx is pending OR confirming
+  const approveLoading = isApproving || isApproveConfirming;
 
   return (
     <div className="flex items-center flex-col grow pt-10">
@@ -240,7 +279,10 @@ const StakePage: NextPage = () => {
               <p className="font-bold">
                 {clawdBalance !== undefined
                   ? Number(formatEther(clawdBalance as bigint)).toLocaleString()
-                  : "..."}
+                  : "..."}{" "}
+                <span className="text-sm font-normal text-base-content/50">
+                  {formatUsd(clawdBalance as bigint | undefined)}
+                </span>
               </p>
             </div>
             <div>
@@ -248,13 +290,21 @@ const StakePage: NextPage = () => {
               <p className="font-bold">
                 {stakedBalance !== undefined
                   ? Number(formatEther(stakedBalance as bigint)).toLocaleString()
-                  : "..."}
+                  : "..."}{" "}
+                <span className="text-sm font-normal text-base-content/50">
+                  {formatUsd(stakedBalance as bigint | undefined)}
+                </span>
               </p>
             </div>
           </div>
 
           <div className="mb-2 text-sm text-base-content/60">
-            Price per credit: {pricePerCredit ? formatEther(pricePerCredit as bigint) : "..."} CLAWD
+            Price per credit: {pricePerCredit ? formatEther(pricePerCredit as bigint) : "..."} CLAWD{" "}
+            <span className="text-base-content/50">
+              {pricePerCredit && clawdPriceUsd !== null
+                ? `(~$${(Number(formatEther(pricePerCredit as bigint)) * clawdPriceUsd).toFixed(2)})`
+                : ""}
+            </span>
           </div>
 
           {/* Stake Input */}
@@ -276,19 +326,19 @@ const StakePage: NextPage = () => {
           {!connectedAddress ? (
             <RainbowKitCustomConnectButton />
           ) : wrongNetwork ? (
-            <button className="btn btn-warning w-full" disabled>
-              Switch to Base in your wallet
+            <button className="btn btn-warning w-full" onClick={() => switchChain({ chainId: 8453 })}>
+              Switch to Base
             </button>
           ) : needsApproval ? (
             <button
               className="btn btn-primary w-full"
-              disabled={isApproving || stakeAmountBigInt === 0n}
+              disabled={approveLoading || stakeAmountBigInt === 0n}
               onClick={handleApprove}
             >
-              {isApproving ? (
+              {approveLoading ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : null}
-              {isApproving ? "Approving..." : "Approve CLAWD"}
+              {approveLoading ? "Approving..." : "Approve CLAWD"}
             </button>
           ) : (
             <button
@@ -321,8 +371,8 @@ const StakePage: NextPage = () => {
           {!connectedAddress ? (
             <RainbowKitCustomConnectButton />
           ) : wrongNetwork ? (
-            <button className="btn btn-warning w-full" disabled>
-              Switch to Base in your wallet
+            <button className="btn btn-warning w-full" onClick={() => switchChain({ chainId: 8453 })}>
+              Switch to Base
             </button>
           ) : (
             <button

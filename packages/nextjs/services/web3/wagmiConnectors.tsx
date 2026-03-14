@@ -3,6 +3,7 @@ import {
   baseAccount,
   ledgerWallet,
   metaMaskWallet,
+  phantomWallet,
   rainbowWallet,
   safeWallet,
   walletConnectWallet,
@@ -23,6 +24,7 @@ const wallets = [
   ledgerWallet,
   baseAccount,
   rainbowWallet,
+  phantomWallet,
   safeWallet,
   ...(showBurnerWallet ? [rainbowkitBurnerWallet] : []),
 ];

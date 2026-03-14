@@ -2,10 +2,8 @@
 import type { Metadata } from "next";
 
 
-const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : `http://localhost:${process.env.PORT || 3000}`;
-const titleTemplate = "%s | Scaffold-ETH 2";
+const baseUrl = "https://zkllmapi.com";
+const titleTemplate = "%s | ZK LLM API";
 
 export const getMetadata = ({
   title,
