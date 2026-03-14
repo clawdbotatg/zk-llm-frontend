@@ -74,7 +74,7 @@ const ChatPage: NextPage = () => {
       // Step 1: Fetch current root from health endpoint
       setProofStatus("Fetching current root...");
       const healthRes = await fetch(`${API_URL}/health`);
-      const healthData = await healthRes.json();
+      await healthRes.json(); // ensure server is reachable
 
       // Step 2: Load circuit and generate proof
       setProofStatus("Loading ZK circuit (this may take a moment)...");
@@ -116,7 +116,7 @@ const ChatPage: NextPage = () => {
         siblings: merkleData.siblings.map(String),
       });
 
-      const { proof: proofBytes, publicInputs } = await backend.generateProof(witness);
+      const { proof: proofBytes } = await backend.generateProof(witness);
 
       await bb.destroy();
 
