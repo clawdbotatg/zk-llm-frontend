@@ -58,6 +58,10 @@ const externalContracts = {
           outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
           stateMutability: "view",
         },
+        { type: "error", name: "APICredits__EmptyTree", inputs: [] },
+        { type: "error", name: "APICredits__InsufficientStake", inputs: [] },
+        { type: "error", name: "APICredits__ZeroAmount", inputs: [] },
+        { type: "error", name: "APICredits__CommitmentAlreadyUsed", inputs: [{ name: "commitment", type: "uint256" }] },
         {
           type: "event",
           name: "CreditRegistered",
