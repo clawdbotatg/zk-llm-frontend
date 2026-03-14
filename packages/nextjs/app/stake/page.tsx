@@ -177,9 +177,12 @@ const StakePage: NextPage = () => {
       const nullifierMod = nullifier % FIELD_MODULUS;
       const secretMod = secret % FIELD_MODULUS;
 
-      // Compute commitment using poseidon2
-      const { poseidon2 } = await import("poseidon-lite");
-      const commitment = poseidon2([nullifierMod, secretMod]);
+      // Compute commitment using bb.js Poseidon2 (Noir/Barretenberg compatible)
+      const { Barretenberg, Fr } = await import("@aztec/bb.js");
+      const bbInstance = await Barretenberg.new({ threads: 1 });
+      const frToBigInt = (fr: { value: Uint8Array }) => BigInt("0x" + Array.from(fr.value).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
+      const commitment = frToBigInt(await bbInstance.poseidon2Hash([new Fr(nullifierMod), new Fr(secretMod)]));
+      await bbInstance.destroy();
 
       // Send register tx
       await writeContractAsync({

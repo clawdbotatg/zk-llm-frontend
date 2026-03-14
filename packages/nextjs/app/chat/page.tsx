@@ -84,47 +84,58 @@ const ChatPage: NextPage = () => {
 
       setProofStatus("Initializing proof system...");
       const { Noir } = await import("@noir-lang/noir_js");
-      const { UltraHonkBackend, Barretenberg } = await import("@aztec/bb.js");
+      const { UltraHonkBackend, Barretenberg, Fr } = await import("@aztec/bb.js");
 
-      const bb = await Barretenberg.new();
+      const bb = await Barretenberg.new({ threads: 1 });
       const noir = new Noir(circuit);
-      const backend = new UltraHonkBackend(circuit.bytecode, bb);
+      const backend = new UltraHonkBackend(circuit.bytecode);
 
-      setProofStatus("Generating ZK proof (takes 10-30s)...");
+      // Helper: Fr field element → BigInt
+      const frToBigInt = (fr: { value: Uint8Array }) =>
+        BigInt("0x" + Array.from(fr.value).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
 
-      // Build proof inputs
-      // We need: nullifier, secret, and the merkle path
-      // For the merkle path, we need siblings from the tree
-      // The API health endpoint should have the root
-      const currentRoot = healthData.currentRoot || healthData.root;
+      // Compute nullifier hash = poseidon2(nullifier)
+      const nullifierBig = BigInt(creditToUse.nullifier);
+      const nullifierHash = frToBigInt(await bb.poseidon2Hash([new Fr(nullifierBig)]));
 
       // Fetch merkle path from the API
       const pathRes = await fetch(`${API_URL}/merkle-path/${creditToUse.commitment}`);
-      let merkleData: any = {};
-      if (pathRes.ok) {
-        merkleData = await pathRes.json();
-      }
+      if (!pathRes.ok) throw new Error("Failed to fetch merkle path");
+      const merkleData = await pathRes.json();
+      if (merkleData.error) throw new Error("Merkle path error: " + merkleData.error);
 
-      const proofInputs = {
+      setProofStatus("Generating ZK proof (takes 10-30s)...");
+
+      const { witness } = await noir.execute({
+        nullifier_hash: nullifierHash.toString(),
+        root: merkleData.root,
+        depth: merkleData.depth,
         nullifier: creditToUse.nullifier,
         secret: creditToUse.secret,
-        root: currentRoot?.toString() || "0",
-        leaf_index: merkleData.leafIndex?.toString() || creditToUse.leafIndex?.toString() || "0",
-        siblings: merkleData.siblings || [],
-      };
+        indices: merkleData.indices.map(String),
+        siblings: merkleData.siblings.map(String),
+      });
 
-      const { witness } = await noir.execute(proofInputs);
-      const proof = await backend.generateProof(witness);
+      const { proof: proofBytes, publicInputs } = await backend.generateProof(witness);
+
+      await bb.destroy();
 
       setProofStatus("Sending to API...");
+
+      // Format proof as hex string and submit
+      const proofHex = "0x" + Array.from(proofBytes).map((b: number) => b.toString(16).padStart(2, "0")).join("");
+      const nullifierHashHex = "0x" + nullifierHash.toString(16).padStart(64, "0");
+      const rootHex = "0x" + BigInt(merkleData.root).toString(16).padStart(64, "0");
 
       // Step 3: POST to API
       const apiRes = await fetch(`${API_URL}/v1/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          proof: Array.from(proof.proof),
-          publicInputs: proof.publicInputs,
+          proof: proofHex,
+          nullifier_hash: nullifierHashHex,
+          root: rootHex,
+          depth: merkleData.depth,
           model: selectedModel,
           messages: [{ role: "user", content: userMessage }],
         }),
