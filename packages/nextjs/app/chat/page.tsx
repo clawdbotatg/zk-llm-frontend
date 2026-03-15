@@ -283,7 +283,7 @@ const ChatPage: NextPage = () => {
           {messages.map((msg, i) => (
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[80%] ${msg.role === "user" ? "" : ""}`}>
-                <p className={`text-xs font-mono mb-2 ${msg.role === "user" ? "text-right text-base-content/30" : "text-primary/60"}`}>
+                <p className={`text-xs font-mono mb-2 ${msg.role === "user" ? "text-right text-base-content/30" : "text-[#42F38F]/60"}`}>
                   {msg.role === "user" ? "YOU" : selectedModel.toUpperCase()}
                 </p>
                 <div

@@ -79,19 +79,19 @@ const Home: NextPage = () => {
         <div className="flex flex-wrap items-center gap-4 mb-20">
           <Link
             href="/stake"
-            className="font-mono text-sm bg-[#00ff88] text-black px-6 py-3 hover:bg-[#00cc66] transition-colors font-bold"
+            className="font-mono text-sm bg-[#F14E47] text-black px-6 py-3 hover:bg-[#d43d37] transition-colors font-bold"
           >
             BUY A CREDIT →
           </Link>
           <Link
             href="/chat"
-            className="font-mono text-sm border border-[#333] text-base-content/60 px-6 py-3 hover:border-[#00ff88]/50 hover:text-base-content transition-colors"
+            className="font-mono text-sm border border-[#333] text-base-content/60 px-6 py-3 hover:border-[#F14E47]/50 hover:text-base-content transition-colors"
           >
             TRY IT NOW
           </Link>
           <a
             href="/skill.md"
-            className="font-mono text-sm text-base-content/30 hover:text-[#00ff88] transition-colors"
+            className="font-mono text-sm text-base-content/30 hover:text-[#42F38F] transition-colors"
           >
             FOR BOTS ↗
           </a>
@@ -112,7 +112,7 @@ const Home: NextPage = () => {
             <p className="text-xs font-mono text-base-content/40 mt-1">API CALLS MADE</p>
           </div>
           <div className="p-6">
-            <p className="text-3xl font-mono font-bold text-[#00ff88]">
+            <p className="text-3xl font-mono font-bold text-[#42F38F]">
               {priceUsd ?? "—"}
             </p>
             <p className="text-xs font-mono text-base-content/40 mt-1">PER CREDIT</p>
@@ -146,7 +146,7 @@ const Home: NextPage = () => {
                 key={n}
                 className={`p-8 ${i < 2 ? "md:border-r border-b md:border-b-0 border-[#333]" : ""}`}
               >
-                <p className="text-xs font-mono text-[#00ff88] mb-4">{n}</p>
+                <p className="text-xs font-mono text-[#42F38F] mb-4">{n}</p>
                 <h3 className="font-mono font-bold text-base mb-3">{title}</h3>
                 <p className="text-sm font-mono text-base-content/50 leading-relaxed">{body}</p>
               </div>
@@ -180,7 +180,7 @@ curl -X POST https://backend.zkllmapi.com/v1/chat \\
             href="https://github.com/clawdbotatg/zk-api-credits"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-[#00ff88] transition-colors"
+            className="hover:text-[#42F38F] transition-colors"
           >
             GITHUB ↗
           </a>
@@ -188,13 +188,13 @@ curl -X POST https://backend.zkllmapi.com/v1/chat \\
             href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-[#00ff88] transition-colors"
+            className="hover:text-[#42F38F] transition-colors"
           >
             CONTRACT ↗
           </a>
-          <Link href="/about" className="hover:text-[#00ff88] transition-colors">HOW IT WORKS</Link>
-          <Link href="/fork" className="hover:text-[#00ff88] transition-colors">FORK THIS</Link>
-          <a href="/skill.md" className="hover:text-[#00ff88] transition-colors">SKILL.md</a>
+          <Link href="/about" className="hover:text-[#42F38F] transition-colors">HOW IT WORKS</Link>
+          <Link href="/fork" className="hover:text-[#42F38F] transition-colors">FORK THIS</Link>
+          <a href="/skill.md" className="hover:text-[#42F38F] transition-colors">SKILL.md</a>
         </div>
 
       </div>

@@ -393,7 +393,7 @@ const StakePage: NextPage = () => {
             </button>
           ) : needsApproval ? (
             <button
-              className="w-full font-mono text-sm bg-[#0a0a1a] border border-[#00ff88] text-[#00ff88] px-6 py-3 hover:bg-[#00ff88]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full font-mono text-sm bg-[#0a0a1a] border border-[#F14E47] text-[#42F38F] px-6 py-3 hover:bg-[#F14E47]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={approveLoading || stakeAmountBigInt === 0n}
               onClick={handleApprove}
             >
@@ -402,7 +402,7 @@ const StakePage: NextPage = () => {
             </button>
           ) : (
             <button
-              className="w-full font-mono text-sm bg-[#00ff88] text-black font-bold px-6 py-3 hover:bg-[#00cc66] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-3 hover:bg-[#d43d37] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={isStaking || stakeAmountBigInt === 0n || numCredits === 0}
               onClick={handleStake}
             >
@@ -438,7 +438,7 @@ const StakePage: NextPage = () => {
                   <div className="border-b border-[#222] px-3 py-2 flex justify-between items-center">
                     <span className="text-xs font-mono text-base-content/30">KEY #{i + 1}</span>
                     <button
-                      className="text-xs font-mono text-primary/60 hover:text-primary transition-colors"
+                      className="text-xs font-mono text-[#42F38F]/60 hover:text-primary transition-colors"
                       onClick={async () => {
                         try {
                           await navigator.clipboard.writeText(toApiKey(credit));
@@ -514,7 +514,7 @@ curl -X POST https://backend.zkllmapi.com/chat \\
           href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-primary/60 transition-colors"
+          className="hover:text-[#42F38F]/60 transition-colors"
         >
           VIEW CONTRACT ON BASESCAN ↗
         </a>
