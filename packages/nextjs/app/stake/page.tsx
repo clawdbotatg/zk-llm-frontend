@@ -107,7 +107,7 @@ const StakePage: NextPage = () => {
   const { data: pricePerCredit } = useReadContract({
     address: API_CREDITS_ADDRESS,
     abi: apiCreditsAbi,
-    functionName: "PRICE_PER_CREDIT",
+    functionName: "pricePerCredit",
     chainId: 8453,
   });
 
@@ -195,7 +195,7 @@ const StakePage: NextPage = () => {
     setIsStaking(true);
     setTxError(null);
     try {
-      const PRICE_PER_CREDIT = 1000n * 10n ** 18n;
+      const PRICE_PER_CREDIT = pricePerCredit ? (pricePerCredit as bigint) : 2000n * 10n ** 18n;
       const numCredits = Number(stakeAmountBigInt / PRICE_PER_CREDIT);
       if (numCredits === 0) { setTxError("Minimum 1000 CLAWD required."); return; }
 
@@ -315,7 +315,8 @@ const StakePage: NextPage = () => {
   // Approve button shows spinner while tx is pending OR confirming
   const approveLoading = isApproving || isApproveConfirming || approveCooldown;
 
-    const numCredits = stakeAmountBigInt > 0n ? Number(stakeAmountBigInt / (1000n * 10n ** 18n)) : 0;
+    const contractPrice = pricePerCredit ? (pricePerCredit as bigint) : 2000n * 10n ** 18n;
+    const numCredits = stakeAmountBigInt > 0n && contractPrice > 0n ? Number(stakeAmountBigInt / contractPrice) : 0;
   const availableCredits = savedCredits.filter(c => !c.spent);
 
   // Format a credit as a portable API key string
@@ -331,7 +332,7 @@ const StakePage: NextPage = () => {
         <p className="text-xs font-mono text-primary mb-3 tracking-widest">BUY CREDITS</p>
         <h1 className="text-4xl font-mono font-bold mb-3">API Credits</h1>
         <p className="font-mono text-base-content/50 text-sm">
-          {pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "1,000"} CLAWD per credit
+          {pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "2,000"} CLAWD per credit
           {pricePerCredit && clawdPriceUsd !== null
             ? ` · ~$${(Number(formatEther(pricePerCredit as bigint)) * clawdPriceUsd).toFixed(2)} USD each`
             : ""}
