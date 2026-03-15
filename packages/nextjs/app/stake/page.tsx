@@ -49,6 +49,7 @@ const StakePage: NextPage = () => {
   const [clawdPriceUsd, setClawdPriceUsd] = useState<number | null>(null);
   const [approveTxHash, setApproveTxHash] = useState<`0x${string}` | undefined>(undefined);
   const [approveCooldown, setApproveCooldown] = useState(false);
+  const [approveConfirmed, setApproveConfirmed] = useState(false); // true after on-chain confirmation
 
   const wrongNetwork = chain?.id !== 8453;
 
@@ -120,24 +121,15 @@ const StakePage: NextPage = () => {
     hash: approveTxHash,
   });
 
-  // When approve tx is confirmed, poll allowance until it reflects new value, then clear state
+  // When approve tx is confirmed on-chain, mark approved and refetch
   useEffect(() => {
     if (isApproveConfirmed && approveTxHash) {
       setIsApproving(false);
       setApproveTxHash(undefined);
-      notification.success("Approval confirmed! Loading...");
-      // Poll allowance every 1s until it reflects the approved amount (max 15s)
-      let attempts = 0;
-      const poll = setInterval(async () => {
-        attempts++;
-        await refetchAllowance();
-        if (attempts >= 15) {
-          clearInterval(poll);
-          setApproveCooldown(false);
-        }
-      }, 1000);
-      // Cooldown clears when poll finds updated allowance via needsApproval going false
-      return () => clearInterval(poll);
+      setApproveConfirmed(true); // override needsApproval immediately
+      setApproveCooldown(false);
+      refetchAllowance();
+      notification.success("Approved! You can now stake.");
     }
   }, [isApproveConfirmed, approveTxHash, refetchAllowance]);
 
@@ -161,14 +153,22 @@ const StakePage: NextPage = () => {
     }
   })();
 
-  const needsApproval = stakeAmountBigInt > 0n && (!allowance || (allowance as bigint) < stakeAmountBigInt);
+  // needsApproval: false if on-chain confirmed OR allowance already sufficient
+  const needsApproval = !approveConfirmed &&
+    stakeAmountBigInt > 0n &&
+    (!allowance || (allowance as bigint) < stakeAmountBigInt);
 
-  // Clear cooldown as soon as allowance is sufficient — Stake button appears immediately
+  // Once allowance catches up, clear the approveConfirmed override
   useEffect(() => {
-    if (approveCooldown && !needsApproval) {
-      setApproveCooldown(false);
+    if (approveConfirmed && allowance && (allowance as bigint) >= stakeAmountBigInt && stakeAmountBigInt > 0n) {
+      setApproveConfirmed(false);
     }
-  }, [approveCooldown, needsApproval]);
+  }, [approveConfirmed, allowance, stakeAmountBigInt]);
+
+  // Reset approveConfirmed if user changes stake amount
+  useEffect(() => {
+    setApproveConfirmed(false);
+  }, [stakeAmount]);
 
   const handleApprove = async () => {
     if (!connectedAddress) return;
