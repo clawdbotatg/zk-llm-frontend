@@ -3,7 +3,9 @@ import Link from "next/link";
 
 const AboutPage: NextPage = () => {
   return (
-    <div className="flex items-center flex-col grow pt-10 pb-20">
+    <div className="relative min-h-[calc(100vh-56px)]" style={{backgroundImage: "url(/hero-about.jpg)", backgroundSize: "cover", backgroundPosition: "center"}}>
+      <div className="absolute inset-0 bg-black/85" />
+      <div className="relative z-10 flex items-center flex-col grow pt-10 pb-20">
       <div className="px-5 max-w-2xl w-full prose prose-sm max-w-none">
 
         <div className="text-center mb-12">
@@ -266,6 +268,7 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
           </Link>
         </div>
 
+      </div>
       </div>
     </div>
   );
