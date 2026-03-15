@@ -226,97 +226,108 @@ const ChatPage: NextPage = () => {
     }
   };
 
-  return (
-    <div className="flex items-center flex-col grow pt-6">
-      <div className="px-4 max-w-3xl w-full flex flex-col" style={{ height: "calc(100vh - 120px)" }}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">ZK Chat</h2>
-          <div className="flex items-center gap-3">
-            <span className="badge badge-info">
-              {availableCredits.length} credit{availableCredits.length !== 1 ? "s" : ""} available
-            </span>
-            {messages.length > 0 && (
-              <button
-                className="btn btn-ghost btn-xs text-base-content/40 hover:text-error"
-                onClick={clearChat}
-                title="Clear chat history"
-              >
-                ✕ Clear
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Model Selector */}
-        <div className="mb-4">
+    return (
+    <div className="flex flex-col" style={{ height: "calc(100vh - 56px)" }}>
+      {/* Top bar */}
+      <div className="border-b border-[#1f1f1f] px-6 py-3 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-mono font-bold">ZK CHAT</span>
+          <span className="text-xs font-mono text-base-content/30">·</span>
           <select
-            className="select select-bordered w-full"
+            className="bg-transparent text-xs font-mono text-base-content/50 border-none outline-none cursor-pointer hover:text-base-content transition-colors"
             value={selectedModel}
             onChange={e => setSelectedModel(e.target.value)}
           >
             {MODELS.map(m => (
-              <option key={m.id} value={m.id}>
+              <option key={m.id} value={m.id} className="bg-[#111]">
                 {m.label}
               </option>
             ))}
           </select>
         </div>
-
-        {/* Chat Messages */}
-        <div className="flex-1 bg-base-100 rounded-xl p-4 shadow overflow-y-auto mb-4">
-          {messages.length === 0 && !isSending && (
-            <div className="flex items-center justify-center h-full text-base-content/40">
-              <div className="text-center">
-                <p className="text-4xl mb-4">🔐</p>
-                <p>Send a message to start chatting privately.</p>
-                <p className="text-sm mt-2">Your identity is hidden behind a ZK proof.</p>
-              </div>
-            </div>
+        <div className="flex items-center gap-4">
+          <span className="text-xs font-mono text-base-content/30">
+            {availableCredits.length} credit{availableCredits.length !== 1 ? "s" : ""} left
+          </span>
+          {messages.length > 0 && (
+            <button
+              className="text-xs font-mono text-base-content/20 hover:text-error transition-colors"
+              onClick={clearChat}
+            >
+              CLEAR
+            </button>
           )}
+        </div>
+      </div>
 
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-6 py-6">
+        {messages.length === 0 && !isSending && (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+              <p className="text-xs font-mono text-base-content/20 tracking-widest mb-3">PRIVATE LLM TERMINAL</p>
+              <p className="font-mono text-base-content/40 text-sm mb-1">Your identity is hidden behind a ZK proof.</p>
+              <p className="font-mono text-base-content/20 text-xs">
+                {availableCredits.length === 0
+                  ? "→ Go to /stake to buy credits first"
+                  : `${availableCredits.length} credit${availableCredits.length !== 1 ? "s" : ""} ready. Start typing below.`}
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="max-w-3xl mx-auto space-y-6">
           {messages.map((msg, i) => (
-            <div key={i} className={`chat ${msg.role === "user" ? "chat-end" : "chat-start"}`}>
-              <div className="chat-header text-xs text-base-content/50 mb-1">
-                {msg.role === "user" ? "You" : selectedModel}
-              </div>
-              <div
-                className={`chat-bubble ${
-                  msg.role === "user" ? "chat-bubble-primary" : "chat-bubble-secondary"
-                } whitespace-pre-wrap`}
-              >
-                {msg.content}
+            <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+              <div className={`max-w-[80%] ${msg.role === "user" ? "" : ""}`}>
+                <p className={`text-xs font-mono mb-2 ${msg.role === "user" ? "text-right text-base-content/30" : "text-primary/60"}`}>
+                  {msg.role === "user" ? "YOU" : selectedModel.toUpperCase()}
+                </p>
+                <div
+                  className={`font-mono text-sm leading-relaxed whitespace-pre-wrap px-4 py-3 border ${
+                    msg.role === "user"
+                      ? "border-primary/20 bg-primary/5 text-base-content/80 text-right"
+                      : "border-[#222] bg-[#111] text-base-content/80"
+                  }`}
+                >
+                  {msg.content}
+                </div>
               </div>
             </div>
           ))}
 
           {proofStatus && (
-            <div className="chat chat-start">
-              <div className="chat-bubble chat-bubble-info flex items-center gap-2">
-                <span className="loading loading-spinner loading-sm"></span>
-                {proofStatus}
+            <div className="flex justify-start">
+              <div className="border border-[#222] bg-[#111] px-4 py-3 flex items-center gap-3">
+                <span className="loading loading-spinner loading-xs text-primary"></span>
+                <span className="text-xs font-mono text-base-content/40">{proofStatus}</span>
               </div>
             </div>
           )}
 
           <div ref={messagesEndRef} />
         </div>
+      </div>
 
-        {/* Error */}
-        {error && (
-          <div className="alert alert-error text-sm mb-3">
-            <span>{error}</span>
-            <button className="btn btn-ghost btn-xs" onClick={() => setError(null)}>
-              ✕
-            </button>
-          </div>
-        )}
+      {/* Error */}
+      {error && (
+        <div className="border-t border-error/20 bg-error/5 px-6 py-3 flex items-center justify-between flex-shrink-0">
+          <span className="text-xs font-mono text-error">{error}</span>
+          <button className="text-xs font-mono text-base-content/30 hover:text-base-content transition-colors" onClick={() => setError(null)}>
+            DISMISS
+          </button>
+        </div>
+      )}
 
-        {/* Input */}
-        <div className="flex gap-2 mb-4">
+      {/* Input */}
+      <div className="border-t border-[#1f1f1f] px-6 py-4 flex-shrink-0">
+        <div className="max-w-3xl mx-auto flex gap-3">
           <textarea
-            className="textarea textarea-bordered flex-1 min-h-[52px] max-h-[150px]"
+            className="flex-1 bg-[#111] border border-[#333] text-base-content font-mono text-sm px-4 py-3 focus:outline-none focus:border-primary/40 transition-colors resize-none min-h-[48px] max-h-[140px]"
             placeholder={
-              availableCredits.length === 0 ? "No credits available — go to Stake to get some" : "Type your message..."
+              availableCredits.length === 0
+                ? "No credits — go to /stake to buy some"
+                : "Type your message... (Enter to send)"
             }
             value={message}
             onChange={e => {
@@ -330,13 +341,14 @@ const ChatPage: NextPage = () => {
               }
             }}
             disabled={isSending || availableCredits.length === 0}
+            rows={1}
           />
           <button
-            className="btn btn-primary self-end"
+            className="font-mono text-sm bg-primary text-black font-bold px-5 py-3 hover:bg-primary/80 transition-colors disabled:opacity-30 disabled:cursor-not-allowed self-end flex items-center gap-2"
             disabled={isSending || !message.trim() || availableCredits.length === 0}
             onClick={handleSend}
           >
-            {isSending ? <span className="loading loading-spinner loading-sm"></span> : "Send"}
+            {isSending ? <span className="loading loading-spinner loading-xs"></span> : "SEND →"}
           </button>
         </div>
       </div>

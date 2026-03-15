@@ -322,42 +322,45 @@ const StakePage: NextPage = () => {
   const toApiKey = (c: StoredCredit) =>
     `zklm_${c.nullifier}_${c.secret}_${c.commitment}`;
 
-  return (
-    <div className="flex items-center flex-col grow pt-10">
-      <div className="px-5 max-w-lg w-full">
+    return (
+    <div className="max-w-2xl mx-auto px-6 pt-16 pb-32">
 
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-2">Buy API Credits</h2>
-          <p className="text-base-content/60">
-            {pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "1,000"} CLAWD per credit
-            {pricePerCredit && clawdPriceUsd !== null
-              ? ` (~$${(Number(formatEther(pricePerCredit as bigint)) * clawdPriceUsd).toFixed(2)} each)`
-              : ""}
-          </p>
-        </div>
+      {/* Header */}
+      <div className="mb-10">
+        <p className="text-xs font-mono text-primary mb-3 tracking-widest">BUY CREDITS</p>
+        <h1 className="text-4xl font-mono font-bold mb-3">API Credits</h1>
+        <p className="font-mono text-base-content/50 text-sm">
+          {pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "1,000"} CLAWD per credit
+          {pricePerCredit && clawdPriceUsd !== null
+            ? ` · ~$${(Number(formatEther(pricePerCredit as bigint)) * clawdPriceUsd).toFixed(2)} USD each`
+            : ""}
+        </p>
+      </div>
 
-        {/* Buy box */}
-        <div className="bg-base-100 rounded-xl p-6 shadow mb-6">
+      {/* Buy box */}
+      <div className="border border-[#222] mb-6">
+        {/* Balance row */}
+        {connectedAddress && (
+          <div className="border-b border-[#222] px-5 py-3 flex justify-between items-center">
+            <span className="text-xs font-mono text-base-content/40">YOUR CLAWD</span>
+            <span className="text-sm font-mono text-base-content/70">
+              {clawdBalance !== undefined
+                ? Number(formatEther(clawdBalance as bigint)).toLocaleString()
+                : "—"}
+              {" "}
+              <span className="text-base-content/30">{formatUsd(clawdBalance as bigint | undefined)}</span>
+            </span>
+          </div>
+        )}
 
-          {/* Wallet balance */}
-          {connectedAddress && (
-            <div className="flex justify-between text-sm text-base-content/60 mb-4">
-              <span>Your CLAWD</span>
-              <span className="font-mono">
-                {clawdBalance !== undefined
-                  ? Number(formatEther(clawdBalance as bigint)).toLocaleString()
-                  : "..."}{" "}
-                <span className="text-base-content/40">{formatUsd(clawdBalance as bigint | undefined)}</span>
-              </span>
-            </div>
-          )}
-
+        <div className="p-5">
           {/* Amount input */}
-          <div className="mb-1">
+          <div className="mb-2">
+            <label className="text-xs font-mono text-base-content/40 block mb-2">CLAWD AMOUNT</label>
             <input
               type="text"
               placeholder="1000"
-              className="input input-bordered w-full text-lg"
+              className="w-full bg-[#111] border border-[#333] text-base-content font-mono text-xl px-4 py-3 focus:outline-none focus:border-primary/50 transition-colors"
               value={stakeAmount}
               onChange={e => {
                 setStakeAmount(e.target.value);
@@ -366,8 +369,8 @@ const StakePage: NextPage = () => {
             />
           </div>
 
-          {/* Credit count hint */}
-          <p className="text-sm text-base-content/50 mb-4 text-right">
+          {/* Credit count */}
+          <p className="text-xs font-mono text-base-content/30 text-right mb-5">
             {numCredits > 0 ? `= ${numCredits} API credit${numCredits !== 1 ? "s" : ""}` : " "}
           </p>
 
@@ -375,111 +378,120 @@ const StakePage: NextPage = () => {
           {!connectedAddress ? (
             <RainbowKitCustomConnectButton />
           ) : wrongNetwork ? (
-            <button className="btn btn-warning w-full" onClick={() => switchChain({ chainId: 8453 })}>
-              Switch to Base
+            <button
+              className="w-full font-mono text-sm border border-yellow-500/50 text-yellow-400 px-6 py-3 hover:bg-yellow-500/10 transition-colors"
+              onClick={() => switchChain({ chainId: 8453 })}
+            >
+              SWITCH TO BASE →
             </button>
           ) : needsApproval ? (
             <button
-              className="btn btn-primary w-full"
+              className="w-full font-mono text-sm bg-[#1a1a2e] border border-primary/50 text-primary px-6 py-3 hover:bg-primary/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={approveLoading || stakeAmountBigInt === 0n}
               onClick={handleApprove}
             >
-              {approveLoading && <span className="loading loading-spinner loading-sm mr-2"></span>}
-              {approveLoading ? "Approving..." : "Approve CLAWD"}
+              {approveLoading && <span className="loading loading-spinner loading-xs"></span>}
+              {approveLoading ? "APPROVING..." : "APPROVE CLAWD →"}
             </button>
           ) : (
             <button
-              className="btn btn-primary w-full"
+              className="w-full font-mono text-sm bg-primary text-black font-bold px-6 py-3 hover:bg-primary/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={isStaking || stakeAmountBigInt === 0n || numCredits === 0}
               onClick={handleStake}
             >
-              {isStaking && <span className="loading loading-spinner loading-sm mr-2"></span>}
-              {isStaking ? "Buying..." : `Buy ${numCredits > 0 ? numCredits : ""} Credit${numCredits !== 1 ? "s" : ""}`}
+              {isStaking && <span className="loading loading-spinner loading-xs"></span>}
+              {isStaking
+                ? "BUYING..."
+                : `BUY ${numCredits > 0 ? numCredits : ""} CREDIT${numCredits !== 1 ? "S" : ""} →`}
             </button>
           )}
 
           {txError && (
-            <div className="mt-3 alert alert-error text-sm">
-              <span>{txError}</span>
+            <div className="mt-3 border border-error/30 bg-error/5 px-4 py-3 text-xs font-mono text-error">
+              {txError}
             </div>
           )}
         </div>
+      </div>
 
-        {/* Your API Keys */}
-        {availableCredits.length > 0 && (
-          <div className="bg-base-100 rounded-xl p-6 shadow mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg">Your API Keys</h3>
-              <span className="badge badge-success">{availableCredits.length} available</span>
-            </div>
-            <p className="text-sm text-base-content/60 mb-4">
-              Use these in your scripts. Each key works for one API call.
+      {/* API Keys */}
+      {availableCredits.length > 0 && (
+        <div className="border border-[#222] mb-6">
+          <div className="border-b border-[#222] px-5 py-3 flex justify-between items-center">
+            <span className="text-xs font-mono text-base-content/40">YOUR API KEYS</span>
+            <span className="text-xs font-mono text-success">{availableCredits.length} AVAILABLE</span>
+          </div>
+          <div className="p-5">
+            <p className="text-xs font-mono text-base-content/40 mb-4">
+              Each key works once. Store them safely — they cannot be recovered.
             </p>
             <div className="space-y-3">
               {availableCredits.map((credit, i) => (
-                <div key={i} className="bg-base-200 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs text-base-content/50">Credit {i + 1}</span>
+                <div key={i} className="border border-[#222] bg-[#111]">
+                  <div className="border-b border-[#222] px-3 py-2 flex justify-between items-center">
+                    <span className="text-xs font-mono text-base-content/30">KEY #{i + 1}</span>
                     <button
-                      className="btn btn-xs btn-ghost"
-                      onClick={() => navigator.clipboard.writeText(toApiKey(credit))}
+                      className="text-xs font-mono text-primary/60 hover:text-primary transition-colors"
+                      onClick={() => {
+                        navigator.clipboard.writeText(toApiKey(credit));
+                      }}
                     >
-                      Copy
+                      COPY ↗
                     </button>
                   </div>
-                  <p className="font-mono text-xs break-all text-base-content/70">
-                    {toApiKey(credit).slice(0, 40)}...
-                  </p>
+                  <div className="px-3 py-2">
+                    <p className="font-mono text-xs text-base-content/40 break-all">
+                      {toApiKey(credit).slice(0, 48)}...
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
 
-            {/* Usage example */}
-            <details className="mt-4">
-              <summary className="text-xs text-base-content/50 cursor-pointer hover:text-base-content">
-                How to use in a script ↓
+            {/* Usage */}
+            <details className="mt-5">
+              <summary className="text-xs font-mono text-base-content/30 cursor-pointer hover:text-base-content/60 transition-colors">
+                HOW TO USE IN A SCRIPT ↓
               </summary>
-              <div className="mt-3 bg-base-300 rounded-lg p-3 text-xs font-mono">
-                <p className="text-base-content/60 mb-1"># Parse your API key</p>
-                <p>{"API_KEY=\"zklm_<nullifier>_<secret>_<commitment>\""}</p>
-                <p className="mt-2 text-base-content/60"># Split and use</p>
-                <p>{"IFS='_' read -r _ NULLIFIER SECRET COMMITMENT <<< \"$API_KEY\""}</p>
-                <p className="mt-2 text-base-content/60"># Call the API</p>
-                <p>{"curl -X POST https://backend.zkllmapi.com/chat \\"}</p>
-                <p>{"  -H 'Content-Type: application/json' \\"}</p>
-                <p>{"  -d '{\"nullifier\":\"'$NULLIFIER'\",\"secret\":\"'$SECRET'\",\"commitment\":\"'$COMMITMENT'\",\"message\":\"Hello\",...}'"}</p>
+              <div className="mt-3 border border-[#222] bg-[#111] overflow-x-auto">
+                <pre className="p-4 text-xs font-mono text-base-content/50 leading-relaxed">{`API_KEY="zklm_<nullifier>_<secret>_<commitment>"
+
+IFS='_' read -r _ N S C <<< "$API_KEY"
+curl -X POST https://backend.zkllmapi.com/chat \\
+  -H 'Content-Type: application/json' \\
+  -d '{"nullifier":"'$N'","secret":"'$S'","commitment":"'$C'","message":"Hello"}'`}</pre>
               </div>
             </details>
           </div>
-        )}
-
-        {/* Spent credits — collapsed */}
-        {savedCredits.filter(c => c.spent).length > 0 && (
-          <details className="mb-6">
-            <summary className="text-sm text-base-content/40 cursor-pointer">
-              {savedCredits.filter(c => c.spent).length} spent credit{savedCredits.filter(c => c.spent).length !== 1 ? "s" : ""}
-            </summary>
-            <div className="mt-2 space-y-2">
-              {savedCredits.filter(c => c.spent).map((credit, i) => (
-                <div key={i} className="bg-base-200 rounded-lg p-3 opacity-50">
-                  <p className="font-mono text-xs break-all">{toApiKey(credit).slice(0, 40)}...</p>
-                  <span className="badge badge-error badge-xs mt-1">spent</span>
-                </div>
-              ))}
-            </div>
-          </details>
-        )}
-
-        <div className="text-center text-xs text-base-content/30 mb-8">
-          <a
-            href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-base-content/60"
-          >
-            View contract on Basescan ↗
-          </a>
         </div>
+      )}
+
+      {/* Spent */}
+      {savedCredits.filter(c => c.spent).length > 0 && (
+        <details className="mb-6">
+          <summary className="text-xs font-mono text-base-content/30 cursor-pointer hover:text-base-content/50 transition-colors">
+            {savedCredits.filter(c => c.spent).length} SPENT CREDIT{savedCredits.filter(c => c.spent).length !== 1 ? "S" : ""} ↓
+          </summary>
+          <div className="mt-3 space-y-2">
+            {savedCredits.filter(c => c.spent).map((credit, i) => (
+              <div key={i} className="border border-[#1a1a1a] px-3 py-2 opacity-40">
+                <p className="font-mono text-xs text-base-content/50 break-all">{toApiKey(credit).slice(0, 48)}...</p>
+                <span className="text-xs font-mono text-error">SPENT</span>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+
+      <div className="text-xs font-mono text-base-content/20 mt-8">
+        <a
+          href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-primary/60 transition-colors"
+        >
+          VIEW CONTRACT ON BASESCAN ↗
+        </a>
       </div>
     </div>
   );

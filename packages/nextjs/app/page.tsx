@@ -40,86 +40,145 @@ const Home: NextPage = () => {
     : "1,000";
 
   return (
-    <div className="flex items-center flex-col grow pt-20">
-      <div className="px-5 max-w-xl w-full text-center">
+    <div className="grid-bg min-h-[calc(100vh-56px)]">
+      <div className="max-w-5xl mx-auto px-6 pt-24 pb-32">
+
+        {/* Tag line */}
+        <div className="mb-6">
+          <span className="text-xs font-mono text-primary border border-primary/30 px-2 py-1">
+            ZK-GATED LLM API — BASE MAINNET
+          </span>
+        </div>
 
         {/* Hero */}
-        <div className="mb-10">
-          <h1 className="text-5xl font-bold mb-6 leading-tight">
-            Spend CLAWD.<br />Get ZK LLM access.
-          </h1>
-          <p className="text-xl text-base-content/60">
-            No account. No API key tied to your identity.<br />
-            Just a ZK proof that you paid.
-          </p>
-        </div>
+        <h1 className="text-6xl md:text-7xl font-mono font-bold leading-none mb-8 tracking-tight">
+          Spend CLAWD.<br />
+          <span className="text-primary">Get ZK LLM</span><br />
+          access.
+        </h1>
 
-        {/* Primary CTA */}
-        <div className="flex flex-col items-center gap-3 mb-16">
-          <Link href="/stake" className="btn btn-primary btn-lg px-12 text-lg">
-            Get Credits →
+        <p className="text-base-content/50 text-lg font-mono mb-12 max-w-xl leading-relaxed">
+          No account. No identity tied to your request.<br />
+          Pay with CLAWD token → get a one-time API key<br />
+          backed by a zero-knowledge proof.
+        </p>
+
+        {/* CTAs */}
+        <div className="flex flex-wrap items-center gap-4 mb-20">
+          <Link
+            href="/stake"
+            className="font-mono text-sm bg-primary text-black px-6 py-3 hover:bg-primary/80 transition-colors font-bold"
+          >
+            BUY CREDITS →
           </Link>
-          <div className="flex gap-6 text-sm text-base-content/40">
-            <Link href="/chat" className="hover:text-base-content transition-colors">Try the chat demo</Link>
-            <span>·</span>
-            <Link href="/about" className="hover:text-base-content transition-colors">How it works</Link>
-            <span>·</span>
-            <a href="/skill.md" className="hover:text-base-content transition-colors">SKILL.md</a>
+          <Link
+            href="/chat"
+            className="font-mono text-sm border border-[#333] text-base-content/60 px-6 py-3 hover:border-primary/50 hover:text-base-content transition-colors"
+          >
+            TRY THE DEMO
+          </Link>
+          <a
+            href="/skill.md"
+            className="font-mono text-sm text-base-content/30 hover:text-primary transition-colors"
+          >
+            SKILL.md ↗
+          </a>
+        </div>
+
+        {/* Stats bar */}
+        <div className="border border-[#1f1f1f] grid grid-cols-3 mb-20">
+          <div className="border-r border-[#1f1f1f] p-6">
+            <p className="text-3xl font-mono font-bold mono-stat">
+              {totalCredits ?? "—"}
+            </p>
+            <p className="text-xs font-mono text-base-content/40 mt-1">CREDITS ISSUED</p>
+          </div>
+          <div className="border-r border-[#1f1f1f] p-6">
+            <p className="text-3xl font-mono font-bold mono-stat">
+              {spentCount ?? "—"}
+            </p>
+            <p className="text-xs font-mono text-base-content/40 mt-1">API CALLS MADE</p>
+          </div>
+          <div className="p-6">
+            <p className="text-3xl font-mono font-bold">{priceLabel}</p>
+            <p className="text-xs font-mono text-base-content/40 mt-1">CLAWD PER CREDIT</p>
           </div>
         </div>
 
-        {/* One-liner explainer */}
-        <div className="grid grid-cols-3 gap-4 mb-16 text-sm">
-          <div className="bg-base-100 rounded-xl p-4 shadow">
-            <div className="text-2xl mb-2">💰</div>
-            <p className="font-semibold mb-1">Stake {priceLabel} CLAWD</p>
-            <p className="text-base-content/50 text-xs">per API credit</p>
-          </div>
-          <div className="bg-base-100 rounded-xl p-4 shadow">
-            <div className="text-2xl mb-2">🔑</div>
-            <p className="font-semibold mb-1">Get an API key</p>
-            <p className="text-base-content/50 text-xs">works in any script or app</p>
-          </div>
-          <div className="bg-base-100 rounded-xl p-4 shadow">
-            <div className="text-2xl mb-2">🤖</div>
-            <p className="font-semibold mb-1">Call the LLM</p>
-            <p className="text-base-content/50 text-xs">identity stays hidden</p>
+        {/* How it works */}
+        <div className="mb-20">
+          <p className="text-xs font-mono text-base-content/30 mb-8 tracking-widest">HOW IT WORKS</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#1f1f1f]">
+            {[
+              {
+                n: "01",
+                title: "Stake CLAWD",
+                body: `Send ${priceLabel} CLAWD per credit to the APICredits contract. One transaction covers approval, staking, and credit registration.`,
+              },
+              {
+                n: "02",
+                title: "Get API keys",
+                body: "Your browser generates secret credentials locally. The contract stores only a Poseidon2 hash. Your identity is never revealed.",
+              },
+              {
+                n: "03",
+                title: "Call the LLM",
+                body: "Pass your key with each request. The server verifies a ZK proof — it knows you paid, nothing else. Works in any script or app.",
+              },
+            ].map(({ n, title, body }, i) => (
+              <div
+                key={n}
+                className={`p-8 ${i < 2 ? "md:border-r border-b md:border-b-0 border-[#1f1f1f]" : ""}`}
+              >
+                <p className="text-xs font-mono text-primary mb-4">{n}</p>
+                <h3 className="font-mono font-bold text-base mb-3">{title}</h3>
+                <p className="text-sm font-mono text-base-content/50 leading-relaxed">{body}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Live stats */}
-        <div className="flex justify-center gap-12 text-center mb-16 text-base-content/50 text-sm">
-          <div>
-            <p className="text-3xl font-bold text-base-content">{totalCredits ?? "—"}</p>
-            <p>credits issued</p>
-          </div>
-          <div>
-            <p className="text-3xl font-bold text-base-content">{spentCount ?? "—"}</p>
-            <p>API calls made</p>
+        {/* Code snippet */}
+        <div className="mb-20">
+          <p className="text-xs font-mono text-base-content/30 mb-4 tracking-widest">USE ANYWHERE</p>
+          <div className="border border-[#1f1f1f] bg-[#111] overflow-x-auto">
+            <div className="border-b border-[#1f1f1f] px-4 py-2 flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#333]"></div>
+              <div className="w-2 h-2 rounded-full bg-[#333]"></div>
+              <div className="w-2 h-2 rounded-full bg-[#333]"></div>
+              <span className="text-xs font-mono text-base-content/30 ml-2">example.sh</span>
+            </div>
+            <pre className="p-6 text-xs font-mono text-base-content/70 leading-relaxed overflow-x-auto">{`# Your API key (from the Buy page)
+API_KEY="zklm_<nullifier>_<secret>_<commitment>"
+
+# Split and call
+IFS='_' read -r _ N S C <<< "$API_KEY"
+curl -X POST https://backend.zkllmapi.com/chat \\
+  -H 'Content-Type: application/json' \\
+  -d '{"nullifier":"'$N'","secret":"'$S'","commitment":"'$C'","message":"Hello"}'`}</pre>
           </div>
         </div>
 
-        {/* Footer links */}
-        <div className="text-xs text-base-content/30 mb-8 flex justify-center gap-6">
+        {/* Bottom links */}
+        <div className="flex flex-wrap gap-8 text-xs font-mono text-base-content/30">
           <a
             href="https://github.com/clawdbotatg/zk-api-credits"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-base-content/60 transition-colors"
+            className="hover:text-primary transition-colors"
           >
-            GitHub ↗
+            GITHUB ↗
           </a>
           <a
             href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-base-content/60 transition-colors"
+            className="hover:text-primary transition-colors"
           >
-            Contract ↗
+            CONTRACT ↗
           </a>
-          <Link href="/about" className="hover:text-base-content/60 transition-colors">
-            About / Docs
-          </Link>
+          <Link href="/about" className="hover:text-primary transition-colors">ABOUT / DOCS</Link>
+          <a href="/skill.md" className="hover:text-primary transition-colors">SKILL.md</a>
         </div>
 
       </div>
