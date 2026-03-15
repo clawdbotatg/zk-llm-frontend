@@ -14,6 +14,7 @@ type HeaderMenuLink = {
 export const menuLinks: HeaderMenuLink[] = [
   { label: "Buy", href: "/stake" },
   { label: "Chat", href: "/chat" },
+  { label: "Fork", href: "/fork" },
   { label: "About", href: "/about" },
 ];
 
