@@ -3,7 +3,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const externalContracts = {
   8453: {
     APICredits: {
-      address: "0x45284835Fe6eC9937Ce8db8AEE32F3E684f900F3",
+      address: "0x4A6782D251e12c06e1f16450D8b28f6C857cFdd1",
       abi: [
         {
           type: "function",
@@ -23,6 +23,16 @@ const externalContracts = {
           type: "function",
           name: "register",
           inputs: [{ name: "commitment", type: "uint256", internalType: "uint256" }],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "stakeAndRegister",
+          inputs: [
+            { name: "amount", type: "uint256", internalType: "uint256" },
+            { name: "commitments", type: "uint256[]", internalType: "uint256[]" },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },

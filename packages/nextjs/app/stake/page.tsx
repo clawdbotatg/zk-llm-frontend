@@ -10,7 +10,7 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import externalContracts from "~~/contracts/externalContracts";
 
-const API_CREDITS_ADDRESS = "0x45284835Fe6eC9937Ce8db8AEE32F3E684f900F3";
+const API_CREDITS_ADDRESS = "0x4A6782D251e12c06e1f16450D8b28f6C857cFdd1";
 const CLAWD_ADDRESS = "0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07";
 
 const apiCreditsAbi = externalContracts[8453].APICredits.abi;
@@ -198,26 +198,12 @@ const StakePage: NextPage = () => {
     setIsStaking(true);
     setTxError(null);
     try {
-      // Stake CLAWD
-      await writeContractAsync({
-        address: API_CREDITS_ADDRESS,
-        abi: apiCreditsAbi,
-        functionName: "stake",
-        args: [stakeAmountBigInt],
-      });
-      notification.success("Staked! Registering credits...");
-
-      // Calculate how many credits to register (floor division by PRICE_PER_CREDIT)
       const PRICE_PER_CREDIT = 1000n * 10n ** 18n;
       const numCredits = Number(stakeAmountBigInt / PRICE_PER_CREDIT);
+      if (numCredits === 0) { setTxError("Minimum 1000 CLAWD required."); return; }
 
-      if (numCredits === 0) {
-        setStakeAmount("");
-        setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); }, 3000);
-        return;
-      }
-
-      // Init bb.js once for all commitments
+      // Generate all commitments BEFORE the tx
+      notification.success("Generating commitments...");
       const { Barretenberg, Fr } = await import("@aztec/bb.js");
       const bbInstance = await Barretenberg.new({ threads: 1 });
       const frToBigInt = (fr: { value: Uint8Array }) =>
@@ -225,28 +211,27 @@ const StakePage: NextPage = () => {
       const FIELD_MODULUS = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
 
       const newCredits: StoredCredit[] = [];
+      const commitments: bigint[] = [];
 
       for (let i = 0; i < numCredits; i++) {
-        setIsRegistering(true);
-        // Generate fresh nullifier + secret
         const rb1 = new Uint8Array(32); crypto.getRandomValues(rb1);
         const rb2 = new Uint8Array(32); crypto.getRandomValues(rb2);
         const nullifier = BigInt("0x" + Array.from(rb1).map(b => b.toString(16).padStart(2, "0")).join("")) % FIELD_MODULUS;
         const secret = BigInt("0x" + Array.from(rb2).map(b => b.toString(16).padStart(2, "0")).join("")) % FIELD_MODULUS;
         const commitment = frToBigInt(await bbInstance.poseidon2Hash([new Fr(nullifier), new Fr(secret)]));
-
-        await writeContractAsync({
-          address: API_CREDITS_ADDRESS,
-          abi: apiCreditsAbi,
-          functionName: "register",
-          args: [commitment],
-        });
-
+        commitments.push(commitment);
         newCredits.push({ nullifier: nullifier.toString(), secret: secret.toString(), commitment: commitment.toString(), leafIndex: -1, spent: false });
-        notification.success(`Credit ${i + 1}/${numCredits} registered!`);
       }
-
       await bbInstance.destroy();
+
+      // ONE transaction: stake + register all credits atomically
+      notification.success(`Staking & registering ${numCredits} credit${numCredits > 1 ? "s" : ""} in one tx...`);
+      await writeContractAsync({
+        address: API_CREDITS_ADDRESS,
+        abi: apiCreditsAbi,
+        functionName: "stakeAndRegister",
+        args: [stakeAmountBigInt, commitments],
+      });
 
       // Save all new credits to localStorage
       const existing = JSON.parse(localStorage.getItem("zk-credits") || "[]");

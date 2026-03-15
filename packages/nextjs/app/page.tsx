@@ -11,7 +11,7 @@ import { Address } from "@scaffold-ui/components";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import externalContracts from "~~/contracts/externalContracts";
 
-const API_CREDITS_ADDRESS = "0x45284835Fe6eC9937Ce8db8AEE32F3E684f900F3";
+const API_CREDITS_ADDRESS = "0x4A6782D251e12c06e1f16450D8b28f6C857cFdd1";
 
 interface HealthData {
   nullifiersSpent?: number;
