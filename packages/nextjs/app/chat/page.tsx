@@ -40,16 +40,29 @@ const ChatPage: NextPage = () => {
 
   const availableCredits = credits.filter(c => !c.spent);
 
+  // Load credits + persisted chat history from localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem("zk-credits");
-      if (stored) {
-        setCredits(JSON.parse(stored));
-      }
+      if (stored) setCredits(JSON.parse(stored));
+      const history = localStorage.getItem("zk-chat-history");
+      if (history) setMessages(JSON.parse(history));
     } catch (e) {
-      console.error("Failed to load credits:", e);
+      console.error("Failed to load from localStorage:", e);
     }
   }, []);
+
+  // Persist chat history whenever messages change
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem("zk-chat-history", JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  const clearChat = () => {
+    setMessages([]);
+    localStorage.removeItem("zk-chat-history");
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -222,6 +235,15 @@ const ChatPage: NextPage = () => {
             <span className="badge badge-info">
               {availableCredits.length} credit{availableCredits.length !== 1 ? "s" : ""} available
             </span>
+            {messages.length > 0 && (
+              <button
+                className="btn btn-ghost btn-xs text-base-content/40 hover:text-error"
+                onClick={clearChat}
+                title="Clear chat history"
+              >
+                ✕ Clear
+              </button>
+            )}
           </div>
         </div>
 
