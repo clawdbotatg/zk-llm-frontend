@@ -84,17 +84,11 @@ const Home: NextPage = () => {
           >
             BUY A CREDIT →
           </Link>
-          <Link
-            href="/chat"
-            className="font-mono text-sm border border-[#333] text-base-content/60 px-6 py-3 hover:border-[#F14E47]/50 hover:text-base-content transition-colors"
-          >
-            TRY IT NOW
-          </Link>
           <a
             href="/skill.md"
-            className="font-mono text-sm text-base-content/30 hover:text-[#42F38F] transition-colors"
+            className="font-mono text-sm border border-[#333] text-base-content/60 px-6 py-3 hover:border-[#42F38F]/50 hover:text-[#42F38F] transition-colors"
           >
-            FOR BOTS ↗
+            TRAIN YOUR BOT ↗
           </a>
         </div>
 
