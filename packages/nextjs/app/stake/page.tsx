@@ -36,7 +36,8 @@ interface StoredCredit {
 const StakePage: NextPage = () => {
   const { address: connectedAddress, chain } = useAccount();
   const { switchChain } = useSwitchChain();
-  const [stakeAmount, setStakeAmount] = useState("");
+  const [numCreditsInput, setNumCreditsInput] = useState("1");
+  const [paymentMethod, setPaymentMethod] = useState<'clawd'|'usdc'|'eth'>('clawd');
   const [isApproving, setIsApproving] = useState(false);
   const [isStaking, setIsStaking] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
@@ -142,13 +143,9 @@ const StakePage: NextPage = () => {
     }
   }, []);
 
-  const stakeAmountBigInt = (() => {
-    try {
-      return stakeAmount ? parseEther(stakeAmount) : 0n;
-    } catch {
-      return 0n;
-    }
-  })();
+  const contractPrice = pricePerCredit ? (pricePerCredit as bigint) : 2000n * 10n ** 18n;
+  const numCredits = Math.max(0, parseInt(numCreditsInput) || 0);
+  const stakeAmountBigInt = contractPrice * BigInt(numCredits);
 
   // needsApproval: false if on-chain confirmed OR allowance already sufficient
   const needsApproval = !approveConfirmed &&
@@ -162,10 +159,10 @@ const StakePage: NextPage = () => {
     }
   }, [approveConfirmed, allowance, stakeAmountBigInt]);
 
-  // Reset approveConfirmed if user changes stake amount
+  // Reset approveConfirmed if user changes credit count
   useEffect(() => {
     setApproveConfirmed(false);
-  }, [stakeAmount]);
+  }, [numCreditsInput]);
 
   const handleApprove = async () => {
     if (!connectedAddress) return;
@@ -238,7 +235,7 @@ const StakePage: NextPage = () => {
       setRegisteredCredit(newCredits[newCredits.length - 1]);
 
       notification.success(`✅ ${numCredits} credit${numCredits > 1 ? "s" : ""} ready to use!`);
-      setStakeAmount("");
+      setNumCreditsInput("1");
       setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); }, 3000);
     } catch (e: any) {
       console.error(e);
@@ -315,8 +312,7 @@ const StakePage: NextPage = () => {
   // Approve button shows spinner while tx is pending OR confirming
   const approveLoading = isApproving || isApproveConfirming || approveCooldown;
 
-    const contractPrice = pricePerCredit ? (pricePerCredit as bigint) : 2000n * 10n ** 18n;
-    const numCredits = stakeAmountBigInt > 0n && contractPrice > 0n ? Number(stakeAmountBigInt / contractPrice) : 0;
+
   const availableCredits = savedCredits.filter(c => !c.spent);
 
   // Format a credit as a portable API key string
@@ -361,25 +357,43 @@ const StakePage: NextPage = () => {
         )}
 
         <div className="p-5">
-          {/* Amount input */}
-          <div className="mb-2">
-            <label className="text-xs font-mono text-base-content/40 block mb-2">AMOUNT (CLAWD)</label>
-            <input
-              type="text"
-              placeholder="1000"
-              className="w-full bg-[#111] border border-[#333] text-base-content font-mono text-xl px-4 py-3 focus:outline-none focus:border-primary/50 transition-colors"
-              value={stakeAmount}
-              onChange={e => {
-                setStakeAmount(e.target.value);
-                setTxError(null);
-              }}
-            />
+          {/* Credit count input */}
+          <div className="mb-4">
+            <label className="text-xs font-mono text-base-content/40 block mb-2">HOW MANY CREDITS?</label>
+            <div className="flex items-center gap-3">
+              <button className="font-mono text-xl px-4 py-3 border border-[#333] bg-[#111] hover:border-[#F14E47] transition-colors w-12 text-center"
+                onClick={() => { setNumCreditsInput(n => String(Math.max(1, (parseInt(n)||1)-1))); setTxError(null); }}>−</button>
+              <input
+                type="number"
+                min="1"
+                className="flex-1 bg-[#111] border border-[#333] text-base-content font-mono text-xl px-4 py-3 focus:outline-none focus:border-[#F14E47] transition-colors text-center"
+                value={numCreditsInput}
+                onChange={e => { setNumCreditsInput(e.target.value); setTxError(null); }}
+              />
+              <button className="font-mono text-xl px-4 py-3 border border-[#333] bg-[#111] hover:border-[#F14E47] transition-colors w-12 text-center"
+                onClick={() => { setNumCreditsInput(n => String((parseInt(n)||0)+1)); setTxError(null); }}>+</button>
+            </div>
           </div>
 
-          {/* Credit count */}
-          <p className="text-xs font-mono text-base-content/30 text-right mb-5">
-            {numCredits > 0 ? `= ${numCredits} API credit${numCredits !== 1 ? "s" : ""}` : " "}
-          </p>
+          {/* Cost breakdown */}
+          <div className="border border-[#222] bg-black/40 px-4 py-3 mb-5 font-mono text-sm">
+            <div className="flex justify-between text-base-content/50 mb-1">
+              <span>Price per credit</span>
+              <span>{pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "2,000"} CLAWD{clawdPriceUsd ? ` (~$${(Number(formatEther((pricePerCredit as bigint) || 2000n * 10n**18n)) * clawdPriceUsd).toFixed(4)})` : ""}</span>
+            </div>
+            <div className="flex justify-between text-base-content font-bold">
+              <span>Total</span>
+              <span>{numCredits > 0 ? Number(formatEther(stakeAmountBigInt)).toLocaleString() : "0"} CLAWD{clawdPriceUsd && numCredits > 0 ? ` (~$${(Number(formatEther(stakeAmountBigInt)) * clawdPriceUsd).toFixed(2)})` : ""}</span>
+            </div>
+          </div>
+
+          {/* Payment method — ETH/USDC coming soon */}
+          <div className="flex gap-2 mb-5">
+            <button className={`flex-1 font-mono text-xs py-2 border transition-colors ${paymentMethod === 'clawd' ? 'border-[#F14E47] text-[#F14E47]' : 'border-[#333] text-base-content/30'}`}
+              onClick={() => setPaymentMethod('clawd')}>CLAWD</button>
+            <button className="flex-1 font-mono text-xs py-2 border border-[#222] text-base-content/20 cursor-not-allowed" disabled title="Coming soon">USDC (soon)</button>
+            <button className="flex-1 font-mono text-xs py-2 border border-[#222] text-base-content/20 cursor-not-allowed" disabled title="Coming soon">ETH (soon)</button>
+          </div>
 
           {/* Action button */}
           {!connectedAddress ? (
