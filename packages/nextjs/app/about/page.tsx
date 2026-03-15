@@ -197,7 +197,7 @@ fn main(
               ["✅ Server cannot link two API calls", "Each credit has a unique nullifier. There's no correlation between calls unless you reuse a credential."],
               ["✅ Server cannot identify which leaf you used", "The ZK proof proves membership in the set without revealing the index or commitment."],
               ["⚠️ Proof generation happens in your browser", "The API server handles LLM routing — it sees your plaintext message. For full privacy, self-host the server."],
-              ["⚠️ Credits are stored in localStorage", "Back up your API keys. If you clear your browser storage, unspent credits are lost (the CLAWD is still staked on-chain but credentials are gone)."],
+              ["⚠️ Credits are stored in localStorage", "If you clear your browser, unspent credits are gone (CLAWD stays staked on-chain, but the credentials are lost). Back them up — or better yet, script the purchase and let your bot manage credits automatically via the skill.md API."],
             ].map(([title, body]) => (
               <div key={title as string} className="bg-base-100 rounded-xl p-4 shadow">
                 <p className="font-bold text-sm mb-1">{title}</p>

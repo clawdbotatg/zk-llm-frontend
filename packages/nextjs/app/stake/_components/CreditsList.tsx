@@ -85,8 +85,9 @@ export const CreditsList = () => {
 
         <div className="alert alert-warning mt-4">
           <span className="text-sm">
-            ⚠️ Your secrets are stored in localStorage only. If you clear browser data, they&apos;re gone forever.
-            Back them up!
+            ⚠️ Credits live in localStorage — clear your browser and they&apos;re gone. Back them up, or skip the hassle entirely:{" "}
+            <a href="/skill.md" className="underline hover:text-[#42F38F]">script the purchase</a>{" "}
+            and let your bot manage credits automatically.
           </span>
         </div>
 
