@@ -7,22 +7,12 @@ import Link from "next/link";
 import type { NextPage } from "next";
 import { formatEther } from "viem";
 import { useReadContract } from "wagmi";
-import { Address } from "@scaffold-ui/components";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import externalContracts from "~~/contracts/externalContracts";
 
 const API_CREDITS_ADDRESS = "0x4A6782D251e12c06e1f16450D8b28f6C857cFdd1";
 
-interface HealthData {
-  nullifiersSpent?: number;
-  currentRoot?: string;
-  status?: string;
-}
-
 const Home: NextPage = () => {
-  const [healthData, setHealthData] = useState<HealthData>({});
-  const [healthLoading, setHealthLoading] = useState(true);
-  const { targetNetwork } = useTargetNetwork();
+  const [spentCount, setSpentCount] = useState<number | null>(null);
 
   const { data: treeData } = useReadContract({
     address: API_CREDITS_ADDRESS,
@@ -39,107 +29,107 @@ const Home: NextPage = () => {
   });
 
   useEffect(() => {
-    const fetchHealth = async () => {
-      try {
-        const res = await fetch(`${API_URL}/health`);
-        const data = await res.json();
-        setHealthData(data);
-      } catch (e) {
-        console.error("Failed to fetch health:", e);
-      } finally {
-        setHealthLoading(false);
-      }
-    };
-    fetchHealth();
-    const interval = setInterval(fetchHealth, 30000);
-    return () => clearInterval(interval);
+    fetch(`${API_URL}/health`)
+      .then(r => r.json())
+      .then(d => setSpentCount(d.spentNullifiers ?? null))
+      .catch(() => {});
   }, []);
 
+  const totalCredits = treeData ? Number((treeData as bigint[])[0]) : null;
+  const priceLabel = pricePerCredit
+    ? Number(formatEther(pricePerCredit as bigint)).toLocaleString()
+    : "1,000";
+
   return (
-    <div className="flex items-center flex-col grow pt-10">
-      <div className="px-5 max-w-3xl w-full">
+    <div className="flex items-center flex-col grow pt-16">
+      <div className="px-5 max-w-2xl w-full text-center">
+
         {/* Hero */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">
-            Private LLM API.
+        <div className="mb-14">
+          <h1 className="text-5xl font-bold mb-5 leading-tight">
+            Private LLM API.<br />
+            <span className="text-primary">No account required.</span>
           </h1>
-          <p className="text-xl text-base-content/70">
-            No account. No API key. Just a ZK proof.
+          <p className="text-xl text-base-content/60 max-w-lg mx-auto">
+            Buy credits with CLAWD. Get an API key. Use it anywhere.
+            Your identity stays hidden behind a ZK proof.
           </p>
         </div>
 
+        {/* CTA */}
+        <div className="flex justify-center gap-4 mb-16">
+          <Link href="/stake" className="btn btn-primary btn-lg px-8">
+            Buy Credits
+          </Link>
+          <Link href="/chat" className="btn btn-outline btn-lg px-8">
+            Try the Chat
+          </Link>
+        </div>
+
         {/* How it works */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-base-100 rounded-xl p-6 text-center shadow">
-            <div className="text-3xl mb-3">1️⃣</div>
-            <h3 className="font-bold text-lg mb-2">Stake CLAWD</h3>
-            <p className="text-base-content/70 text-sm">
-              Stake CLAWD tokens to purchase API credits. Each credit costs{" "}
-              {pricePerCredit ? formatEther(pricePerCredit as bigint) : "..."} CLAWD.
+        <div className="grid grid-cols-3 gap-6 mb-16">
+          <div className="text-center">
+            <div className="text-4xl mb-3">💰</div>
+            <h3 className="font-bold mb-1">Buy</h3>
+            <p className="text-base-content/60 text-sm">
+              Stake {priceLabel} CLAWD per credit. One transaction, instantly ready.
             </p>
           </div>
-          <div className="bg-base-100 rounded-xl p-6 text-center shadow">
-            <div className="text-3xl mb-3">2️⃣</div>
-            <h3 className="font-bold text-lg mb-2">Register</h3>
-            <p className="text-base-content/70 text-sm">
-              Generate a secret commitment and register it onchain. Your identity is hidden behind a hash.
+          <div className="text-center">
+            <div className="text-4xl mb-3">🔑</div>
+            <h3 className="font-bold mb-1">Get your API key</h3>
+            <p className="text-base-content/60 text-sm">
+              Receive a private key you can use in any script or app.
             </p>
           </div>
-          <div className="bg-base-100 rounded-xl p-6 text-center shadow">
-            <div className="text-3xl mb-3">3️⃣</div>
-            <h3 className="font-bold text-lg mb-2">Chat</h3>
-            <p className="text-base-content/70 text-sm">
-              Generate a ZK proof and send it with your message. The server verifies the proof — never your identity.
+          <div className="text-center">
+            <div className="text-4xl mb-3">🤖</div>
+            <h3 className="font-bold mb-1">Call the API</h3>
+            <p className="text-base-content/60 text-sm">
+              Pass your key with each request. Server verifies via ZK — never your identity.
             </p>
           </div>
         </div>
 
-        {/* CTA Buttons */}
-        <div className="flex justify-center gap-4 mb-12">
-          <Link href="/stake" className="btn btn-primary btn-lg">
-            Get Credits
+        {/* Live stats — minimal */}
+        <div className="flex justify-center gap-10 text-center mb-16 text-base-content/50 text-sm">
+          <div>
+            <p className="text-2xl font-bold text-base-content">{totalCredits ?? "—"}</p>
+            <p>credits issued</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-base-content">{spentCount ?? "—"}</p>
+            <p>API calls made</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-base-content">Base</p>
+            <p>network</p>
+          </div>
+        </div>
+
+        {/* Footer links */}
+        <div className="text-sm text-base-content/40 mb-8 flex justify-center gap-6">
+          <a
+            href="https://github.com/clawdbotatg/zk-api-credits"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-base-content transition-colors"
+          >
+            GitHub
+          </a>
+          <a
+            href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-base-content transition-colors"
+          >
+            Contract
+          </a>
+          <Link href="/chat" className="hover:text-base-content transition-colors">
+            Chat Demo
           </Link>
-          <Link href="/chat" className="btn btn-secondary btn-lg">
-            Start Chatting
-          </Link>
         </div>
 
-        {/* Live Stats */}
-        <div className="bg-base-100 rounded-xl p-6 shadow mb-8">
-          <h2 className="font-bold text-lg mb-4 text-center">📊 Live Stats</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center">
-              <p className="text-base-content/60 text-sm">Tree Size</p>
-              <p className="text-2xl font-bold">
-                {treeData ? (treeData as unknown as bigint[])[0].toString() : "..."}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-base-content/60 text-sm">Nullifiers Spent</p>
-              <p className="text-2xl font-bold">
-                {healthLoading ? "..." : healthData.nullifiersSpent?.toString() ?? "N/A"}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-base-content/60 text-sm">Current Root</p>
-              <p className="text-sm font-mono break-all">
-                {healthLoading
-                  ? "..."
-                  : healthData.currentRoot
-                    ? `${healthData.currentRoot.toString().slice(0, 12)}...`
-                    : treeData
-                      ? `${(treeData as unknown as bigint[])[2].toString().slice(0, 12)}...`
-                      : "N/A"}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Contract Address */}
-        <div className="text-center mt-4 text-sm text-base-content/60 mb-8">
-          <p className="mb-1">APICredits Contract:</p>
-          <Address address={API_CREDITS_ADDRESS} chain={targetNetwork} />
-        </div>
       </div>
     </div>
   );
