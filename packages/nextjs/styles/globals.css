@@ -2,185 +2,102 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
-
 @theme {
   --shadow-center: 0 0 12px -2px rgb(0 0 0 / 0.05);
   --animate-pulse-fast: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --font-mono: "IBM Plex Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
 }
 
 @plugin "daisyui" {
-  themes:
-    light,
-    dark --prefersdark;
-}
-
-@plugin "daisyui/theme" {
-  name: "light";
-
-  --color-primary: #93bbfb;
-  --color-primary-content: #212638;
-  --color-secondary: #dae8ff;
-  --color-secondary-content: #212638;
-  --color-accent: #93bbfb;
-  --color-accent-content: #212638;
-  --color-neutral: #212638;
-  --color-neutral-content: #ffffff;
-  --color-base-100: #ffffff;
-  --color-base-200: #f4f8ff;
-  --color-base-300: #dae8ff;
-  --color-base-content: #212638;
-  --color-info: #93bbfb;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
-
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
-  --tt-tailw: 6px;
+  themes: dark --prefersdark;
 }
 
 @plugin "daisyui/theme" {
   name: "dark";
 
-  --color-primary: #212638;
-  --color-primary-content: #f9fbff;
-  --color-secondary: #323f61;
-  --color-secondary-content: #f9fbff;
-  --color-accent: #4969a6;
-  --color-accent-content: #f9fbff;
-  --color-neutral: #f9fbff;
-  --color-neutral-content: #385183;
-  --color-base-100: #385183;
-  --color-base-200: #2a3655;
-  --color-base-300: #212638;
-  --color-base-content: #f9fbff;
-  --color-info: #385183;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  /* Aztec-inspired: pure black, stark white, electric purple accent */
+  --color-primary: #c4b5fd;           /* electric violet */
+  --color-primary-content: #000000;
+  --color-secondary: #1a1a2e;
+  --color-secondary-content: #c4b5fd;
+  --color-accent: #818cf8;
+  --color-accent-content: #000000;
+  --color-neutral: #e5e7eb;
+  --color-neutral-content: #000000;
+  --color-base-100: #0a0a0a;          /* near-black */
+  --color-base-200: #111111;          /* dark card */
+  --color-base-300: #1a1a1a;          /* border/divider */
+  --color-base-content: #f0f0f0;      /* off-white text */
+  --color-info: #818cf8;
+  --color-success: #34d399;
+  --color-warning: #fbbf24;
+  --color-error: #f87171;
 
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
-
+  --radius-field: 0rem;               /* sharp corners — no rounding */
+  --radius-box: 0rem;
   --tt-tailw: 6px;
-  --tt-bg: var(--color-primary);
 }
 
-/*
-  The default border color has changed to `currentColor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-
-  p {
-    margin: 1rem 0;
+  html {
+    background-color: #0a0a0a;
   }
 
   body {
-    min-height: 100vh;
+    font-family: "IBM Plex Mono", "Fira Code", ui-monospace, monospace;
+    background-color: #0a0a0a;
+    color: #f0f0f0;
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    margin-bottom: 0.5rem;
-    line-height: 1;
+  /* Sharp borders everywhere */
+  *,
+  ::after,
+  ::before {
+    border-color: #1f1f1f;
+  }
+
+  /* Selection color */
+  ::selection {
+    background: #c4b5fd;
+    color: #000;
   }
 }
 
-:root,
-[data-theme] {
-  background: var(--color-base-200);
+/* Grid overlay — subtle dot grid like Aztec */
+.grid-bg {
+  background-image: radial-gradient(circle, #2a2a2a 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-.btn {
-  @apply shadow-md;
+/* Aztec-style bordered card */
+.aztec-card {
+  border: 1px solid #222;
+  background: #111;
+  padding: 1.5rem;
 }
 
-.btn.btn-ghost {
-  @apply shadow-none;
+/* Glowing primary border on hover */
+.aztec-card:hover {
+  border-color: #c4b5fd40;
 }
 
-.link {
-  text-underline-offset: 2px;
+/* Monospace number display */
+.mono-stat {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
 }
 
-.link:hover {
-  opacity: 80%;
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
 }
-  
-
-  /* -- EXTENSION OVERRIDES -- */
-  
-@plugin "daisyui/theme" {
-  name: "light";
-
-  --color-primary: #c8f5ff;
-  --color-primary-content: #026262;
-  --color-secondary: #89d7e9;
-  --color-secondary-content: #088484;
-  --color-accent: #026262;
-  --color-accent-content: #e9fbff;
-  --color-neutral: #088484;
-  --color-neutral-content: #f0fcff;
-  --color-base-100: #f0fcff;
-  --color-base-200: #e1faff;
-  --color-base-300: #c8f5ff;
-  --color-base-content: #088484;
-  --color-info: #026262;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
-
-  /* radius / button rounding */
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
-
-  /* tooltip tail width */
-  --tt-tailw: 6px;
+::-webkit-scrollbar-track {
+  background: #111;
 }
-
-/* —— DARK THEME —— */
-@plugin "daisyui/theme" {
-  name: "dark";
-
-  --color-primary: #026262;
-  --color-primary-content: #c8f5ff;
-  --color-secondary: #107575;
-  --color-secondary-content: #e9fbff;
-  --color-accent: #c8f5ff;
-  --color-accent-content: #088484;
-  --color-neutral: #e9fbff;
-  --color-neutral-content: #11acac;
-  --color-base-100: #11acac;
-  --color-base-200: #088484;
-  --color-base-300: #026262;
-  --color-base-content: #e9fbff;
-  --color-info: #c8f5ff;
-  --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
-
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
-
-  --tt-tailw: 6px;
-  --tt-bg: var(--color-primary); /* if you need a tooltip bg override */
+::-webkit-scrollbar-thumb {
+  background: #333;
 }
-
-@theme inline {
-  --font-space-grotesk: var(--font-space-grotesk);
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
