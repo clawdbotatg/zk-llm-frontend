@@ -167,7 +167,7 @@ const ChatPage: NextPage = () => {
         siblings: merkleData.siblings.map(String),
       });
 
-      const { proof: proofBytes } = await backend.generateProof(witness);
+      const { proof: proofBytes, publicInputs } = await backend.generateProof(witness);
 
       await bb.destroy();
 
@@ -184,6 +184,7 @@ const ChatPage: NextPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           proof: proofHex,
+          publicInputs,
           nullifier_hash: nullifierHashHex,
           root: rootHex,
           depth: merkleData.depth,

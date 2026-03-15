@@ -320,8 +320,11 @@ const StakePage: NextPage = () => {
   const availableCredits = savedCredits.filter(c => !c.spent);
 
   // Format a credit as a portable API key string
-  const toApiKey = (c: StoredCredit) =>
-    `zklm_${c.nullifier}_${c.secret}_${c.commitment}`;
+  const toApiKey = (c: StoredCredit) => {
+    const raw = `${c.nullifier}:${c.secret}:${c.commitment}`;
+    const b64 = btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    return `zk-llm-${b64}`;
+  };
 
     return (
     <div className="grid-bg min-h-[calc(100vh-56px)]">
@@ -434,8 +437,19 @@ const StakePage: NextPage = () => {
                     <span className="text-xs font-mono text-base-content/30">KEY #{i + 1}</span>
                     <button
                       className="text-xs font-mono text-primary/60 hover:text-primary transition-colors"
-                      onClick={() => {
-                        navigator.clipboard.writeText(toApiKey(credit));
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(toApiKey(credit));
+                          notification.success("Copied!");
+                        } catch {
+                          const el = document.createElement("textarea");
+                          el.value = toApiKey(credit);
+                          document.body.appendChild(el);
+                          el.select();
+                          document.execCommand("copy");
+                          document.body.removeChild(el);
+                          notification.success("Copied!");
+                        }
                       }}
                     >
                       COPY ↗
@@ -456,7 +470,15 @@ const StakePage: NextPage = () => {
                 HOW TO USE IN A SCRIPT ↓
               </summary>
               <div className="mt-3 border border-[#222] bg-[#111] overflow-x-auto">
-                <pre className="p-4 text-xs font-mono text-base-content/50 leading-relaxed">{`API_KEY="zklm_<nullifier>_<secret>_<commitment>"
+                <pre className="p-4 text-xs font-mono text-base-content/50 leading-relaxed">{`API_KEY="zk-llm-<your-key>"
+
+curl -X POST https://backend.zkllmapi.com/v1/chat \
+  -H 'Content-Type: application/json' \
+  -H "Authorization: Bearer $API_KEY" \
+  -d '{"messages": [{"role": "user", "content": "Hello"}]}'
+  
+# The server decodes your key automatically.
+# Each key works once — use it when you need it.
 
 IFS='_' read -r _ N S C <<< "$API_KEY"
 curl -X POST https://backend.zkllmapi.com/chat \\
