@@ -323,6 +323,7 @@ const StakePage: NextPage = () => {
     `zklm_${c.nullifier}_${c.secret}_${c.commitment}`;
 
     return (
+    <div className="grid-bg min-h-[calc(100vh-56px)]">
     <div className="max-w-2xl mx-auto px-6 pt-16 pb-32">
 
       {/* Header */}
@@ -493,6 +494,7 @@ curl -X POST https://backend.zkllmapi.com/chat \\
           VIEW CONTRACT ON BASESCAN ↗
         </a>
       </div>
+    </div>
     </div>
   );
 };
