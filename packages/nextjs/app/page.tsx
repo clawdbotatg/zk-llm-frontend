@@ -66,7 +66,7 @@ const Home: NextPage = () => {
         <h1 className="text-6xl md:text-7xl font-mono font-bold leading-none mb-8 tracking-tight">
           Anonymous LLM<br />
           <span className="text-primary">access. No account.</span><br />
-          No identity.
+          No identity. Hella forkable.
         </h1>
 
         <p className="text-base-content/50 text-lg font-mono mb-12 max-w-xl leading-relaxed">
