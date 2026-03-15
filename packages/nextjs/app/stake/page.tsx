@@ -120,13 +120,24 @@ const StakePage: NextPage = () => {
     hash: approveTxHash,
   });
 
-  // When approve tx is confirmed, refetch allowance and clear state
+  // When approve tx is confirmed, poll allowance until it reflects new value, then clear state
   useEffect(() => {
     if (isApproveConfirmed && approveTxHash) {
-      refetchAllowance();
       setIsApproving(false);
       setApproveTxHash(undefined);
-      notification.success("Approval confirmed!");
+      notification.success("Approval confirmed! Loading...");
+      // Poll allowance every 1s until it reflects the approved amount (max 15s)
+      let attempts = 0;
+      const poll = setInterval(async () => {
+        attempts++;
+        await refetchAllowance();
+        if (attempts >= 15) {
+          clearInterval(poll);
+          setApproveCooldown(false);
+        }
+      }, 1000);
+      // Cooldown clears when poll finds updated allowance via needsApproval going false
+      return () => clearInterval(poll);
     }
   }, [isApproveConfirmed, approveTxHash, refetchAllowance]);
 
@@ -152,6 +163,13 @@ const StakePage: NextPage = () => {
 
   const needsApproval = stakeAmountBigInt > 0n && (!allowance || (allowance as bigint) < stakeAmountBigInt);
 
+  // Clear cooldown as soon as allowance is sufficient — Stake button appears immediately
+  useEffect(() => {
+    if (approveCooldown && !needsApproval) {
+      setApproveCooldown(false);
+    }
+  }, [approveCooldown, needsApproval]);
+
   const handleApprove = async () => {
     if (!connectedAddress) return;
     setIsApproving(true);
@@ -166,7 +184,7 @@ const StakePage: NextPage = () => {
       setApproveTxHash(hash);
       // Hold button disabled during the allowance re-fetch gap (wagmi cache lag)
       setApproveCooldown(true);
-      setTimeout(() => setApproveCooldown(false), 4000);
+      setTimeout(() => setApproveCooldown(false), 10000); // fallback — cleared earlier by useEffect when allowance updates
       notification.success("Approval submitted! Waiting for confirmation...");
     } catch (e: any) {
       console.error(e);
