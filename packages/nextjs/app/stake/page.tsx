@@ -327,7 +327,9 @@ const StakePage: NextPage = () => {
   };
 
     return (
-    <div className="grid-bg min-h-[calc(100vh-56px)]">
+    <div className="relative min-h-[calc(100vh-56px)]" style={{backgroundImage: "url(/hero-stake.jpg)", backgroundSize: "cover", backgroundPosition: "center"}}>
+      <div className="absolute inset-0 bg-black/80" />
+      <div className="relative z-10">
     <div className="max-w-2xl mx-auto px-6 pt-8 pb-16">
 
       {/* Header */}
@@ -518,6 +520,7 @@ curl -X POST https://backend.zkllmapi.com/chat \\
         </a>
       </div>
     </div>
+      </div>
     </div>
   );
 };

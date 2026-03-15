@@ -228,7 +228,9 @@ const ChatPage: NextPage = () => {
   };
 
     return (
-    <div className="flex flex-col" style={{ height: "calc(100vh - 56px)" }}>
+    <div className="flex flex-col relative" style={{ height: "calc(100vh - 56px)", backgroundImage: "url(/hero-chat.jpg)", backgroundSize: "cover", backgroundPosition: "center top" }}>
+      <div className="absolute inset-0 bg-black/85" />
+      <div className="relative z-10 flex flex-col h-full">
       {/* Top bar */}
       <div className="border-b border-[#1f1f1f] px-6 py-3 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-4">
@@ -352,6 +354,8 @@ const ChatPage: NextPage = () => {
             {isSending ? <span className="loading loading-spinner loading-xs"></span> : "SEND →"}
           </button>
         </div>
+      </div>
+    </div>
       </div>
     </div>
   );

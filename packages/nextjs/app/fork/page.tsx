@@ -2,7 +2,9 @@ import type { NextPage } from "next";
 
 const ForkPage: NextPage = () => {
   return (
-    <div className="flex items-center flex-col flex-grow pt-10 pb-20">
+    <div className="relative min-h-[calc(100vh-56px)]" style={{backgroundImage: "url(/hero-fork.jpg)", backgroundSize: "cover", backgroundPosition: "center"}}>
+      <div className="absolute inset-0 bg-black/85" />
+      <div className="relative z-10 flex items-center flex-col flex-grow pt-10 pb-20">
       <div className="px-5 max-w-3xl w-full">
 
         {/* Hero */}
@@ -248,6 +250,8 @@ cd packages/api-server && yarn start`}
       </div>
     </div>
   );
+      </div>
+    </div>
 };
 
 export default ForkPage;
