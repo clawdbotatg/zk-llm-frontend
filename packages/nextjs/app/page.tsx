@@ -1,7 +1,5 @@
 "use client";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.zkllmapi.com";
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
@@ -9,6 +7,7 @@ import { formatEther } from "viem";
 import { useReadContract } from "wagmi";
 import externalContracts from "~~/contracts/externalContracts";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.zkllmapi.com";
 const API_CREDITS_ADDRESS = "0x4A6782D251e12c06e1f16450D8b28f6C857cFdd1";
 
 const Home: NextPage = () => {
@@ -41,92 +40,85 @@ const Home: NextPage = () => {
     : "1,000";
 
   return (
-    <div className="flex items-center flex-col grow pt-16">
-      <div className="px-5 max-w-2xl w-full text-center">
+    <div className="flex items-center flex-col grow pt-20">
+      <div className="px-5 max-w-xl w-full text-center">
 
         {/* Hero */}
-        <div className="mb-14">
-          <h1 className="text-5xl font-bold mb-5 leading-tight">
-            Private LLM API.<br />
-            <span className="text-primary">No account required.</span>
+        <div className="mb-10">
+          <h1 className="text-5xl font-bold mb-6 leading-tight">
+            Spend CLAWD.<br />Get ZK LLM access.
           </h1>
-          <p className="text-xl text-base-content/60 max-w-lg mx-auto">
-            Buy credits with CLAWD. Get an API key. Use it anywhere.
-            Your identity stays hidden behind a ZK proof.
+          <p className="text-xl text-base-content/60">
+            No account. No API key tied to your identity.<br />
+            Just a ZK proof that you paid.
           </p>
         </div>
 
-        {/* CTA */}
-        <div className="flex justify-center gap-4 mb-16">
-          <Link href="/stake" className="btn btn-primary btn-lg px-8">
-            Buy Credits
+        {/* Primary CTA */}
+        <div className="flex flex-col items-center gap-3 mb-16">
+          <Link href="/stake" className="btn btn-primary btn-lg px-12 text-lg">
+            Get Credits →
           </Link>
-          <Link href="/chat" className="btn btn-outline btn-lg px-8">
-            Try the Chat
-          </Link>
-        </div>
-
-        {/* How it works */}
-        <div className="grid grid-cols-3 gap-6 mb-16">
-          <div className="text-center">
-            <div className="text-4xl mb-3">💰</div>
-            <h3 className="font-bold mb-1">Buy</h3>
-            <p className="text-base-content/60 text-sm">
-              Stake {priceLabel} CLAWD per credit. One transaction, instantly ready.
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl mb-3">🔑</div>
-            <h3 className="font-bold mb-1">Get your API key</h3>
-            <p className="text-base-content/60 text-sm">
-              Receive a private key you can use in any script or app.
-            </p>
-          </div>
-          <div className="text-center">
-            <div className="text-4xl mb-3">🤖</div>
-            <h3 className="font-bold mb-1">Call the API</h3>
-            <p className="text-base-content/60 text-sm">
-              Pass your key with each request. Server verifies via ZK — never your identity.
-            </p>
+          <div className="flex gap-6 text-sm text-base-content/40">
+            <Link href="/chat" className="hover:text-base-content transition-colors">Try the chat demo</Link>
+            <span>·</span>
+            <Link href="/about" className="hover:text-base-content transition-colors">How it works</Link>
+            <span>·</span>
+            <a href="/skill.md" className="hover:text-base-content transition-colors">SKILL.md</a>
           </div>
         </div>
 
-        {/* Live stats — minimal */}
-        <div className="flex justify-center gap-10 text-center mb-16 text-base-content/50 text-sm">
+        {/* One-liner explainer */}
+        <div className="grid grid-cols-3 gap-4 mb-16 text-sm">
+          <div className="bg-base-100 rounded-xl p-4 shadow">
+            <div className="text-2xl mb-2">💰</div>
+            <p className="font-semibold mb-1">Stake {priceLabel} CLAWD</p>
+            <p className="text-base-content/50 text-xs">per API credit</p>
+          </div>
+          <div className="bg-base-100 rounded-xl p-4 shadow">
+            <div className="text-2xl mb-2">🔑</div>
+            <p className="font-semibold mb-1">Get an API key</p>
+            <p className="text-base-content/50 text-xs">works in any script or app</p>
+          </div>
+          <div className="bg-base-100 rounded-xl p-4 shadow">
+            <div className="text-2xl mb-2">🤖</div>
+            <p className="font-semibold mb-1">Call the LLM</p>
+            <p className="text-base-content/50 text-xs">identity stays hidden</p>
+          </div>
+        </div>
+
+        {/* Live stats */}
+        <div className="flex justify-center gap-12 text-center mb-16 text-base-content/50 text-sm">
           <div>
-            <p className="text-2xl font-bold text-base-content">{totalCredits ?? "—"}</p>
+            <p className="text-3xl font-bold text-base-content">{totalCredits ?? "—"}</p>
             <p>credits issued</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-base-content">{spentCount ?? "—"}</p>
+            <p className="text-3xl font-bold text-base-content">{spentCount ?? "—"}</p>
             <p>API calls made</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-base-content">Base</p>
-            <p>network</p>
           </div>
         </div>
 
         {/* Footer links */}
-        <div className="text-sm text-base-content/40 mb-8 flex justify-center gap-6">
+        <div className="text-xs text-base-content/30 mb-8 flex justify-center gap-6">
           <a
             href="https://github.com/clawdbotatg/zk-api-credits"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-base-content transition-colors"
+            className="hover:text-base-content/60 transition-colors"
           >
-            GitHub
+            GitHub ↗
           </a>
           <a
             href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-base-content transition-colors"
+            className="hover:text-base-content/60 transition-colors"
           >
-            Contract
+            Contract ↗
           </a>
-          <Link href="/chat" className="hover:text-base-content transition-colors">
-            Chat Demo
+          <Link href="/about" className="hover:text-base-content/60 transition-colors">
+            About / Docs
           </Link>
         </div>
 
