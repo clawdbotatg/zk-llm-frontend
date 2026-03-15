@@ -2,17 +2,22 @@
 
 import { useState, useEffect } from "react";
 import type { NextPage } from "next";
-import { formatEther, parseEther } from "viem";
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain } from "wagmi";
+import { formatEther, parseEther, parseUnits, formatUnits } from "viem";
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain, useBalance } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import externalContracts from "~~/contracts/externalContracts";
 
 const API_CREDITS_ADDRESS = "0xc18fad39f72eBe5E54718D904C5012Da74594674";
+const CLAWD_ROUTER_ADDRESS = "0x908b8738D13eEF2eaaA45BD7D6f4c3A13242C5AC";
 const CLAWD_ADDRESS = "0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07";
+const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 const apiCreditsAbi = externalContracts[8453].APICredits.abi;
 const clawdAbi = externalContracts[8453].CLAWDToken.abi;
+const routerAbi = externalContracts[8453].CLAWDRouter.abi;
+const pricingAbi = externalContracts[8453].CLAWDPricing.abi;
+const usdcAbi = externalContracts[8453].USDC.abi;
 
 /** Map contract revert reasons to friendly messages */
 const parseContractError = (e: any): string => {
@@ -112,6 +117,47 @@ const StakePage: NextPage = () => {
     chainId: 8453,
   });
 
+  // ETH balance
+  const { data: ethBalance } = useBalance({
+    address: connectedAddress,
+    chainId: 8453,
+    query: { enabled: !!connectedAddress },
+  });
+
+  // USDC balance
+  const { data: usdcBalance, refetch: refetchUsdcBalance } = useReadContract({
+    address: USDC_ADDRESS,
+    abi: usdcAbi,
+    functionName: "balanceOf",
+    args: connectedAddress ? [connectedAddress] : undefined,
+    chainId: 8453,
+    query: { enabled: !!connectedAddress },
+  });
+
+  // USDC allowance to router
+  const { data: usdcAllowance, refetch: refetchUsdcAllowance } = useReadContract({
+    address: USDC_ADDRESS,
+    abi: usdcAbi,
+    functionName: "allowance",
+    args: connectedAddress ? [connectedAddress, CLAWD_ROUTER_ADDRESS] : undefined,
+    chainId: 8453,
+    query: { enabled: !!connectedAddress },
+  });
+
+  // CLAWDPricing: creditPriceUSD and ETH/USD
+  const { data: creditPriceUSD } = useReadContract({
+    address: externalContracts[8453].CLAWDPricing.address,
+    abi: pricingAbi,
+    functionName: "creditPriceUSD",
+    chainId: 8453,
+  });
+  const { data: ethUsdPrice } = useReadContract({
+    address: externalContracts[8453].CLAWDPricing.address,
+    abi: pricingAbi,
+    functionName: "getEthUsdPrice",
+    chainId: 8453,
+  });
+
   const { writeContractAsync } = useWriteContract();
 
   // Wait for approve tx confirmation
@@ -147,10 +193,29 @@ const StakePage: NextPage = () => {
   const numCredits = Math.max(0, parseInt(numCreditsInput) || 0);
   const stakeAmountBigInt = contractPrice * BigInt(numCredits);
 
-  // needsApproval: false if on-chain confirmed OR allowance already sufficient
-  const needsApproval = !approveConfirmed &&
+  // ETH cost estimate: numCredits * creditPriceUSD / ethUsdPrice (both 18 decimals)
+  const creditPriceUSDVal = creditPriceUSD ? (creditPriceUSD as bigint) : 100000000000000000n; // $0.10
+  const ethUsdVal = ethUsdPrice ? (ethUsdPrice as bigint) : 1900n * 10n ** 18n;
+  const ethCostExact = numCredits > 0 ? (creditPriceUSDVal * BigInt(numCredits) * 10n ** 18n) / ethUsdVal : 0n;
+  const ethCostWithSlippage = ethCostExact * 115n / 100n; // +15% slippage buffer (oracle vs pool price drift)
+
+  // USDC cost estimate: numCredits * creditPriceUSD (18 dec) → convert to 6 dec USDC
+  const usdcCostExact = numCredits > 0 ? (creditPriceUSDVal * BigInt(numCredits)) / 10n ** 12n : 0n; // 18→6 decimals
+  const usdcCostWithSlippage = usdcCostExact * 102n / 100n;
+
+  // minCLAWDOut for slippage protection (2% below expected)
+  const minCLAWDOut = stakeAmountBigInt; // exact CLAWD needed — router checks clawdReceived >= totalCLAWD
+
+  // needsApproval depends on payment method
+  const needsClawdApproval = paymentMethod === 'clawd' && !approveConfirmed &&
     stakeAmountBigInt > 0n &&
     (!allowance || (allowance as bigint) < stakeAmountBigInt);
+
+  const needsUsdcApproval = paymentMethod === 'usdc' && !approveConfirmed &&
+    usdcCostWithSlippage > 0n &&
+    (!usdcAllowance || (usdcAllowance as bigint) < usdcCostWithSlippage);
+
+  const needsApproval = needsClawdApproval || needsUsdcApproval;
 
   // Once allowance catches up, clear the approveConfirmed override
   useEffect(() => {
@@ -169,16 +234,25 @@ const StakePage: NextPage = () => {
     setIsApproving(true);
     setTxError(null);
     try {
-      const hash = await writeContractAsync({
-        address: CLAWD_ADDRESS,
-        abi: clawdAbi,
-        functionName: "approve",
-        args: [API_CREDITS_ADDRESS, stakeAmountBigInt],
-      });
+      let hash;
+      if (paymentMethod === 'usdc') {
+        hash = await writeContractAsync({
+          address: USDC_ADDRESS,
+          abi: usdcAbi,
+          functionName: "approve",
+          args: [CLAWD_ROUTER_ADDRESS, usdcCostWithSlippage],
+        });
+      } else {
+        hash = await writeContractAsync({
+          address: CLAWD_ADDRESS,
+          abi: clawdAbi,
+          functionName: "approve",
+          args: [API_CREDITS_ADDRESS, stakeAmountBigInt],
+        });
+      }
       setApproveTxHash(hash);
-      // Hold button disabled during the allowance re-fetch gap (wagmi cache lag)
       setApproveCooldown(true);
-      setTimeout(() => setApproveCooldown(false), 10000); // fallback — cleared earlier by useEffect when allowance updates
+      setTimeout(() => setApproveCooldown(false), 10000);
       notification.success("Approval submitted! Waiting for confirmation...");
     } catch (e: any) {
       console.error(e);
@@ -218,14 +292,32 @@ const StakePage: NextPage = () => {
       }
       await bbInstance.destroy();
 
-      // ONE transaction: stake + register all credits atomically
-      notification.success(`Staking & registering ${numCredits} credit${numCredits > 1 ? "s" : ""} in one tx...`);
-      await writeContractAsync({
-        address: API_CREDITS_ADDRESS,
-        abi: apiCreditsAbi,
-        functionName: "stakeAndRegister",
-        args: [stakeAmountBigInt, commitments],
-      });
+      // ONE transaction: pay + register credits
+      notification.success(`Buying ${numCredits} credit${numCredits > 1 ? "s" : ""} via ${paymentMethod.toUpperCase()}...`);
+
+      if (paymentMethod === 'eth') {
+        await writeContractAsync({
+          address: CLAWD_ROUTER_ADDRESS,
+          abi: routerAbi,
+          functionName: "buyWithETH",
+          args: [commitments, minCLAWDOut],
+          value: ethCostWithSlippage,
+        });
+      } else if (paymentMethod === 'usdc') {
+        await writeContractAsync({
+          address: CLAWD_ROUTER_ADDRESS,
+          abi: routerAbi,
+          functionName: "buyWithUSDC",
+          args: [commitments, usdcCostWithSlippage, minCLAWDOut],
+        });
+      } else {
+        await writeContractAsync({
+          address: API_CREDITS_ADDRESS,
+          abi: apiCreditsAbi,
+          functionName: "stakeAndRegister",
+          args: [stakeAmountBigInt, commitments],
+        });
+      }
 
       // Save all new credits to localStorage
       const existing = JSON.parse(localStorage.getItem("zk-credits") || "[]");
@@ -236,7 +328,7 @@ const StakePage: NextPage = () => {
 
       notification.success(`✅ ${numCredits} credit${numCredits > 1 ? "s" : ""} ready to use!`);
       setNumCreditsInput("1");
-      setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); }, 3000);
+      setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); refetchUsdcBalance(); refetchUsdcAllowance(); }, 3000);
     } catch (e: any) {
       console.error(e);
       setTxError(parseContractError(e));
@@ -347,11 +439,13 @@ const StakePage: NextPage = () => {
           <div className="border-b border-[#222] px-5 py-3 flex justify-between items-center">
             <span className="text-xs font-mono text-base-content/40">YOUR BALANCE</span>
             <span className="text-sm font-mono text-base-content/70">
-              {clawdBalance !== undefined
-                ? Number(formatEther(clawdBalance as bigint)).toLocaleString()
+              {paymentMethod === 'eth' && ethBalance
+                ? `${Number(ethBalance.formatted).toFixed(4)} ETH`
+                : paymentMethod === 'usdc' && usdcBalance !== undefined
+                ? `${Number(formatUnits(usdcBalance as bigint, 6)).toLocaleString(undefined, {maximumFractionDigits: 2})} USDC`
+                : clawdBalance !== undefined
+                ? `${Number(formatEther(clawdBalance as bigint)).toLocaleString()} CLAWD`
                 : "—"}
-              {" "}
-              <span className="text-base-content/30">{formatUsd(clawdBalance as bigint | undefined)}</span>
             </span>
           </div>
         )}
@@ -379,20 +473,37 @@ const StakePage: NextPage = () => {
           <div className="border border-[#222] bg-black/40 px-4 py-3 mb-5 font-mono text-sm">
             <div className="flex justify-between text-base-content/50 mb-1">
               <span>Price per credit</span>
-              <span>{pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "2,000"} CLAWD{clawdPriceUsd ? ` (~$${(Number(formatEther((pricePerCredit as bigint) || 2000n * 10n**18n)) * clawdPriceUsd).toFixed(4)})` : ""}</span>
+              <span>
+                {paymentMethod === 'eth'
+                  ? `~${Number(formatEther(ethCostExact / BigInt(Math.max(numCredits,1)))).toFixed(6)} ETH`
+                  : paymentMethod === 'usdc'
+                  ? `~$${Number(formatUnits(usdcCostExact / BigInt(Math.max(numCredits,1)), 6)).toFixed(4)} USDC`
+                  : `${pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "2,000"} CLAWD`}
+              </span>
             </div>
             <div className="flex justify-between text-base-content font-bold">
-              <span>Total</span>
-              <span>{numCredits > 0 ? Number(formatEther(stakeAmountBigInt)).toLocaleString() : "0"} CLAWD{clawdPriceUsd && numCredits > 0 ? ` (~$${(Number(formatEther(stakeAmountBigInt)) * clawdPriceUsd).toFixed(2)})` : ""}</span>
+              <span>Total ({numCredits} credit{numCredits !== 1 ? "s" : ""})</span>
+              <span>
+                {paymentMethod === 'eth'
+                  ? `~${Number(formatEther(ethCostWithSlippage)).toFixed(6)} ETH`
+                  : paymentMethod === 'usdc'
+                  ? `~$${Number(formatUnits(usdcCostWithSlippage, 6)).toFixed(4)} USDC`
+                  : `${numCredits > 0 ? Number(formatEther(stakeAmountBigInt)).toLocaleString() : "0"} CLAWD`}
+              </span>
             </div>
           </div>
 
-          {/* Payment method — ETH/USDC coming soon */}
+          {/* Payment method */}
           <div className="flex gap-2 mb-5">
-            <button className={`flex-1 font-mono text-xs py-2 border transition-colors ${paymentMethod === 'clawd' ? 'border-[#F14E47] text-[#F14E47]' : 'border-[#333] text-base-content/30'}`}
-              onClick={() => setPaymentMethod('clawd')}>CLAWD</button>
-            <button className="flex-1 font-mono text-xs py-2 border border-[#222] text-base-content/20 cursor-not-allowed" disabled title="Coming soon">USDC (soon)</button>
-            <button className="flex-1 font-mono text-xs py-2 border border-[#222] text-base-content/20 cursor-not-allowed" disabled title="Coming soon">ETH (soon)</button>
+            {(['clawd', 'usdc', 'eth'] as const).map(m => (
+              <button
+                key={m}
+                className={`flex-1 font-mono text-xs py-2 border transition-colors ${paymentMethod === m ? 'border-[#F14E47] text-[#F14E47] bg-[#F14E47]/10' : 'border-[#333] text-base-content/40 hover:border-[#555]'}`}
+                onClick={() => { setPaymentMethod(m); setApproveConfirmed(false); setTxError(null); }}
+              >
+                {m.toUpperCase()}
+              </button>
+            ))}
           </div>
 
           {/* Action button */}
@@ -412,7 +523,7 @@ const StakePage: NextPage = () => {
               onClick={handleApprove}
             >
               {approveLoading && <span className="loading loading-spinner loading-xs"></span>}
-              {approveLoading ? "APPROVING..." : "APPROVE CLAWD →"}
+              {approveLoading ? "APPROVING..." : `APPROVE ${paymentMethod === 'usdc' ? 'USDC' : 'CLAWD'} →`}
             </button>
           ) : (
             <button

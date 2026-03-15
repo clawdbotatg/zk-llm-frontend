@@ -59,7 +59,7 @@ The nullifier is burned on use — each credit is single-use.
 
 - APICredits: 0xc18fad39f72eBe5E54718D904C5012Da74594674
 - CLAWDPricing: 0xaca9733Cc19aD837899dc7D1170aF1d5367C332E
-- CLAWDRouter: 0xedeCFFec6E166f88a39DF452f9251f505a19Ef62
+- CLAWDRouter: 0x908b8738D13eEF2eaaA45BD7D6f4c3A13242C5AC
 - CLAWD token: 0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07
 
 ## Privacy Model

@@ -139,7 +139,7 @@ const externalContracts = {
       ],
     },
     CLAWDRouter: {
-      address: "0xedeCFFec6E166f88a39DF452f9251f505a19Ef62",
+      address: "0x908b8738D13eEF2eaaA45BD7D6f4c3A13242C5AC",
       abi: [
         {
           type: "function",
