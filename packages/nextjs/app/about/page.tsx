@@ -3,21 +3,20 @@ import Link from "next/link";
 
 const AboutPage: NextPage = () => {
   return (
-    <div className="grid-bg min-h-[calc(100vh-56px)]">
-    <div className="max-w-2xl mx-auto px-6 pt-16 pb-24">
+    <div className="flex items-center flex-col grow pt-10 pb-20">
+      <div className="px-5 max-w-2xl w-full prose prose-sm max-w-none">
 
-        <div className="mb-12">
-          <p className="text-xs font-mono text-primary mb-4 tracking-widest">TECHNICAL DOCUMENTATION</p>
-          <h1 className="text-5xl font-mono font-bold mb-4 leading-none">How It Works</h1>
-          <p className="text-base-content/50 font-mono text-sm leading-relaxed">
-            Full breakdown — from token stake to ZK proof to LLM response.
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-3">How ZK LLM API Works</h1>
+          <p className="text-base-content/60">
+            Full technical breakdown — from token stake to ZK proof to LLM response.
           </p>
         </div>
 
         {/* Overview */}
         <section className="mb-10">
-          <h2 className="text-xl font-mono font-bold mb-4 tracking-tight">Overview</h2>
-          <p className="text-base-content/50 font-mono text-sm leading-relaxed">
+          <h2 className="text-2xl font-bold mb-4">Overview</h2>
+          <p className="text-base-content/70 leading-relaxed">
             ZK LLM API lets anyone access a private LLM endpoint by paying with CLAWD token.
             The server never knows who you are — it only verifies a zero-knowledge proof that
             you hold a valid, unspent credit in an on-chain Merkle tree.
@@ -31,7 +30,7 @@ const AboutPage: NextPage = () => {
 
         {/* Flow */}
         <section className="mb-10">
-          <h2 className="text-xl font-mono font-bold mb-4 tracking-tight">End-to-End Flow</h2>
+          <h2 className="text-2xl font-bold mb-4">End-to-End Flow</h2>
           <div className="space-y-4">
             {[
               {
@@ -80,8 +79,8 @@ const AboutPage: NextPage = () => {
 
         {/* ZK Circuit */}
         <section className="mb-10">
-          <h2 className="text-xl font-mono font-bold mb-4 tracking-tight">The ZK Circuit</h2>
-          <p className="text-base-content/50 font-mono text-sm mb-4">
+          <h2 className="text-2xl font-bold mb-4">The ZK Circuit</h2>
+          <p className="text-base-content/70 mb-4">
             Written in <a href="https://noir-lang.org" target="_blank" rel="noopener noreferrer" className="text-primary">Noir</a>,
             compiled with Barretenberg (UltraHonk backend). The circuit has:
           </p>
@@ -104,7 +103,7 @@ const AboutPage: NextPage = () => {
               </ul>
             </div>
           </div>
-          <div className="border border-[#1f1f1f] bg-[#0a0a0a] p-4 text-xs font-mono overflow-x-auto mb-4">
+          <div className="bg-base-300 rounded-xl p-4 text-xs font-mono overflow-x-auto mb-4">
             <p className="text-base-content/50 mb-2">{`// main.nr — the full circuit`}</p>
             <pre className="whitespace-pre text-base-content/80">{`use std::hash::poseidon2::Poseidon2;
 use binary_merkle_root::binary_merkle_root;
@@ -143,13 +142,13 @@ fn main(
 
         {/* Hashing */}
         <section className="mb-10">
-          <h2 className="text-xl font-mono font-bold mb-4 tracking-tight">Poseidon2 Hashing</h2>
-          <p className="text-base-content/50 font-mono text-sm mb-3">
+          <h2 className="text-2xl font-bold mb-4">Poseidon2 Hashing</h2>
+          <p className="text-base-content/70 mb-3">
             All hashing uses <strong>Poseidon2</strong> — a ZK-friendly hash function designed for
             efficient in-circuit computation. Critically, this is <em>not</em> the same as the
             original Poseidon hash used by iden3/Circom.
           </p>
-          <p className="text-base-content/50 font-mono text-sm mb-3">
+          <p className="text-base-content/70 mb-3">
             We use Barretenberg&apos;s implementation (<code className="text-xs bg-base-200 px-1 rounded">@aztec/bb.js v0.72.1</code>),
             which must match exactly between the circuit, the API server, and the frontend client.
             Using any other Poseidon implementation will produce different hashes and invalid proofs.
@@ -166,12 +165,12 @@ fn main(
 
         {/* Merkle Tree */}
         <section className="mb-10">
-          <h2 className="text-xl font-mono font-bold mb-4 tracking-tight">Incremental Merkle Tree</h2>
-          <p className="text-base-content/50 font-mono text-sm mb-3">
+          <h2 className="text-2xl font-bold mb-4">Incremental Merkle Tree</h2>
+          <p className="text-base-content/70 mb-3">
             The on-chain contract maintains a Semaphore-style incremental binary Merkle tree
             with max depth 16 (up to 65,536 leaves). Each registered commitment is a leaf.
           </p>
-          <p className="text-base-content/50 font-mono text-sm mb-3">
+          <p className="text-base-content/70 mb-3">
             Empty subtrees use precomputed zero hashes: <code className="text-xs bg-base-200 px-1 rounded">zeros[0] = 0</code>,{" "}
             <code className="text-xs bg-base-200 px-1 rounded">zeros[i+1] = Poseidon2(zeros[i], zeros[i])</code>.
             Every level always hashes two children — this matches Noir&apos;s{" "}
@@ -189,7 +188,7 @@ fn main(
 
         {/* Privacy */}
         <section className="mb-10">
-          <h2 className="text-xl font-mono font-bold mb-4 tracking-tight">Privacy Guarantees</h2>
+          <h2 className="text-2xl font-bold mb-4">Privacy Guarantees</h2>
           <div className="space-y-3">
             {[
               ["✅ Server never sees your wallet address", "The proof is generated client-side. The server receives only the proof, nullifier_hash, and your message."],
@@ -198,7 +197,7 @@ fn main(
               ["⚠️ Proof generation happens in your browser", "The API server handles LLM routing — it sees your plaintext message. For full privacy, self-host the server."],
               ["⚠️ Credits are stored in localStorage", "Back up your API keys. If you clear your browser storage, unspent credits are lost (the CLAWD is still staked on-chain but credentials are gone)."],
             ].map(([title, body]) => (
-              <div key={title as string} className="border border-[#1f1f1f] bg-[#111] p-4">
+              <div key={title as string} className="bg-base-100 rounded-xl p-4 shadow">
                 <p className="font-bold text-sm mb-1">{title}</p>
                 <p className="text-base-content/60 text-sm">{body}</p>
               </div>
@@ -208,11 +207,11 @@ fn main(
 
         {/* Self-hosting */}
         <section className="mb-10">
-          <h2 className="text-xl font-mono font-bold mb-4 tracking-tight">Self-Hosting</h2>
-          <p className="text-base-content/50 font-mono text-sm mb-3">
+          <h2 className="text-2xl font-bold mb-4">Self-Hosting</h2>
+          <p className="text-base-content/70 mb-3">
             Everything is open-source. You can deploy your own instance pointing at any LLM provider.
           </p>
-          <div className="border border-[#1f1f1f] bg-[#0a0a0a] p-4 text-xs font-mono overflow-x-auto mb-4">
+          <div className="bg-base-300 rounded-xl p-4 text-xs font-mono overflow-x-auto mb-4">
             <pre>{`# Clone and deploy
 git clone https://github.com/clawdbotatg/zk-api-credits
 cd zk-api-credits
@@ -237,7 +236,7 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
 
         {/* Links */}
         <section className="mb-10">
-          <h2 className="text-xl font-mono font-bold mb-4 tracking-tight">Links</h2>
+          <h2 className="text-2xl font-bold mb-4">Links</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
               ["GitHub — zk-api-credits", "https://github.com/clawdbotatg/zk-api-credits"],
@@ -268,7 +267,6 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
         </div>
 
       </div>
-    </div>
     </div>
   );
 };
