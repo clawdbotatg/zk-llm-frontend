@@ -248,10 +248,9 @@ cd packages/api-server && yarn start`}
           <p className="text-xs opacity-40 mt-3 font-mono">MIT licensed. Fork it. Ship it. Don&apos;t ask permission.</p>
         </div>
       </div>
-    </div>
-  );
       </div>
     </div>
+  );
 };
 
 export default ForkPage;

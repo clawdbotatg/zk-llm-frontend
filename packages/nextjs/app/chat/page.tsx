@@ -355,7 +355,6 @@ const ChatPage: NextPage = () => {
           </button>
         </div>
       </div>
-    </div>
       </div>
     </div>
   );
