@@ -98,14 +98,14 @@ const Home: NextPage = () => {
         </div>
 
         {/* Stats bar */}
-        <div className="border border-[#1f1f1f] grid grid-cols-3 mb-20">
-          <div className="border-r border-[#1f1f1f] p-6">
+        <div className="border border-[#333] grid grid-cols-3 mb-20 bg-black/80 backdrop-blur-sm">
+          <div className="border-r border-[#333] p-6">
             <p className="text-3xl font-mono font-bold">
               {treeSize ?? "—"}
             </p>
             <p className="text-xs font-mono text-base-content/40 mt-1">CREDITS ISSUED</p>
           </div>
-          <div className="border-r border-[#1f1f1f] p-6">
+          <div className="border-r border-[#333] p-6">
             <p className="text-3xl font-mono font-bold">
               {spentCount ?? "—"}
             </p>
@@ -122,7 +122,7 @@ const Home: NextPage = () => {
         {/* How it works */}
         <div className="mb-20">
           <p className="text-xs font-mono text-base-content/30 mb-8 tracking-widest">HOW IT WORKS</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#1f1f1f]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[#333] bg-black/80 backdrop-blur-sm">
             {[
               {
                 n: "01",
@@ -144,7 +144,7 @@ const Home: NextPage = () => {
             ].map(({ n, title, body }, i) => (
               <div
                 key={n}
-                className={`p-8 ${i < 2 ? "md:border-r border-b md:border-b-0 border-[#1f1f1f]" : ""}`}
+                className={`p-8 ${i < 2 ? "md:border-r border-b md:border-b-0 border-[#333]" : ""}`}
               >
                 <p className="text-xs font-mono text-[#00ff88] mb-4">{n}</p>
                 <h3 className="font-mono font-bold text-base mb-3">{title}</h3>
@@ -157,8 +157,8 @@ const Home: NextPage = () => {
         {/* Code snippet */}
         <div className="mb-20">
           <p className="text-xs font-mono text-base-content/30 mb-4 tracking-widest">USE ANYWHERE</p>
-          <div className="border border-[#1f1f1f] bg-[#111] overflow-x-auto">
-            <div className="border-b border-[#1f1f1f] px-4 py-2 flex items-center gap-2">
+          <div className="border border-[#333] bg-black/90 backdrop-blur-sm overflow-x-auto">
+            <div className="border-b border-[#333] px-4 py-2 flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#333]"></div>
               <div className="w-2 h-2 rounded-full bg-[#333]"></div>
               <div className="w-2 h-2 rounded-full bg-[#333]"></div>
@@ -175,7 +175,7 @@ curl -X POST https://backend.zkllmapi.com/v1/chat \\
         </div>
 
         {/* Bottom links */}
-        <div className="flex flex-wrap gap-8 text-xs font-mono text-base-content/30">
+        <div className="flex flex-wrap gap-8 text-xs font-mono text-base-content/50 bg-black/60 backdrop-blur-sm px-4 py-3 border border-[#333]">
           <a
             href="https://github.com/clawdbotatg/zk-api-credits"
             target="_blank"
