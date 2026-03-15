@@ -25,7 +25,7 @@ const MAX_DEPTH = 16;
 
 /**
  * Standard binary Merkle tree with zero-padding (Semaphore-style).
- * Matches the on-chain APICredits contract and Noir binary_merkle_root exactly.
+ * Matches the onchain APICredits contract and Noir binary_merkle_root exactly.
  *
  * Empty positions use precomputed zero hashes:
  *   zeros[0] = 0
@@ -206,7 +206,7 @@ export const ProofGenerator = ({
 
       setStatus("Rebuilding Merkle tree with Poseidon2...");
 
-      // Build standard binary tree (matches on-chain + Noir circuit exactly)
+      // Build standard binary tree (matches onchain + Noir circuit exactly)
       const tree = new BinaryMerkleTree(poseidon2Hash);
       await tree.precomputeZeros();
 

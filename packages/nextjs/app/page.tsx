@@ -71,7 +71,7 @@ const Home: NextPage = () => {
         </h1>
 
         <p className="text-base-content/50 text-lg font-mono mb-12 max-w-xl leading-relaxed">
-          Buy a credit on-chain. Your browser generates a<br />
+          Buy a credit onchain. Your browser generates a<br />
           zero-knowledge proof. The server verifies it.<br />
           It knows you paid. Nothing else.
         </p>

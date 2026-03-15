@@ -39,7 +39,7 @@ function saveCredit(data: CommitmentData) {
 /**
  * Generate random field elements and compute Poseidon2 commitment
  * Uses bb.js poseidon2Hash — the ONLY correct Poseidon2 implementation
- * that matches Noir's Poseidon2::hash and the on-chain LibPoseidon2.
+ * that matches Noir's Poseidon2::hash and the onchain LibPoseidon2.
  */
 async function generateCommitmentData(): Promise<{
   commitment: bigint;

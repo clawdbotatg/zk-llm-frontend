@@ -81,7 +81,7 @@ const ChatPage: NextPage = () => {
     setMessage("");
     setMessages(prev => [...prev, { role: "user", content: userMessage }]);
 
-    // Find first credit that: (1) exists on-chain, (2) nullifier not spent
+    // Find first credit that: (1) exists onchain, (2) nullifier not spent
     // Pre-load bb.js to compute nullifier hashes for spent check
     const { Barretenberg: BB2, Fr: Fr2 } = await import("@aztec/bb.js");
     const bbCheck = await BB2.new({ threads: 1 });
@@ -92,7 +92,7 @@ const ChatPage: NextPage = () => {
     const staleCredits: string[] = [];
 
     for (const credit of availableCredits) {
-      // Check commitment exists on-chain
+      // Check commitment exists onchain
       const pathCheck = await fetch(`${API_URL}/merkle-path/${credit.commitment}`);
       if (!pathCheck.ok) { staleCredits.push(credit.commitment); continue; }
 

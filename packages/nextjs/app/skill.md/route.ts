@@ -35,7 +35,7 @@ POST https://backend.zkllmapi.com/v1/chat
 1. Go to https://zkllmapi.com/stake
 2. Connect a wallet on Base
 3. Approve CLAWD token spend
-4. Register a ZK commitment on-chain
+4. Register a ZK commitment onchain
 5. Download your secret (stored locally — never leaves your browser)
 
 ## How to Generate a Proof (client-side)
@@ -64,7 +64,7 @@ The nullifier is burned on use — each credit is single-use.
 
 ## Privacy Model
 
-- Your wallet is only used to stake + register (one-time, on-chain)
+- Your wallet is only used to stake + register (one-time, onchain)
 - Every chat request is unlinkable — no wallet, no session, no IP logging at the app layer
 - Proof generation happens in your browser — secrets never sent to the server
 - The server only sees: a valid proof, a nullifier, and your message

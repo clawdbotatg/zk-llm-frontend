@@ -21,7 +21,7 @@ const AboutPage: NextPage = () => {
           <p className="text-base-content/70 leading-relaxed">
             ZK LLM API lets anyone access a private LLM endpoint by paying with CLAWD token.
             The server never knows who you are — it only verifies a zero-knowledge proof that
-            you hold a valid, unspent credit in an on-chain Merkle tree.
+            you hold a valid, unspent credit in an onchain Merkle tree.
           </p>
           <p className="text-base-content/70 leading-relaxed mt-3">
             The system is fully open-source and self-hostable. Anyone can fork it, deploy their
@@ -48,12 +48,12 @@ const AboutPage: NextPage = () => {
               {
                 step: "3",
                 title: "stakeAndRegister() — one transaction",
-                body: "You approve CLAWD, then call stakeAndRegister(amount, commitments[]) on the APICredits contract. This stakes N×1000 CLAWD and inserts your commitments into an on-chain incremental Merkle tree. One transaction, N credits."
+                body: "You approve CLAWD, then call stakeAndRegister(amount, commitments[]) on the APICredits contract. This stakes N×1000 CLAWD and inserts your commitments into an onchain incremental Merkle tree. One transaction, N credits."
               },
               {
                 step: "4",
                 title: "API server reads the Merkle tree",
-                body: "The API server watches the contract. When you call /chat, it fetches your commitment's Merkle path (siblings + indices) from the on-chain tree and sends it back to your client."
+                body: "The API server watches the contract. When you call /chat, it fetches your commitment's Merkle path (siblings + indices) from the onchain tree and sends it back to your client."
               },
               {
                 step: "5",
@@ -63,7 +63,7 @@ const AboutPage: NextPage = () => {
               {
                 step: "6",
                 title: "Server verifies and responds",
-                body: "The server verifies the UltraHonk proof against the on-chain root, checks the nullifier hasn't been spent, marks it spent, then forwards your message to the Venice LLM API and returns the response."
+                body: "The server verifies the UltraHonk proof against the onchain root, checks the nullifier hasn't been spent, marks it spent, then forwards your message to the Venice LLM API and returns the response."
               }
             ].map(({ step, title, body }) => (
               <div key={step} className="flex gap-4 bg-base-100 rounded-xl p-5 shadow">
@@ -91,7 +91,7 @@ const AboutPage: NextPage = () => {
               <p className="text-xs text-base-content/50 mb-1">Public inputs (verifier sees)</p>
               <ul className="text-sm space-y-1">
                 <li><code className="text-xs">nullifier_hash</code> — Poseidon2(nullifier)</li>
-                <li><code className="text-xs">root</code> — on-chain Merkle root</li>
+                <li><code className="text-xs">root</code> — onchain Merkle root</li>
                 <li><code className="text-xs">depth</code> — current tree depth</li>
               </ul>
             </div>
@@ -158,7 +158,7 @@ fn main(
           <div className="bg-base-100 rounded-xl p-4 shadow text-sm">
             <p className="font-bold mb-2">Three hash operations in the system:</p>
             <ul className="space-y-2 text-base-content/70">
-              <li><code className="text-xs bg-base-200 px-1 rounded">commitment = Poseidon2(nullifier, secret)</code> — computed client-side, stored on-chain</li>
+              <li><code className="text-xs bg-base-200 px-1 rounded">commitment = Poseidon2(nullifier, secret)</code> — computed client-side, stored onchain</li>
               <li><code className="text-xs bg-base-200 px-1 rounded">node = Poseidon2(left, right)</code> — used at every level of the Merkle tree</li>
               <li><code className="text-xs bg-base-200 px-1 rounded">nullifier_hash = Poseidon2(nullifier)</code> — public, used to track spent credits</li>
             </ul>
@@ -169,7 +169,7 @@ fn main(
         <section className="mb-10">
           <h2 className="text-2xl font-bold mb-4">Incremental Merkle Tree</h2>
           <p className="text-base-content/70 mb-3">
-            The on-chain contract maintains a Semaphore-style incremental binary Merkle tree
+            The onchain contract maintains a Semaphore-style incremental binary Merkle tree
             with max depth 16 (up to 65,536 leaves). Each registered commitment is a leaf.
           </p>
           <p className="text-base-content/70 mb-3">
@@ -197,7 +197,7 @@ fn main(
               ["✅ Server cannot link two API calls", "Each credit has a unique nullifier. There's no correlation between calls unless you reuse a credential."],
               ["✅ Server cannot identify which leaf you used", "The ZK proof proves membership in the set without revealing the index or commitment."],
               ["⚠️ Proof generation happens in your browser", "The API server handles LLM routing — it sees your plaintext message. For full privacy, self-host the server."],
-              ["⚠️ Credits are stored in localStorage", "If you clear your browser, unspent credits are gone (CLAWD stays staked on-chain, but the credentials are lost). Back them up — or better yet, script the purchase and let your bot manage credits automatically via the skill.md API."],
+              ["⚠️ Credits are stored in localStorage", "If you clear your browser, unspent credits are gone (CLAWD stays staked onchain, but the credentials are lost). Back them up — or better yet, script the purchase and let your bot manage credits automatically via the skill.md API."],
             ].map(([title, body]) => (
               <div key={title as string} className="bg-base-100 rounded-xl p-4 shadow">
                 <p className="font-bold text-sm mb-1">{title}</p>

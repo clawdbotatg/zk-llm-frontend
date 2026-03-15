@@ -52,7 +52,7 @@ const StakePage: NextPage = () => {
   const [clawdPriceUsd, setClawdPriceUsd] = useState<number | null>(null);
   const [approveTxHash, setApproveTxHash] = useState<`0x${string}` | undefined>(undefined);
   const [approveCooldown, setApproveCooldown] = useState(false);
-  const [approveConfirmed, setApproveConfirmed] = useState(false); // true after on-chain confirmation
+  const [approveConfirmed, setApproveConfirmed] = useState(false); // true after onchain confirmation
 
   const wrongNetwork = chain?.id !== 8453;
 
@@ -165,7 +165,7 @@ const StakePage: NextPage = () => {
     hash: approveTxHash,
   });
 
-  // When approve tx is confirmed on-chain, mark approved and refetch
+  // When approve tx is confirmed onchain, mark approved and refetch
   useEffect(() => {
     if (isApproveConfirmed && approveTxHash) {
       setIsApproving(false);
