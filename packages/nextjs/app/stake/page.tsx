@@ -48,6 +48,7 @@ const StakePage: NextPage = () => {
   const [savedCredits, setSavedCredits] = useState<StoredCredit[]>([]);
   const [clawdPriceUsd, setClawdPriceUsd] = useState<number | null>(null);
   const [approveTxHash, setApproveTxHash] = useState<`0x${string}` | undefined>(undefined);
+  const [approveCooldown, setApproveCooldown] = useState(false);
 
   const wrongNetwork = chain?.id !== 8453;
 
@@ -163,6 +164,9 @@ const StakePage: NextPage = () => {
         args: [API_CREDITS_ADDRESS, stakeAmountBigInt],
       });
       setApproveTxHash(hash);
+      // Hold button disabled during the allowance re-fetch gap (wagmi cache lag)
+      setApproveCooldown(true);
+      setTimeout(() => setApproveCooldown(false), 4000);
       notification.success("Approval submitted! Waiting for confirmation...");
     } catch (e: any) {
       console.error(e);
@@ -261,7 +265,7 @@ const StakePage: NextPage = () => {
   };
 
   // Approve button shows spinner while tx is pending OR confirming
-  const approveLoading = isApproving || isApproveConfirming;
+  const approveLoading = isApproving || isApproveConfirming || approveCooldown;
 
   return (
     <div className="flex items-center flex-col grow pt-10">
