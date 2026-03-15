@@ -15,8 +15,8 @@ const spaceGrotesk = Space_Grotesk({
 
 
 export const metadata = getMetadata({
-  title: 'ZK Voting | SpeedRunEthereum',
-  description: 'Built with 🏗 Scaffold-ETH 2'
+  title: 'ZK LLM API — Private AI via ZK Proofs',
+  description: 'Anonymous LLM API access via zero-knowledge proofs. No account. No tracking. Pay once, use privately.'
 });
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
