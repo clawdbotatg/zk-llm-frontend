@@ -5,6 +5,11 @@ import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 0.9,
+};
+
 export const metadata = getMetadata({
   title: "ZK LLM API — Private AI via ZK Proofs",
   description: "Private LLM API access via ZK proofs. No account. No API key. Just a proof.",
