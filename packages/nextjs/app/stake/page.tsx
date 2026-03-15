@@ -180,24 +180,72 @@ const StakePage: NextPage = () => {
     setIsStaking(true);
     setTxError(null);
     try {
+      // Stake CLAWD
       await writeContractAsync({
         address: API_CREDITS_ADDRESS,
         abi: apiCreditsAbi,
         functionName: "stake",
         args: [stakeAmountBigInt],
       });
-      notification.success("Staking successful!");
+      notification.success("Staked! Registering credits...");
+
+      // Calculate how many credits to register (floor division by PRICE_PER_CREDIT)
+      const PRICE_PER_CREDIT = 1000n * 10n ** 18n;
+      const numCredits = Number(stakeAmountBigInt / PRICE_PER_CREDIT);
+
+      if (numCredits === 0) {
+        setStakeAmount("");
+        setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); }, 3000);
+        return;
+      }
+
+      // Init bb.js once for all commitments
+      const { Barretenberg, Fr } = await import("@aztec/bb.js");
+      const bbInstance = await Barretenberg.new({ threads: 1 });
+      const frToBigInt = (fr: { value: Uint8Array }) =>
+        BigInt("0x" + Array.from(fr.value).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
+      const FIELD_MODULUS = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
+
+      const newCredits: StoredCredit[] = [];
+
+      for (let i = 0; i < numCredits; i++) {
+        setIsRegistering(true);
+        // Generate fresh nullifier + secret
+        const rb1 = new Uint8Array(32); crypto.getRandomValues(rb1);
+        const rb2 = new Uint8Array(32); crypto.getRandomValues(rb2);
+        const nullifier = BigInt("0x" + Array.from(rb1).map(b => b.toString(16).padStart(2, "0")).join("")) % FIELD_MODULUS;
+        const secret = BigInt("0x" + Array.from(rb2).map(b => b.toString(16).padStart(2, "0")).join("")) % FIELD_MODULUS;
+        const commitment = frToBigInt(await bbInstance.poseidon2Hash([new Fr(nullifier), new Fr(secret)]));
+
+        await writeContractAsync({
+          address: API_CREDITS_ADDRESS,
+          abi: apiCreditsAbi,
+          functionName: "register",
+          args: [commitment],
+        });
+
+        newCredits.push({ nullifier: nullifier.toString(), secret: secret.toString(), commitment: commitment.toString(), leafIndex: -1, spent: false });
+        notification.success(`Credit ${i + 1}/${numCredits} registered!`);
+      }
+
+      await bbInstance.destroy();
+
+      // Save all new credits to localStorage
+      const existing = JSON.parse(localStorage.getItem("zk-credits") || "[]");
+      const all = [...existing, ...newCredits];
+      localStorage.setItem("zk-credits", JSON.stringify(all));
+      setSavedCredits(all);
+      setRegisteredCredit(newCredits[newCredits.length - 1]);
+
+      notification.success(`✅ ${numCredits} credit${numCredits > 1 ? "s" : ""} ready to use!`);
       setStakeAmount("");
-      setTimeout(() => {
-        refetchStaked();
-        refetchBalance();
-        refetchAllowance();
-      }, 5000);
+      setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); }, 3000);
     } catch (e: any) {
       console.error(e);
       setTxError(parseContractError(e));
     } finally {
       setIsStaking(false);
+      setIsRegistering(false);
     }
   };
 
@@ -364,12 +412,12 @@ const StakePage: NextPage = () => {
           )}
         </div>
 
-        {/* Step B: Register */}
+        {/* Step B: Register — auto-happens after staking, but also manual if staked balance remains */}
         <div className="bg-base-100 rounded-xl p-6 shadow mb-6">
-          <h3 className="font-bold text-lg mb-4">Step 2: Register a Credit</h3>
+          <h3 className="font-bold text-lg mb-4">Step 2: Register Credits from Existing Stake</h3>
           <p className="text-base-content/60 text-sm mb-4">
-            This generates a random nullifier + secret, computes a Poseidon commitment, and registers it onchain.
-            Your staked balance will be reduced by {pricePerCredit ? formatEther(pricePerCredit as bigint) : "..."} CLAWD.
+            If you already have staked CLAWD, register credits here. Each credit costs {pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "1,000"} CLAWD.
+            Credits are registered automatically when you stake above.
           </p>
 
           {!connectedAddress ? (
@@ -381,13 +429,13 @@ const StakePage: NextPage = () => {
           ) : (
             <button
               className="btn btn-secondary w-full"
-              disabled={isRegistering}
+              disabled={isRegistering || !stakedBalance || (stakedBalance as bigint) < (pricePerCredit as bigint || 1000n * 10n ** 18n)}
               onClick={handleRegister}
             >
               {isRegistering ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : null}
-              {isRegistering ? "Generating & Registering..." : "Generate & Register Commitment"}
+              {isRegistering ? "Registering..." : "Register 1 Credit from Staked Balance"}
             </button>
           )}
 
