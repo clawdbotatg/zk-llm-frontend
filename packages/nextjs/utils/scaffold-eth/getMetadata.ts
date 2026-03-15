@@ -2,13 +2,15 @@
 import type { Metadata } from "next";
 
 
-const baseUrl = "https://zkllmapi.com";
-const titleTemplate = "%s | ZK LLM API";
+const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : `http://localhost:${process.env.PORT || 3000}`;
+const titleTemplate = "%s | SpeedRunEthereum";
 
 export const getMetadata = ({
   title,
   description,
-  imageRelativePath = "/thumbnail.jpg",
+  imageRelativePath = "/thumbnail.png",
 }: {
   title: string;
   description: string;
