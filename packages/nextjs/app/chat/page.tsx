@@ -68,14 +68,42 @@ const ChatPage: NextPage = () => {
     setMessage("");
     setMessages(prev => [...prev, { role: "user", content: userMessage }]);
 
-    // Find first credit that exists on-chain (skip stale localStorage credits)
-    let creditToUse = availableCredits[0];
+    // Find first credit that: (1) exists on-chain, (2) nullifier not spent
+    // Pre-load bb.js to compute nullifier hashes for spent check
+    const { Barretenberg: BB2, Fr: Fr2 } = await import("@aztec/bb.js");
+    const bbCheck = await BB2.new({ threads: 1 });
+    const frToBI = (fr: { value: Uint8Array }) =>
+      BigInt("0x" + Array.from(fr.value).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
+
+    let creditToUse: typeof availableCredits[0] | null = null;
+    const staleCredits: string[] = [];
+
     for (const credit of availableCredits) {
-      const check = await fetch(`${API_URL}/merkle-path/${credit.commitment}`);
-      if (check.ok) { creditToUse = credit; break; }
+      // Check commitment exists on-chain
+      const pathCheck = await fetch(`${API_URL}/merkle-path/${credit.commitment}`);
+      if (!pathCheck.ok) { staleCredits.push(credit.commitment); continue; }
+
+      // Check nullifier not spent
+      const nullifierHash = frToBI(await bbCheck.poseidon2Hash([new Fr2(BigInt(credit.nullifier))]));
+      const nullifierHashHex = "0x" + nullifierHash.toString(16).padStart(64, "0");
+      const spentCheck = await fetch(`${API_URL}/nullifier/${nullifierHashHex}`);
+      const spentData = await spentCheck.json();
+      if (spentData.spent) { staleCredits.push(credit.commitment); continue; }
+
+      creditToUse = credit;
+      break;
     }
+    await bbCheck.destroy();
+
+    // Mark stale credits as spent in localStorage
+    if (staleCredits.length > 0) {
+      const updated = credits.map(c => staleCredits.includes(c.commitment) ? { ...c, spent: true } : c);
+      setCredits(updated);
+      localStorage.setItem("zk-credits", JSON.stringify(updated));
+    }
+
     if (!creditToUse) {
-      setError("No valid on-chain credits found. Please register a new credit on the Stake page.");
+      setError("No valid unspent credits found. Please register a new one on the Stake page.");
       setIsSending(false);
       return;
     }
@@ -153,6 +181,15 @@ const ChatPage: NextPage = () => {
 
       if (!apiRes.ok) {
         const errText = await apiRes.text();
+        // If nullifier already spent, mark it in localStorage and surface a clear message
+        if (apiRes.status === 403 && errText.includes("already spent")) {
+          const updatedCredits = credits.map(c =>
+            c.commitment === creditToUse.commitment ? { ...c, spent: true } : c
+          );
+          setCredits(updatedCredits);
+          localStorage.setItem("zk-credits", JSON.stringify(updatedCredits));
+          throw new Error("This credit was already used. Please register a new one on the Stake page.");
+        }
         throw new Error(`API error (${apiRes.status}): ${errText}`);
       }
 
