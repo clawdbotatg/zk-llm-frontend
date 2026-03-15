@@ -45,10 +45,8 @@ const Home: NextPage = () => {
     ? Number(formatEther(pricePerCredit as bigint))
     : 2000;
 
-  const priceLabel = priceInClawd.toLocaleString();
-
   const priceUsd = clawdPriceUsd !== null
-    ? `~$${(priceInClawd * clawdPriceUsd).toFixed(4)} USD`
+    ? `$${(priceInClawd * clawdPriceUsd).toFixed(4)}`
     : null;
 
   return (
@@ -58,21 +56,21 @@ const Home: NextPage = () => {
         {/* Tag line */}
         <div className="mb-6">
           <span className="text-xs font-mono text-primary border border-primary/30 px-2 py-1">
-            ZK-GATED LLM API — BASE MAINNET
+            PRIVATE LLM API — BASE MAINNET — OPEN SOURCE
           </span>
         </div>
 
         {/* Hero */}
         <h1 className="text-6xl md:text-7xl font-mono font-bold leading-none mb-8 tracking-tight">
-          Spend CLAWD.<br />
-          <span className="text-primary">Get ZK LLM</span><br />
-          access.
+          Anonymous LLM<br />
+          <span className="text-primary">access. No account.</span><br />
+          No identity.
         </h1>
 
         <p className="text-base-content/50 text-lg font-mono mb-12 max-w-xl leading-relaxed">
-          No account. No identity tied to your request.<br />
-          Pay with CLAWD token → get a one-time API credit<br />
-          backed by a zero-knowledge proof on Base.
+          Buy a credit on-chain. Your browser generates a<br />
+          zero-knowledge proof. The server verifies it.<br />
+          It knows you paid. Nothing else.
         </p>
 
         {/* CTAs */}
@@ -81,19 +79,19 @@ const Home: NextPage = () => {
             href="/stake"
             className="font-mono text-sm bg-[#00ff88] text-black px-6 py-3 hover:bg-[#00cc66] transition-colors font-bold"
           >
-            BUY CREDITS →
+            BUY A CREDIT →
           </Link>
           <Link
             href="/chat"
             className="font-mono text-sm border border-[#333] text-base-content/60 px-6 py-3 hover:border-[#00ff88]/50 hover:text-base-content transition-colors"
           >
-            TRY THE DEMO
+            TRY IT NOW
           </Link>
           <a
             href="/skill.md"
             className="font-mono text-sm text-base-content/30 hover:text-[#00ff88] transition-colors"
           >
-            SKILL.md ↗
+            FOR BOTS ↗
           </a>
         </div>
 
@@ -112,10 +110,10 @@ const Home: NextPage = () => {
             <p className="text-xs font-mono text-base-content/40 mt-1">API CALLS MADE</p>
           </div>
           <div className="p-6">
-            <p className="text-3xl font-mono font-bold text-[#00ff88]">{priceLabel}</p>
-            <p className="text-xs font-mono text-base-content/40 mt-1">
-              CLAWD/CREDIT {priceUsd ? `· ${priceUsd}` : ""}
+            <p className="text-3xl font-mono font-bold text-[#00ff88]">
+              {priceUsd ?? "—"}
             </p>
+            <p className="text-xs font-mono text-base-content/40 mt-1">PER CREDIT</p>
           </div>
         </div>
 
@@ -126,18 +124,20 @@ const Home: NextPage = () => {
             {[
               {
                 n: "01",
-                title: "Buy a Credit",
-                body: `Approve ${priceLabel} CLAWD${priceUsd ? ` (${priceUsd})` : ""} per credit. Your browser generates a secret locally — the contract only stores a hash.`,
+                title: "Buy a credit",
+                body: priceUsd
+                  ? `Pay ${priceUsd} on Base. Your browser generates a secret locally — the contract stores only a cryptographic hash.`
+                  : "Pay on Base. Your browser generates a secret locally — the contract stores only a cryptographic hash.",
               },
               {
                 n: "02",
-                title: "Generate a Proof",
-                body: "When you chat, your browser generates a ZK proof that you own a valid credit — without revealing which one or who you are.",
+                title: "Generate a proof",
+                body: "When you make a request, your browser generates a zero-knowledge proof that you own a valid credit — without revealing which one.",
               },
               {
                 n: "03",
                 title: "Call the LLM",
-                body: "The server verifies your proof and forwards to the LLM. It knows you paid. Nothing else. Works in any script or app.",
+                body: "POST your proof to our API. We verify it and forward to the model. We know you paid. That's all we know.",
               },
             ].map(({ n, title, body }, i) => (
               <div
@@ -163,7 +163,7 @@ const Home: NextPage = () => {
               <span className="text-xs font-mono text-base-content/30 ml-2">example.sh</span>
             </div>
             <pre className="p-6 text-xs font-mono text-base-content/70 leading-relaxed overflow-x-auto">{`# Get your key from zkllmapi.com/stake
-API_KEY="zk-llm-<your-key-here>"
+API_KEY="zk-llm-<your-key>"
 
 curl -X POST https://backend.zkllmapi.com/v1/chat \\
   -H 'Content-Type: application/json' \\
@@ -190,7 +190,7 @@ curl -X POST https://backend.zkllmapi.com/v1/chat \\
           >
             CONTRACT ↗
           </a>
-          <Link href="/about" className="hover:text-[#00ff88] transition-colors">ABOUT / DOCS</Link>
+          <Link href="/about" className="hover:text-[#00ff88] transition-colors">HOW IT WORKS</Link>
           <Link href="/fork" className="hover:text-[#00ff88] transition-colors">FORK THIS</Link>
           <a href="/skill.md" className="hover:text-[#00ff88] transition-colors">SKILL.md</a>
         </div>

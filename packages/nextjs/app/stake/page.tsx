@@ -333,11 +333,11 @@ const StakePage: NextPage = () => {
       {/* Header */}
       <div className="mb-10">
         <p className="text-xs font-mono text-primary mb-3 tracking-widest">BUY CREDITS</p>
-        <h1 className="text-4xl font-mono font-bold mb-3">API Credits</h1>
+        <h1 className="text-4xl font-mono font-bold mb-3">Get API Access</h1>
         <p className="font-mono text-base-content/50 text-sm">
-          {pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "2,000"} CLAWD per credit
+          One credit = one private LLM call. No account. No identity.
           {pricePerCredit && clawdPriceUsd !== null
-            ? ` · ~$${(Number(formatEther(pricePerCredit as bigint)) * clawdPriceUsd).toFixed(2)} USD each`
+            ? ` · ~$${(Number(formatEther(pricePerCredit as bigint)) * clawdPriceUsd).toFixed(4)} per credit`
             : ""}
         </p>
       </div>
@@ -347,7 +347,7 @@ const StakePage: NextPage = () => {
         {/* Balance row */}
         {connectedAddress && (
           <div className="border-b border-[#222] px-5 py-3 flex justify-between items-center">
-            <span className="text-xs font-mono text-base-content/40">YOUR CLAWD</span>
+            <span className="text-xs font-mono text-base-content/40">YOUR BALANCE</span>
             <span className="text-sm font-mono text-base-content/70">
               {clawdBalance !== undefined
                 ? Number(formatEther(clawdBalance as bigint)).toLocaleString()
@@ -361,7 +361,7 @@ const StakePage: NextPage = () => {
         <div className="p-5">
           {/* Amount input */}
           <div className="mb-2">
-            <label className="text-xs font-mono text-base-content/40 block mb-2">CLAWD AMOUNT</label>
+            <label className="text-xs font-mono text-base-content/40 block mb-2">AMOUNT (CLAWD)</label>
             <input
               type="text"
               placeholder="1000"
