@@ -101,7 +101,7 @@ export function SplashLoader({ onDone }: { onDone: () => void }) {
         pointerEvents: fading ? "none" : "all",
       }}
     >
-      {/* Video — 90vw/90vh centered, not full bleed */}
+      {/* Full-bleed video */}
       <video
         src="/loader.mp4"
         autoPlay
@@ -110,13 +110,10 @@ export function SplashLoader({ onDone }: { onDone: () => void }) {
         playsInline
         style={{
           position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "90vw",
-          height: "90vh",
+          inset: 0,
+          width: "100%",
+          height: "100%",
           objectFit: "cover",
-          borderRadius: "8px",
           opacity: 0.9,
         }}
       />
