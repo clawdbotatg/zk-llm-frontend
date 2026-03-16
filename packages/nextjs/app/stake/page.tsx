@@ -144,7 +144,7 @@ const StakePage: NextPage = () => {
     query: { enabled: !!connectedAddress },
   });
 
-  // CLAWDPricing: creditPriceUSD and ETH/USD
+  // CLAWDPricing: creditPriceUSD, ETH/USD, and dynamic CLAWD/credit
   const { data: creditPriceUSD } = useReadContract({
     address: externalContracts[8453].CLAWDPricing.address,
     abi: pricingAbi,
@@ -155,6 +155,13 @@ const StakePage: NextPage = () => {
     address: externalContracts[8453].CLAWDPricing.address,
     abi: pricingAbi,
     functionName: "getEthUsdPrice",
+    chainId: 8453,
+  });
+  // Dynamic CLAWD per credit from oracle (replaces static pricePerCredit for display + payment)
+  const { data: clawdPerCreditOracle } = useReadContract({
+    address: externalContracts[8453].CLAWDPricing.address,
+    abi: pricingAbi,
+    functionName: "getCreditPriceInCLAWD",
     chainId: 8453,
   });
 
@@ -189,7 +196,8 @@ const StakePage: NextPage = () => {
     }
   }, []);
 
-  const contractPrice = pricePerCredit ? (pricePerCredit as bigint) : 2000n * 10n ** 18n;
+  // Use oracle price (CLAWDPricing) for CLAWD amount — falls back to static contract price if oracle unavailable
+  const contractPrice = clawdPerCreditOracle ? (clawdPerCreditOracle as bigint) : pricePerCredit ? (pricePerCredit as bigint) : 2000n * 10n ** 18n;
   const numCredits = Math.max(0, parseInt(numCreditsInput) || 0);
   const stakeAmountBigInt = contractPrice * BigInt(numCredits);
 
@@ -266,8 +274,7 @@ const StakePage: NextPage = () => {
     setIsStaking(true);
     setTxError(null);
     try {
-      const PRICE_PER_CREDIT = pricePerCredit ? (pricePerCredit as bigint) : 2000n * 10n ** 18n;
-      const numCredits = Number(stakeAmountBigInt / PRICE_PER_CREDIT);
+      const numCredits = Number(numCreditsInput) || 0;
       if (numCredits === 0) { setTxError("Minimum 1000 CLAWD required."); return; }
 
       // Generate all commitments BEFORE the tx
@@ -426,8 +433,8 @@ const StakePage: NextPage = () => {
         <h1 className="text-4xl font-mono font-bold mb-3">Get API Access</h1>
         <p className="font-mono text-base-content/50 text-sm">
           One credit = one private LLM call. No account. No identity.
-          {pricePerCredit && clawdPriceUsd !== null
-            ? ` · ~$${(Number(formatEther(pricePerCredit as bigint)) * clawdPriceUsd).toFixed(4)} per credit`
+          {creditPriceUSD
+            ? ` · ~$${Number(formatEther(creditPriceUSD as bigint)).toFixed(4)} per credit`
             : ""}
         </p>
       </div>
@@ -478,7 +485,7 @@ const StakePage: NextPage = () => {
                   ? `~${Number(formatEther(ethCostExact / BigInt(Math.max(numCredits,1)))).toFixed(6)} ETH`
                   : paymentMethod === 'usdc'
                   ? `~$${Number(formatUnits(usdcCostExact / BigInt(Math.max(numCredits,1)), 6)).toFixed(4)} USDC`
-                  : `${pricePerCredit ? Number(formatEther(pricePerCredit as bigint)).toLocaleString() : "2,000"} CLAWD`}
+                  : `${Number(formatEther(contractPrice)).toLocaleString(undefined, {maximumFractionDigits: 2})} CLAWD`}
               </span>
             </div>
             <div className="flex justify-between text-base-content font-bold">
