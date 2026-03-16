@@ -324,6 +324,14 @@ const ChatPage: NextPage = () => {
 
       {/* Input */}
       <div className="border-t border-[#1f1f1f] px-6 py-4 flex-shrink-0">
+        <div className="max-w-3xl mx-auto mb-2 flex items-center justify-between">
+          <span className="font-mono text-xs text-base-content/30">
+            {availableCredits.length === 0
+              ? <span className="text-[#F14E47]/70">no credits — <a href="/stake" className="underline hover:text-[#F14E47]">buy some</a></span>
+              : <span>{availableCredits.length} credit{availableCredits.length !== 1 ? "s" : ""} left</span>
+            }
+          </span>
+        </div>
         <div className="max-w-3xl mx-auto flex gap-3">
           <textarea
             className="flex-1 bg-[#111] border border-[#333] text-base-content font-mono text-sm px-4 py-3 focus:outline-none focus:border-primary/40 transition-colors resize-none min-h-[48px] max-h-[140px]"
