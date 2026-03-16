@@ -4,7 +4,7 @@ export const Footer = () => {
   return (
     <footer className="border-t border-[#1f1f1f] mt-20">
       <div className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between text-xs font-mono text-base-content/30">
-        <span>zkllmapi.com — private LLM access via ZK proofs</span>
+        <span>zkllmapi.com — private LLM access via ZK proofs powered by Venice.ai</span>
         <div className="flex items-center gap-6">
           <a
             href="https://github.com/clawdbotatg/zk-api-credits"

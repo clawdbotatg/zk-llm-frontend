@@ -8,19 +8,20 @@ import { useReadContract } from "wagmi";
 import externalContracts from "~~/contracts/externalContracts";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.zkllmapi.com";
-const API_CREDITS_ADDRESS = "0xc18fad39f72eBe5E54718D904C5012Da74594674";
 const CLAWD_ADDRESS = "0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07";
 
 const Home: NextPage = () => {
   const [spentCount, setSpentCount] = useState<number | null>(null);
   const [treeSize, setTreeSize] = useState<number | null>(null);
   const [clawdPriceUsd, setClawdPriceUsd] = useState<number | null>(null);
+  const [apiCreditsAddress, setApiCreditsAddress] = useState<`0x${string}` | undefined>(undefined);
 
   const { data: pricePerCredit } = useReadContract({
-    address: API_CREDITS_ADDRESS,
+    address: apiCreditsAddress,
     abi: externalContracts[8453].APICredits.abi,
     functionName: "pricePerCredit",
     chainId: 8453,
+    query: { enabled: !!apiCreditsAddress },
   });
 
   useEffect(() => {
@@ -29,6 +30,13 @@ const Home: NextPage = () => {
       .then(d => {
         setSpentCount(d.spentNullifiers ?? null);
         setTreeSize(d.treeSize ?? null);
+      })
+      .catch(() => {});
+
+    fetch(`${API_URL}/contract`)
+      .then(r => r.json())
+      .then(d => {
+        if (d?.address) setApiCreditsAddress(d.address as `0x${string}`);
       })
       .catch(() => {});
 
@@ -180,7 +188,7 @@ curl -X POST https://backend.zkllmapi.com/v1/chat \\
             GITHUB ↗
           </a>
           <a
-            href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
+            href={apiCreditsAddress ? `https://basescan.org/address/${apiCreditsAddress}` : "#"}
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[#42F38F] transition-colors"
