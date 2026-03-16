@@ -20,14 +20,17 @@ POST https://backend.zkllmapi.com/v1/chat
   "messages": [
     { "role": "user", "content": "your message here" }
   ],
-  "model": "llama-3.3-70b"
+  "model": "hermes-3-llama-3.1-405b"
 }
 \`\`\`
 
 ## Available Models
 
-- llama-3.3-70b (default)
-- zai-org-glm-5
+- hermes-3-llama-3.1-405b (default — 405B open-weight, private inference)
+- llama-3.3-70b
+- kimi-k2-thinking
+- qwen3-235b-a22b-thinking-2507
+- deepseek-v3.2
 - Any Venice-compatible model ID
 
 ## How to Get a Credit
