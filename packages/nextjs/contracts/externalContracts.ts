@@ -3,7 +3,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const externalContracts = {
   8453: {
     APICredits: {
-      address: "0xc18fad39f72eBe5E54718D904C5012Da74594674",
+      address: "0x34457d550195A4B010D2c3dF3C902F2506c2A543",
       abi: [
         {
           type: "function",
@@ -63,17 +63,17 @@ const externalContracts = {
         },
         {
           type: "function",
-          name: "PRICE_PER_CREDIT",
+          name: "pricePerCredit",
           inputs: [],
           outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
           stateMutability: "view",
         },
         {
           type: "function",
-          name: "pricePerCredit",
-          inputs: [],
-          outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-          stateMutability: "view",
+          name: "setPricePerCredit",
+          inputs: [{ name: "newPrice", type: "uint256", internalType: "uint256" }],
+          outputs: [],
+          stateMutability: "nonpayable",
         },
         { type: "error", name: "APICredits__EmptyTree", inputs: [] },
         { type: "error", name: "APICredits__InsufficientStake", inputs: [] },
@@ -139,7 +139,7 @@ const externalContracts = {
       ],
     },
     CLAWDRouter: {
-      address: "0x908b8738D13eEF2eaaA45BD7D6f4c3A13242C5AC",
+      address: "0xeeDc9BdBDC1D72198fd751e68C16875052f76ba7",
       abi: [
         {
           type: "function",
