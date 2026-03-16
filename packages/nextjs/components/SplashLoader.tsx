@@ -40,45 +40,42 @@ export function SplashLoader({ onDone }: { onDone: () => void }) {
   const readyRef = useRef(false);
   const doneRef = useRef(false);
 
-  const tryFinish = () => {
+  const finish = () => {
     if (doneRef.current) return;
-    if (readyRef.current && stepIndexRef.current >= LOADING_STEPS.length - 1) {
-      doneRef.current = true;
+    doneRef.current = true;
+    // Jump to last step so the log looks complete, then fade
+    const last = LOADING_STEPS.length - 1;
+    stepIndexRef.current = last;
+    setStepIndex(last);
+    setTimeout(() => {
       setFading(true);
       setTimeout(onDone, 700);
-    }
+    }, 300); // tiny pause on last line before fade
   };
 
-  // Poll for window.__zkReady
+  // Poll for window.__zkReady — when it fires, finish immediately
   useEffect(() => {
     const check = setInterval(() => {
       if ((window as any).__zkReady) {
-        readyRef.current = true;
         clearInterval(check);
-        tryFinish();
+        readyRef.current = true;
+        finish();
       }
     }, 50);
     return () => clearInterval(check);
   }, []);
 
-  // Advance steps every 250ms; if ready fires early, stop wherever we are and fade
+  // Advance steps every 250ms — purely cosmetic while waiting
   useEffect(() => {
     const lastStep = LOADING_STEPS.length - 1;
     const interval = setInterval(() => {
-      // If already done, stop
       if (doneRef.current) { clearInterval(interval); return; }
-
-      // If ready and we haven't shown all steps yet, still advance (but faster — skip ahead)
       const current = stepIndexRef.current;
-
       if (current < lastStep) {
-        const next = readyRef.current ? Math.min(current + 3, lastStep) : current + 1;
-        stepIndexRef.current = next;
-        setStepIndex(next);
-        if (next >= lastStep) tryFinish();
-      } else {
-        tryFinish();
+        stepIndexRef.current = current + 1;
+        setStepIndex(current + 1);
       }
+      // If we reach the last step naturally, just hold — finish() fires from __zkReady poll
     }, 250);
     return () => clearInterval(interval);
   }, [onDone]);
