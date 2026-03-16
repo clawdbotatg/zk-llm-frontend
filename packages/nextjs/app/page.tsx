@@ -64,7 +64,7 @@ const Home: NextPage = () => {
         {/* Hero */}
         <h1 className="text-6xl md:text-7xl font-mono font-bold leading-none mb-8 tracking-tight">
           Anonymous LLM<br />
-          <span className="text-primary">access. No account.</span><br />
+          access. No account.<br />
           No identity.<br />
           <span className="text-4xl md:text-5xl text-base-content/50">Hella forkable.</span>
         </h1>
