@@ -50,6 +50,8 @@ const StakePage: NextPage = () => {
   const [registeredCredit, setRegisteredCredit] = useState<StoredCredit | null>(null);
   const [savedCredits, setSavedCredits] = useState<StoredCredit[]>([]);
   const [clawdPriceUsd, setClawdPriceUsd] = useState<number | null>(null);
+  const [keysExpanded, setKeysExpanded] = useState(false);
+  const [expandedKeyIndex, setExpandedKeyIndex] = useState<number | null>(null);
   const [approveTxHash, setApproveTxHash] = useState<`0x${string}` | undefined>(undefined);
   const [approveCooldown, setApproveCooldown] = useState(false);
   const [approveConfirmed, setApproveConfirmed] = useState(false); // true after onchain confirmation
@@ -563,61 +565,124 @@ const StakePage: NextPage = () => {
               {txError}
             </div>
           )}
+
+          <p className="mt-3 text-xs font-mono text-base-content/30">
+            * Each credit = one API key. For bulk usage, export your keys and pass them to your script.
+          </p>
         </div>
       </div>
 
       {/* API Keys */}
       {availableCredits.length > 0 && (
         <div className="border border-[#222] mb-6">
-          <div className="border-b border-[#222] px-5 py-3 flex justify-between items-center">
-            <span className="text-xs font-mono text-base-content/40">YOUR API KEYS</span>
-            <span className="text-xs font-mono text-success">{availableCredits.length} AVAILABLE</span>
+          <div
+            className="border-b border-[#222] px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-[#111] transition-colors"
+            onClick={() => setKeysExpanded(!keysExpanded)}
+          >
+            <span className="text-xs font-mono text-base-content/40">
+              YOUR API KEYS — <span className="text-success">{availableCredits.length} AVAILABLE</span>
+            </span>
+            <span className="text-xs font-mono text-base-content/30">
+              {keysExpanded ? "▲ COLLAPSE" : "▼ EXPAND"}
+            </span>
           </div>
-          <div className="p-5">
-            <p className="text-xs font-mono text-base-content/40 mb-4">
-              Each key works once. Store them safely — they cannot be recovered.
-            </p>
-            <div className="space-y-3">
-              {availableCredits.map((credit, i) => (
-                <div key={i} className="border border-[#222] bg-[#111]">
-                  <div className="border-b border-[#222] px-3 py-2 flex justify-between items-center">
-                    <span className="text-xs font-mono text-base-content/30">KEY #{i + 1}</span>
-                    <button
-                      className="text-xs font-mono text-[#42F38F]/60 hover:text-primary transition-colors"
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(toApiKey(credit));
-                          notification.success("Copied!");
-                        } catch {
-                          const el = document.createElement("textarea");
-                          el.value = toApiKey(credit);
-                          document.body.appendChild(el);
-                          el.select();
-                          document.execCommand("copy");
-                          document.body.removeChild(el);
-                          notification.success("Copied!");
-                        }
-                      }}
-                    >
-                      COPY ↗
-                    </button>
-                  </div>
-                  <div className="px-3 py-2">
-                    <p className="font-mono text-xs text-base-content/40 break-all">
-                      {toApiKey(credit).slice(0, 48)}...
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          {keysExpanded && (
+            <div className="p-5">
+              <p className="text-xs font-mono text-base-content/40 mb-4">
+                Each key works once. Store them safely — they cannot be recovered.
+              </p>
 
-            {/* Usage */}
-            <details className="mt-5">
-              <summary className="text-xs font-mono text-base-content/30 cursor-pointer hover:text-base-content/60 transition-colors">
-                HOW TO USE IN A SCRIPT ↓
-              </summary>
-              <div className="mt-3 border border-[#222] bg-[#111] overflow-x-auto">
-                <pre className="p-4 text-xs font-mono text-base-content/50 leading-relaxed">{`API_KEY="zk-llm-<your-key>"
+              {/* Bulk actions */}
+              <div className="flex gap-2 mb-4">
+                <button
+                  className="flex-1 font-mono text-xs py-2 border border-[#333] text-[#42F38F]/60 hover:border-[#42F38F] hover:text-[#42F38F] transition-colors"
+                  onClick={async () => {
+                    const allKeys = availableCredits.map(c => toApiKey(c)).join("\n");
+                    try {
+                      await navigator.clipboard.writeText(allKeys);
+                      notification.success(`Copied ${availableCredits.length} keys!`);
+                    } catch {
+                      const el = document.createElement("textarea");
+                      el.value = allKeys;
+                      document.body.appendChild(el);
+                      el.select();
+                      document.execCommand("copy");
+                      document.body.removeChild(el);
+                      notification.success(`Copied ${availableCredits.length} keys!`);
+                    }
+                  }}
+                >
+                  COPY ALL KEYS
+                </button>
+                <button
+                  className="flex-1 font-mono text-xs py-2 border border-[#333] text-[#42F38F]/60 hover:border-[#42F38F] hover:text-[#42F38F] transition-colors"
+                  onClick={() => {
+                    const allKeys = availableCredits.map(c => toApiKey(c)).join("\n");
+                    const blob = new Blob([allKeys], { type: "text/plain" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `zk-llm-keys-${availableCredits.length}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    notification.success(`Exported ${availableCredits.length} keys!`);
+                  }}
+                >
+                  EXPORT KEYS ↓
+                </button>
+              </div>
+
+              {/* Individual keys — scrollable container */}
+              <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+                {availableCredits.map((credit, i) => (
+                  <div key={i} className="border border-[#222] bg-[#111]">
+                    <div className="px-3 py-2 flex justify-between items-center">
+                      <button
+                        className="text-xs font-mono text-base-content/30 hover:text-base-content/60 transition-colors"
+                        onClick={() => setExpandedKeyIndex(expandedKeyIndex === i ? null : i)}
+                      >
+                        KEY #{i + 1} {expandedKeyIndex === i ? "▲" : "▶"}
+                      </button>
+                      <button
+                        className="text-xs font-mono text-[#42F38F]/60 hover:text-primary transition-colors"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(toApiKey(credit));
+                            notification.success("Copied!");
+                          } catch {
+                            const el = document.createElement("textarea");
+                            el.value = toApiKey(credit);
+                            document.body.appendChild(el);
+                            el.select();
+                            document.execCommand("copy");
+                            document.body.removeChild(el);
+                            notification.success("Copied!");
+                          }
+                        }}
+                      >
+                        COPY ↗
+                      </button>
+                    </div>
+                    {expandedKeyIndex === i && (
+                      <div className="border-t border-[#222] px-3 py-2">
+                        <p className="font-mono text-xs text-base-content/40 break-all select-all">
+                          {toApiKey(credit)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Usage */}
+              <details className="mt-5">
+                <summary className="text-xs font-mono text-base-content/30 cursor-pointer hover:text-base-content/60 transition-colors">
+                  HOW TO USE IN A SCRIPT ↓
+                </summary>
+                <div className="mt-3 border border-[#222] bg-[#111] overflow-x-auto">
+                  <pre className="p-4 text-xs font-mono text-base-content/50 leading-relaxed">{`API_KEY="zk-llm-<your-key>"
 
 curl -X POST https://backend.zkllmapi.com/v1/chat \
   -H 'Content-Type: application/json' \
@@ -631,9 +696,10 @@ IFS='_' read -r _ N S C <<< "$API_KEY"
 curl -X POST https://backend.zkllmapi.com/chat \\
   -H 'Content-Type: application/json' \\
   -d '{"nullifier":"'$N'","secret":"'$S'","commitment":"'$C'","message":"Hello"}'`}</pre>
-              </div>
-            </details>
-          </div>
+                </div>
+              </details>
+            </div>
+          )}
         </div>
       )}
 
