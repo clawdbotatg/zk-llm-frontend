@@ -91,8 +91,8 @@ export function SplashLoader({ onDone }: { onDone: () => void }) {
         background: "#04040a",
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
-        justifyContent: "flex-end",
+        alignItems: "center",
+        justifyContent: "center",
         transition: "opacity 0.7s ease",
         opacity: fading ? 0 : 1,
         pointerEvents: fading ? "none" : "all",
@@ -124,15 +124,16 @@ export function SplashLoader({ onDone }: { onDone: () => void }) {
         }}
       />
 
-      {/* Floating log — bottom-left, very transparent */}
+      {/* Floating log — centered */}
       <div
         style={{
           position: "relative",
           zIndex: 1,
-          padding: "0 28px 28px",
+          padding: "28px",
           fontFamily: "'Courier New', Courier, monospace",
           width: "100%",
           maxWidth: "480px",
+          textAlign: "left",
         }}
       >
         {visibleSteps.map((step, i) => {
