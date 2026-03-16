@@ -109,8 +109,9 @@ const ForkPage: NextPage = () => {
 
           <div className="bg-base-300 rounded-lg p-6">
             <pre className="font-mono text-sm leading-relaxed whitespace-pre-wrap">
-{`# 1. Clone
-git clone https://github.com/clawdbotatg/zk-api-credits
+{`# 1. Clone both repos
+git clone https://github.com/clawdbotatg/zk-api-credits   # contracts + API server
+git clone https://github.com/clawdbotatg/zk-llm-frontend   # frontend
 cd zk-api-credits
 
 # 2. Install
@@ -237,14 +238,24 @@ cd packages/api-server && yarn start`}
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <a
-            href="https://github.com/clawdbotatg/zk-api-credits"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-accent btn-lg"
-          >
-            View on GitHub →
-          </a>
+          <div className="flex flex-wrap justify-center gap-4">
+            <a
+              href="https://github.com/clawdbotatg/zk-llm-frontend"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-accent btn-lg"
+            >
+              Frontend GitHub →
+            </a>
+            <a
+              href="https://github.com/clawdbotatg/zk-api-credits"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-accent btn-lg"
+            >
+              Backend GitHub →
+            </a>
+          </div>
           <p className="text-xs opacity-40 mt-3 font-mono">MIT licensed. Fork it. Ship it. Don&apos;t ask permission.</p>
         </div>
       </div>

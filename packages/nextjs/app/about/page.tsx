@@ -226,8 +226,9 @@ fn main(
             Everything is open-source. You can deploy your own instance pointing at any LLM provider.
           </p>
           <div className="bg-base-300 rounded-xl p-4 text-xs font-mono overflow-x-auto mb-4">
-            <pre>{`# Clone and deploy
-git clone https://github.com/clawdbotatg/zk-api-credits
+            <pre>{`# Clone both repos
+git clone https://github.com/clawdbotatg/zk-api-credits   # contracts + API server
+git clone https://github.com/clawdbotatg/zk-llm-frontend   # frontend
 cd zk-api-credits
 
 # Configure

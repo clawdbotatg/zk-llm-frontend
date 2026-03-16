@@ -171,12 +171,20 @@ curl -X POST https://backend.zkllmapi.com/v1/chat \\
         {/* Bottom links */}
         <div className="flex flex-wrap gap-8 text-xs font-mono text-base-content/50 bg-black/60 backdrop-blur-sm px-4 py-3 border border-[#333]">
           <a
+            href="https://github.com/clawdbotatg/zk-llm-frontend"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#42F38F] transition-colors"
+          >
+            FRONTEND GITHUB ↗
+          </a>
+          <a
             href="https://github.com/clawdbotatg/zk-api-credits"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-[#42F38F] transition-colors"
           >
-            GITHUB ↗
+            BACKEND GITHUB ↗
           </a>
           <a
             href={apiCreditsAddress ? `https://basescan.org/address/${apiCreditsAddress}` : "#"}
