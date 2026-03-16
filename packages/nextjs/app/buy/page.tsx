@@ -679,23 +679,30 @@ const StakePage: NextPage = () => {
               {/* Usage */}
               <details className="mt-5">
                 <summary className="text-xs font-mono text-base-content/30 cursor-pointer hover:text-base-content/60 transition-colors">
-                  HOW TO USE IN A SCRIPT ↓
+                  HOW TO USE ↓
                 </summary>
                 <div className="mt-3 border border-[#222] bg-[#111] overflow-x-auto">
-                  <pre className="p-4 text-xs font-mono text-base-content/50 leading-relaxed">{`API_KEY="zk-llm-<your-key>"
-
-curl -X POST https://backend.zkllmapi.com/v1/chat \
-  -H 'Content-Type: application/json' \
-  -H "Authorization: Bearer $API_KEY" \
-  -d '{"messages": [{"role": "user", "content": "Hello"}]}'
-  
-# The server decodes your key automatically.
-# Each key works once — use it when you need it.
-
-IFS='_' read -r _ N S C <<< "$API_KEY"
-curl -X POST https://backend.zkllmapi.com/chat \\
-  -H 'Content-Type: application/json' \\
-  -d '{"nullifier":"'$N'","secret":"'$S'","commitment":"'$C'","message":"Hello"}'`}</pre>
+                  <pre className="p-4 text-xs font-mono text-base-content/50 leading-relaxed">{`# Each key encodes a secret + nullifier + commitment.
+# To use a credit, your client must generate a ZK proof
+# and POST it to the API. The server never sees your identity.
+#
+# Use the /chat page for interactive use, or integrate
+# the Noir proving circuit into your own script/bot.
+#
+# API endpoint:
+#   POST https://backend.zkllmapi.com/v1/chat
+#
+# Required body fields:
+#   proof          — hex-encoded Noir proof
+#   publicInputs   — proof public inputs
+#   nullifier_hash — hex nullifier (derived from your secret)
+#   root           — Merkle root at time of proof generation
+#   depth          — Merkle tree depth
+#   messages       — [{role: "user", content: "Hello"}]
+#   model          — (optional) e.g. "hermes-3-llama-3.1-405b"
+#
+# Each nullifier can only be used once — one credit, one query.
+# See /fork for the full circuit source and integration guide.`}</pre>
                 </div>
               </details>
             </div>
