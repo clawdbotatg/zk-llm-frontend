@@ -109,14 +109,6 @@ const StakePage: NextPage = () => {
     query: { enabled: !!connectedAddress },
   });
 
-  // Read price per credit
-  const { data: pricePerCredit } = useReadContract({
-    address: API_CREDITS_ADDRESS,
-    abi: apiCreditsAbi,
-    functionName: "pricePerCredit",
-    chainId: 8453,
-  });
-
   // ETH balance
   const { data: ethBalance } = useBalance({
     address: connectedAddress,
@@ -165,6 +157,16 @@ const StakePage: NextPage = () => {
     chainId: 8453,
   });
 
+  // Router quote for N credits — primary price source (returns [clawdAmount, usdEquivalent])
+  const numCredits = Math.max(0, parseInt(numCreditsInput) || 0);
+  const { data: quoteData } = useReadContract({
+    address: CLAWD_ROUTER_ADDRESS,
+    abi: routerAbi,
+    functionName: "quoteCredits",
+    args: [BigInt(Math.max(1, numCredits))],
+    chainId: 8453,
+  });
+
   const { writeContractAsync } = useWriteContract();
 
   // Wait for approve tx confirmation
@@ -196,13 +198,18 @@ const StakePage: NextPage = () => {
     }
   }, []);
 
-  // Use oracle price (CLAWDPricing) for CLAWD amount — falls back to static contract price if oracle unavailable
-  const contractPrice = clawdPerCreditOracle ? (clawdPerCreditOracle as bigint) : pricePerCredit ? (pricePerCredit as bigint) : 2000n * 10n ** 18n;
-  const numCredits = Math.max(0, parseInt(numCreditsInput) || 0);
-  const stakeAmountBigInt = contractPrice * BigInt(numCredits);
+  // Use router quote as primary price, oracle as fallback — no hardcoded fallback
+  const contractPrice = quoteData
+    ? (quoteData as [bigint, bigint])[0] / BigInt(Math.max(1, numCredits))
+    : clawdPerCreditOracle
+    ? (clawdPerCreditOracle as bigint)
+    : 0n;
+  const stakeAmountBigInt = quoteData
+    ? (quoteData as [bigint, bigint])[0]
+    : contractPrice * BigInt(numCredits);
 
   // ETH cost estimate: numCredits * creditPriceUSD / ethUsdPrice (both 18 decimals)
-  const creditPriceUSDVal = creditPriceUSD ? (creditPriceUSD as bigint) : 100000000000000000n; // $0.10
+  const creditPriceUSDVal = creditPriceUSD ? (creditPriceUSD as bigint) : 10000000000000000n; // $0.01
   const ethUsdVal = ethUsdPrice ? (ethUsdPrice as bigint) : 1900n * 10n ** 18n;
   const ethCostExact = numCredits > 0 ? (creditPriceUSDVal * BigInt(numCredits) * 10n ** 18n) / ethUsdVal : 0n;
   const ethCostWithSlippage = ethCostExact * 115n / 100n; // +15% slippage buffer (oracle vs pool price drift)
@@ -437,7 +444,9 @@ const StakePage: NextPage = () => {
         <h1 className="text-4xl font-mono font-bold mb-3">Get API Access</h1>
         <p className="font-mono text-base-content/50 text-sm">
           One credit = one private LLM call. No account. No identity.
-          {creditPriceUSD
+          {quoteData
+            ? ` · ~$${Number(formatEther((quoteData as [bigint, bigint])[1] / BigInt(Math.max(1, numCredits)))).toFixed(4)} per credit`
+            : creditPriceUSD
             ? ` · ~$${Number(formatEther(creditPriceUSD as bigint)).toFixed(4)} per credit`
             : ""}
         </p>
