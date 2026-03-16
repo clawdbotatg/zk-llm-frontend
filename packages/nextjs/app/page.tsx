@@ -8,20 +8,18 @@ import { useReadContract } from "wagmi";
 import externalContracts from "~~/contracts/externalContracts";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.zkllmapi.com";
-const CLAWD_ADDRESS = "0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07";
 
 const Home: NextPage = () => {
   const [spentCount, setSpentCount] = useState<number | null>(null);
   const [treeSize, setTreeSize] = useState<number | null>(null);
-  const [clawdPriceUsd, setClawdPriceUsd] = useState<number | null>(null);
   const [apiCreditsAddress, setApiCreditsAddress] = useState<`0x${string}` | undefined>(undefined);
 
-  const { data: pricePerCredit } = useReadContract({
-    address: apiCreditsAddress,
-    abi: externalContracts[8453].APICredits.abi,
-    functionName: "pricePerCredit",
+  const { data: quoteData } = useReadContract({
+    address: "0x908b8738D13eEF2eaaA45BD7D6f4c3A13242C5AC",
+    abi: externalContracts[8453].CLAWDRouter.abi,
+    functionName: "quoteCredits",
+    args: [1n],
     chainId: 8453,
-    query: { enabled: !!apiCreditsAddress },
   });
 
   useEffect(() => {
@@ -40,21 +38,14 @@ const Home: NextPage = () => {
       })
       .catch(() => {});
 
-    fetch("https://api.dexscreener.com/latest/dex/tokens/" + CLAWD_ADDRESS)
-      .then(r => r.json())
-      .then(d => {
-        const price = d?.pairs?.[0]?.priceUsd;
-        if (price) setClawdPriceUsd(parseFloat(price));
-      })
-      .catch(() => {});
   }, []);
 
-  const priceInClawd = pricePerCredit
-    ? Number(formatEther(pricePerCredit as bigint))
-    : 2000;
+  const priceInClawd = quoteData
+    ? Number(formatEther((quoteData as [bigint, bigint])[0]))
+    : null;
 
-  const priceUsd = clawdPriceUsd !== null
-    ? `$${(priceInClawd * clawdPriceUsd).toFixed(4)}`
+  const priceUsd = quoteData
+    ? `$${Number(formatEther((quoteData as [bigint, bigint])[1])).toFixed(4)}`
     : null;
 
   return (
