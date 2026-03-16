@@ -28,6 +28,18 @@ const AboutPage: NextPage = () => {
             own contract, point it at any LLM provider, and run the same privacy-preserving
             access control.
           </p>
+          <p className="text-base-content/50 leading-relaxed mt-3 text-sm">
+            Inspired by{" "}
+            <a
+              href="https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[#42F38F] transition-colors"
+            >
+              ZK API Usage Credits: LLMs and Beyond
+            </a>{" "}
+            by Vitalik Buterin & Davide Crapis.
+          </p>
         </section>
 
         {/* Flow */}
@@ -241,6 +253,7 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
           <h2 className="text-2xl font-bold mb-4">Links</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
+              ["Original paper — Vitalik & Davide Crapis", "https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"],
               ["GitHub — zk-api-credits", "https://github.com/clawdbotatg/zk-api-credits"],
               ["GitHub — frontend", "https://github.com/clawdbotatg/zk-llm-frontend"],
               ["Contract on Basescan", "https://basescan.org/address/0x4A6782D251e12c06e1f16450D8b28f6C857cFdd1#code"],
