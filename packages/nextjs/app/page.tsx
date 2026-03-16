@@ -87,7 +87,7 @@ const Home: NextPage = () => {
         {/* CTAs */}
         <div className="flex flex-wrap items-center gap-4 mb-20">
           <Link
-            href="/stake"
+            href="/buy"
             className="font-mono text-sm bg-[#F14E47] text-black px-6 py-3 hover:bg-[#d43d37] transition-colors font-bold"
           >
             BUY A CREDIT →
@@ -167,7 +167,7 @@ const Home: NextPage = () => {
               <div className="w-2 h-2 rounded-full bg-[#333]"></div>
               <span className="text-xs font-mono text-base-content/30 ml-2">example.sh</span>
             </div>
-            <pre className="p-6 text-xs font-mono text-base-content/70 leading-relaxed overflow-x-auto">{`# Get your key from zkllmapi.com/stake
+            <pre className="p-6 text-xs font-mono text-base-content/70 leading-relaxed overflow-x-auto">{`# Get your key from zkllmapi.com/buy
 API_KEY="zk-llm-<your-key>"
 
 curl -X POST https://backend.zkllmapi.com/v1/chat \\

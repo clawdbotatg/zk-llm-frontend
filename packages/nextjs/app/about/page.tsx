@@ -276,7 +276,7 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
         </section>
 
         <div className="text-center mt-8">
-          <Link href="/stake" className="btn btn-primary btn-lg px-10">
+          <Link href="/buy" className="btn btn-primary btn-lg px-10">
             Get Credits →
           </Link>
         </div>

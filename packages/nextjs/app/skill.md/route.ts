@@ -35,7 +35,7 @@ POST https://backend.zkllmapi.com/v1/chat
 
 ## How to Get a Credit
 
-1. Go to https://zkllmapi.com/stake
+1. Go to https://zkllmapi.com/buy
 2. Connect a wallet on Base
 3. Approve CLAWD token spend
 4. Register a ZK commitment onchain

@@ -19,10 +19,12 @@ interface ChatMessage {
 }
 
 const MODELS = [
+  { id: "hermes-3-llama-3.1-405b", label: "Hermes 3 405B (default)" },
+  { id: "deepseek-v3.2", label: "DeepSeek V3.2" },
+  { id: "kimi-k2-thinking", label: "Kimi K2 Thinking" },
+  { id: "qwen3-coder-480b-a35b-instruct", label: "Qwen3 Coder 480B" },
   { id: "llama-3.3-70b", label: "Llama 3.3 70B" },
-  { id: "deepseek-r1-671b", label: "DeepSeek R1 671B" },
   { id: "mistral-31-24b", label: "Mistral 31 24B" },
-  { id: "llama-3.1-405b", label: "Llama 3.1 405B" },
 ];
 
 const CIRCUIT_URL =
@@ -272,7 +274,7 @@ const ChatPage: NextPage = () => {
               <p className="font-mono text-base-content/40 text-sm mb-1">Your identity is hidden behind a ZK proof.</p>
               <p className="font-mono text-base-content/20 text-xs">
                 {availableCredits.length === 0
-                  ? "→ Go to /stake to buy credits first"
+                  ? "→ Go to /buy to get credits first"
                   : `${availableCredits.length} credit${availableCredits.length !== 1 ? "s" : ""} ready. Start typing below.`}
               </p>
             </div>
@@ -327,7 +329,7 @@ const ChatPage: NextPage = () => {
         <div className="max-w-3xl mx-auto mb-2 flex items-center justify-between">
           <span className="font-mono text-xs text-base-content/30">
             {availableCredits.length === 0
-              ? <span className="text-[#F14E47]/70">no credits — <a href="/stake" className="underline hover:text-[#F14E47]">buy some</a></span>
+              ? <span className="text-[#F14E47]/70">no credits — <a href="/buy" className="underline hover:text-[#F14E47]">buy some</a></span>
               : <span>{availableCredits.length} credit{availableCredits.length !== 1 ? "s" : ""} left</span>
             }
           </span>
@@ -337,7 +339,7 @@ const ChatPage: NextPage = () => {
             className="flex-1 bg-[#111] border border-[#333] text-base-content font-mono text-sm px-4 py-3 focus:outline-none focus:border-primary/40 transition-colors resize-none min-h-[48px] max-h-[140px]"
             placeholder={
               availableCredits.length === 0
-                ? "No credits — go to /stake to buy some"
+                ? "No credits — go to /buy to get some"
                 : "Type your message... (Enter to send)"
             }
             value={message}

@@ -94,7 +94,7 @@ const StakePage: NextPage = () => {
     address: CLAWD_ADDRESS,
     abi: clawdAbi,
     functionName: "allowance",
-    args: connectedAddress ? [connectedAddress, API_CREDITS_ADDRESS] : undefined,
+    args: connectedAddress ? [connectedAddress, CLAWD_ROUTER_ADDRESS] : undefined,
     chainId: 8453,
     query: { enabled: !!connectedAddress },
   });
@@ -251,11 +251,13 @@ const StakePage: NextPage = () => {
           args: [CLAWD_ROUTER_ADDRESS, usdcCostWithSlippage],
         });
       } else {
+        // CLAWD approval targets CLAWDRouter (not APICredits directly)
+        const maxCLAWD = stakeAmountBigInt * 105n / 100n;
         hash = await writeContractAsync({
           address: CLAWD_ADDRESS,
           abi: clawdAbi,
           functionName: "approve",
-          args: [API_CREDITS_ADDRESS, stakeAmountBigInt],
+          args: [CLAWD_ROUTER_ADDRESS, maxCLAWD],
         });
       }
       setApproveTxHash(hash);
@@ -275,7 +277,7 @@ const StakePage: NextPage = () => {
     setTxError(null);
     try {
       const numCredits = Number(numCreditsInput) || 0;
-      if (numCredits === 0) { setTxError("Minimum 1000 CLAWD required."); return; }
+      if (numCredits === 0) { setTxError("Enter at least 1 credit."); return; }
 
       // Generate all commitments BEFORE the tx
       notification.success("Generating commitments...");
@@ -318,11 +320,13 @@ const StakePage: NextPage = () => {
           args: [commitments, usdcCostWithSlippage, minCLAWDOut],
         });
       } else {
+        // CLAWD payment via CLAWDRouter — +5% slippage buffer on maxCLAWD
+        const maxCLAWD = stakeAmountBigInt * 105n / 100n;
         await writeContractAsync({
-          address: API_CREDITS_ADDRESS,
-          abi: apiCreditsAbi,
-          functionName: "stakeAndRegister",
-          args: [stakeAmountBigInt, commitments],
+          address: CLAWD_ROUTER_ADDRESS,
+          abi: routerAbi,
+          functionName: "buyWithCLAWD",
+          args: [commitments, maxCLAWD],
         });
       }
 
