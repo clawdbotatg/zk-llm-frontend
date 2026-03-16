@@ -18,14 +18,7 @@ interface ChatMessage {
   content: string;
 }
 
-const MODELS = [
-  { id: "hermes-3-llama-3.1-405b", label: "Hermes 3 405B (default)" },
-  { id: "deepseek-v3.2", label: "DeepSeek V3.2" },
-  { id: "kimi-k2-thinking", label: "Kimi K2 Thinking" },
-  { id: "qwen3-coder-480b-a35b-instruct", label: "Qwen3 Coder 480B" },
-  { id: "llama-3.3-70b", label: "Llama 3.3 70B" },
-  { id: "mistral-31-24b", label: "Mistral 31 24B" },
-];
+const MODEL = "hermes-3-llama-3.1-405b";
 
 const CIRCUIT_URL =
   `${API_URL}/circuit`;
@@ -33,7 +26,6 @@ const CIRCUIT_URL =
 const ChatPage: NextPage = () => {
   const [credits, setCredits] = useState<StoredCredit[]>([]);
   const [message, setMessage] = useState("");
-  const [selectedModel, setSelectedModel] = useState(MODELS[0].id);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [proofStatus, setProofStatus] = useState("");
@@ -190,7 +182,7 @@ const ChatPage: NextPage = () => {
           nullifier_hash: nullifierHashHex,
           root: rootHex,
           depth: merkleData.depth,
-          model: selectedModel,
+          model: MODEL,
           messages: [{ role: "user", content: userMessage }],
         }),
       });
@@ -238,17 +230,7 @@ const ChatPage: NextPage = () => {
         <div className="flex items-center gap-4">
           <span className="text-sm font-mono font-bold">ZK CHAT</span>
           <span className="text-xs font-mono text-base-content/30">·</span>
-          <select
-            className="bg-transparent text-xs font-mono text-base-content/50 border-none outline-none cursor-pointer hover:text-base-content transition-colors"
-            value={selectedModel}
-            onChange={e => setSelectedModel(e.target.value)}
-          >
-            {MODELS.map(m => (
-              <option key={m.id} value={m.id} className="bg-[#111]">
-                {m.label}
-              </option>
-            ))}
-          </select>
+          <span className="text-xs font-mono text-base-content/50">HERMES-3-405B</span>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-xs font-mono text-base-content/30">
@@ -286,7 +268,7 @@ const ChatPage: NextPage = () => {
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div className={`max-w-[80%] ${msg.role === "user" ? "" : ""}`}>
                 <p className={`text-xs font-mono mb-2 ${msg.role === "user" ? "text-right text-base-content/30" : "text-[#42F38F]/60"}`}>
-                  {msg.role === "user" ? "YOU" : selectedModel.toUpperCase()}
+                  {msg.role === "user" ? "YOU" : "HERMES-3-405B"}
                 </p>
                 <div
                   className={`font-mono text-sm leading-relaxed whitespace-pre-wrap px-4 py-3 border ${
