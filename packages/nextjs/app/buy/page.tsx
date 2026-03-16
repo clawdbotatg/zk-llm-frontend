@@ -540,7 +540,7 @@ const StakePage: NextPage = () => {
             </button>
           ) : needsApproval ? (
             <button
-              className="w-full font-mono text-sm bg-[#0a0a1a] border border-[#F14E47] text-[#42F38F] px-6 py-3 hover:bg-[#F14E47]/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-3 hover:bg-[#d43d37] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={approveLoading || stakeAmountBigInt === 0n}
               onClick={handleApprove}
             >
@@ -707,6 +707,18 @@ const StakePage: NextPage = () => {
               </details>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Go Chat CTA */}
+      {availableCredits.length > 0 && (
+        <div className="mb-6">
+          <a
+            href="/chat"
+            className="block w-full text-center font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-4 hover:bg-[#d43d37] transition-colors tracking-wider"
+          >
+            GO CHAT →
+          </a>
         </div>
       )}
 
