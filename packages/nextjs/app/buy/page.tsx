@@ -355,8 +355,8 @@ const StakePage: NextPage = () => {
       setLastPurchaseCount(numCredits);
       setPurchaseFlash(true);
       setCreditsFlash(true);
-      setTimeout(() => setPurchaseFlash(false), 3000);
-      setTimeout(() => setCreditsFlash(false), 3500);
+      setTimeout(() => setPurchaseFlash(false), 6000);
+      setTimeout(() => setCreditsFlash(false), 6500);
       setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); refetchUsdcBalance(); refetchUsdcAllowance(); }, 3000);
     } catch (e: any) {
       console.error(e);
@@ -453,13 +453,13 @@ const StakePage: NextPage = () => {
           <style>{`
             @keyframes creditFlash {
               0%   { opacity: 0; transform: scale(0.6); }
-              15%  { opacity: 1; transform: scale(1.1); }
-              30%  { transform: scale(1.0); }
-              70%  { opacity: 1; transform: scale(1.0); }
+              8%   { opacity: 1; transform: scale(1.1); }
+              15%  { transform: scale(1.0); }
+              80%  { opacity: 1; transform: scale(1.0); }
               100% { opacity: 0; transform: scale(1.05); }
             }
           `}</style>
-          <div style={{ animation: "creditFlash 3s ease-in-out forwards" }} className="text-center">
+          <div style={{ animation: "creditFlash 6s ease-in-out forwards" }} className="text-center">
             <div className="font-mono font-bold text-[#42F38F] drop-shadow-[0_0_40px_rgba(66,243,143,0.8)]" style={{ fontSize: "clamp(5rem, 15vw, 9rem)", lineHeight: 1 }}>
               +{lastPurchaseCount}
             </div>
