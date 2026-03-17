@@ -20,8 +20,43 @@ interface ChatMessage {
 
 const MODEL = "hermes-3-llama-3.1-405b";
 
-const CIRCUIT_URL =
-  `${API_URL}/circuit`;
+const CIRCUIT_URL = `${API_URL}/circuit`;
+const PROOF_DEPTH = 16;
+
+interface TreeData {
+  leaves: string[];
+  levels: string[][];
+  root: string;
+  depth: number;
+  zeros: string[];
+}
+
+/**
+ * Compute the Merkle sibling path for a commitment from full tree data.
+ * Called client-side so the server never learns which commitment is being used.
+ */
+function computeMerklePath(treeData: TreeData, commitment: string) {
+  const leafIndex = treeData.leaves.findIndex(l => l === commitment);
+  if (leafIndex === -1) return null;
+
+  const { levels, depth, zeros, root } = treeData;
+  const siblings: string[] = [];
+  const indices: number[] = [];
+  let currentIndex = leafIndex;
+
+  for (let i = 0; i < PROOF_DEPTH; i++) {
+    if (i < depth) {
+      const siblingIndex = currentIndex ^ 1;
+      siblings.push(levels[i][siblingIndex]);
+    } else {
+      siblings.push(zeros[i]);
+    }
+    indices.push((leafIndex >> i) & 1);
+    currentIndex = currentIndex >> 1;
+  }
+
+  return { leafIndex, siblings, indices, root, depth };
+}
 
 const ChatPage: NextPage = () => {
   const [credits, setCredits] = useState<StoredCredit[]>([]);
@@ -85,10 +120,16 @@ const ChatPage: NextPage = () => {
     let creditToUse: typeof availableCredits[0] | null = null;
     const staleCredits: string[] = [];
 
+    // Fetch the full tree once — client computes paths locally so the server
+    // never learns which commitment is about to be used (privacy fix).
+    const treeRes = await fetch(`${API_URL}/tree`);
+    if (!treeRes.ok) throw new Error("Failed to fetch tree data");
+    const treeData: TreeData = await treeRes.json();
+    const treeLeafSet = new Set(treeData.leaves);
+
     for (const credit of availableCredits) {
-      // Check commitment exists onchain
-      const pathCheck = await fetch(`${API_URL}/merkle-path/${credit.commitment}`);
-      if (!pathCheck.ok) { staleCredits.push(credit.commitment); continue; }
+      // Check commitment exists in tree (local lookup — no server request per commitment)
+      if (!treeLeafSet.has(credit.commitment)) { staleCredits.push(credit.commitment); continue; }
 
       // Check nullifier not spent
       const nullifierHash = frToBI(await bbCheck.poseidon2Hash([new Fr2(BigInt(credit.nullifier))]));
@@ -143,11 +184,9 @@ const ChatPage: NextPage = () => {
       const nullifierBig = BigInt(creditToUse.nullifier);
       const nullifierHash = frToBigInt(await bb.poseidon2Hash([new Fr(nullifierBig)]));
 
-      // Fetch merkle path from the API (already verified ok above)
-      const pathRes = await fetch(`${API_URL}/merkle-path/${creditToUse.commitment}`);
-      if (!pathRes.ok) throw new Error("Failed to fetch merkle path");
-      const merkleData = await pathRes.json();
-      if (merkleData.error) throw new Error("Merkle path error: " + merkleData.error);
+      // Compute merkle path locally from treeData (already fetched above — no per-commitment request)
+      const merkleData = computeMerklePath(treeData, creditToUse.commitment);
+      if (!merkleData) throw new Error("Commitment not found in tree");
 
       setProofStatus("Generating ZK proof (takes 10-30s)...");
 
