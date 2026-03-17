@@ -55,6 +55,9 @@ const StakePage: NextPage = () => {
   const [approveTxHash, setApproveTxHash] = useState<`0x${string}` | undefined>(undefined);
   const [approveCooldown, setApproveCooldown] = useState(false);
   const [approveConfirmed, setApproveConfirmed] = useState(false); // true after onchain confirmation
+  const [purchaseFlash, setPurchaseFlash] = useState(false);
+  const [lastPurchaseCount, setLastPurchaseCount] = useState(0);
+  const [creditsFlash, setCreditsFlash] = useState(false);
 
   const wrongNetwork = chain?.id !== 8453;
 
@@ -348,6 +351,12 @@ const StakePage: NextPage = () => {
 
       notification.success(`✅ ${numCredits} credit${numCredits > 1 ? "s" : ""} ready to use!`);
       setNumCreditsInput("1");
+      // Trigger purchase success animations
+      setLastPurchaseCount(numCredits);
+      setPurchaseFlash(true);
+      setCreditsFlash(true);
+      setTimeout(() => setPurchaseFlash(false), 3000);
+      setTimeout(() => setCreditsFlash(false), 3500);
       setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); refetchUsdcBalance(); refetchUsdcAllowance(); }, 3000);
     } catch (e: any) {
       console.error(e);
@@ -437,6 +446,30 @@ const StakePage: NextPage = () => {
     return (
     <div className="relative min-h-[calc(100vh-56px)]" style={{backgroundImage: "url(/hero-stake.jpg)", backgroundSize: "cover", backgroundPosition: "center"}}>
       <div className="absolute inset-0 bg-black/80" />
+
+      {/* Purchase success flash overlay */}
+      {purchaseFlash && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+          <style>{`
+            @keyframes creditFlash {
+              0%   { opacity: 0; transform: scale(0.6); }
+              15%  { opacity: 1; transform: scale(1.1); }
+              30%  { transform: scale(1.0); }
+              70%  { opacity: 1; transform: scale(1.0); }
+              100% { opacity: 0; transform: scale(1.05); }
+            }
+          `}</style>
+          <div style={{ animation: "creditFlash 3s ease-in-out forwards" }} className="text-center">
+            <div className="font-mono font-bold text-[#42F38F] drop-shadow-[0_0_40px_rgba(66,243,143,0.8)]" style={{ fontSize: "clamp(5rem, 15vw, 9rem)", lineHeight: 1 }}>
+              +{lastPurchaseCount}
+            </div>
+            <div className="font-mono text-xl tracking-[0.3em] text-[#42F38F]/80 mt-3">
+              CREDIT{lastPurchaseCount !== 1 ? "S" : ""} ADDED
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="relative z-10">
     <div className="max-w-2xl mx-auto px-6 pt-8 pb-16">
 
@@ -580,7 +613,18 @@ const StakePage: NextPage = () => {
             onClick={() => setKeysExpanded(!keysExpanded)}
           >
             <span className="text-xs font-mono text-base-content/40">
-              YOUR API KEYS — <span className="text-success">{availableCredits.length} AVAILABLE</span>
+              YOUR API KEYS —{" "}
+              <span
+                className="text-success transition-all duration-300"
+                style={creditsFlash ? {
+                  fontSize: "1.2rem",
+                  color: "#42F38F",
+                  textShadow: "0 0 16px rgba(66,243,143,0.9)",
+                  fontWeight: "bold",
+                } : {}}
+              >
+                {availableCredits.length} AVAILABLE
+              </span>
             </span>
             <span className="text-xs font-mono text-base-content/30">
               {keysExpanded ? "▲ COLLAPSE" : "▼ EXPAND"}
