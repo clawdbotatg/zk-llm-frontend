@@ -51,59 +51,46 @@ const AboutPage: NextPage = () => {
 
           <div className="bg-base-100 rounded-xl p-5 shadow mb-4">
             <p className="font-bold text-sm mb-3">What we built:</p>
-            <ul className="space-y-2 text-base-content/60 text-sm">
-              <li>✅ Simple single-use nullifiers — 1 credit = 1 API call, burn and done</li>
-              <li>✅ ZK Merkle membership proof — proves &ldquo;I know a commitment in the tree&rdquo;</li>
-              <li>✅ Working end-to-end flow — stake, register, prove, chat — all live on Base</li>
-              <li>✅ Single provider integration (Venice AI) with E2EE support</li>
+            <ul className="space-y-3 text-sm">
+              {[
+                "Simple single-use nullifiers — 1 credit = 1 API call, burn and done",
+                "ZK Merkle membership proof — proves \"I know a commitment in the tree\"",
+                "Fixed cost per credit — stake once, each credit is one call",
+                "Single provider integration (Venice AI) with E2EE support",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded border-2 border-success bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3 h-3 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="text-base-content/60">{item}</span>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div className="bg-base-100 rounded-xl p-5 shadow mb-4">
             <p className="font-bold text-sm mb-3">What the paper proposes that we haven&apos;t built:</p>
-            <ul className="space-y-2 text-base-content/60 text-sm">
-              <li>
-                <strong>Rate-Limit Nullifiers (RLN)</strong> — users make many anonymous calls
-                per single deposit. Double-spending a ticket index mathematically reveals your
-                secret key, enabling slashing. We use simple one-time nullifiers instead.
-              </li>
-              <li>
-                <strong>Variable cost &amp; refund tickets</strong> — user sets a max cost per
-                call; server issues signed refund tickets for unused capacity. We use fixed
-                1-credit-per-call pricing with no refunds.
-              </li>
-              <li>
-                <strong>ZK solvency proof</strong> — the circuit should prove{" "}
-                <code className="text-xs bg-base-200 px-1 rounded">
-                  (ticket_index + 1) × C_max ≤ deposit + Σ(refunds)
-                </code>
-                , verifying server signatures on refund tickets as private inputs. Our circuit
-                only proves Merkle membership.
-              </li>
-              <li>
-                <strong>RLN slashing</strong> — mathematical double-spend detection that reveals
-                the cheater&apos;s secret key so anyone can slash their deposit. We just check a
-                database.
-              </li>
-              <li>
-                <strong>Dual staking (Policy Stake)</strong> — a separate stake the server can
-                burn but not claim, preventing servers from profiting off false bans. Not
-                implemented.
-              </li>
-              <li>
-                <strong>Homomorphic refund accumulation</strong> — Pedersen Commitments let the
-                server update your balance without learning the total. Constant-size client state.
-                Not implemented.
-              </li>
-              <li>
-                <strong>Parallelizable requests</strong> — generate tickets i, i+1, i+2
-                simultaneously. We process one credit at a time.
-              </li>
-              <li>
-                <strong>Generalized API support</strong> — the paper applies to any fixed-cost
-                API: RPC nodes, image generation, cloud compute, VPNs. We only support LLM
-                inference via Venice.
-              </li>
+            <ul className="space-y-3 text-sm">
+              {[
+                ["Rate-Limit Nullifiers (RLN)", "Users make many anonymous calls per single deposit. Double-spending a ticket index mathematically reveals your secret key, enabling slashing. We use simple one-time nullifiers instead."],
+                ["Variable cost & refund tickets", "User sets a max cost per call; server issues signed refund tickets for unused capacity. We use fixed 1-credit-per-call pricing with no refunds."],
+                ["ZK solvency proof", "The circuit should prove (ticket_index + 1) × C_max ≤ deposit + Σ(refunds), verifying server signatures on refund tickets as private inputs. Our circuit only proves Merkle membership."],
+                ["RLN slashing", "Mathematical double-spend detection that reveals the cheater's secret key so anyone can slash their deposit. We just check a database."],
+                ["Dual staking (Policy Stake)", "A separate stake the server can burn but not claim, preventing servers from profiting off false bans. Not implemented."],
+                ["Homomorphic refund accumulation", "Pedersen Commitments let the server update your balance without learning the total. Constant-size client state. Not implemented."],
+                ["Parallelizable requests", "Generate tickets i, i+1, i+2 simultaneously. We process one credit at a time."],
+                ["Generalized API support", "The paper applies to any fixed-cost API: RPC nodes, image generation, cloud compute, VPNs. We only support LLM inference via Venice."],
+              ].map(([title, desc]) => (
+                <li key={title} className="flex items-start gap-3">
+                  <div className="w-5 h-5 rounded border-2 border-base-content/20 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-base-content/80">{title}</strong>
+                    <span className="text-base-content/50"> — {desc}</span>
+                  </div>
+                </li>
+              ))}
             </ul>
           </div>
 
