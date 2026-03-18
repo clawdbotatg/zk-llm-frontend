@@ -290,7 +290,7 @@ export const ProofGenerator = ({
             </p>
           </div>
           <button
-            className={`btn btn-sm ${hasProof ? "btn-success" : "btn-primary"} ${isGenerating ? "loading" : ""}`}
+            className={`cursor-pointer btn btn-sm ${hasProof ? "btn-success" : "btn-primary"} ${isGenerating ? "loading" : ""}`}
             onClick={handleGenerateProof}
             disabled={availableCredits.length === 0 || isGenerating || hasProof}
           >

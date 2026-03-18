@@ -67,7 +67,7 @@ The nullifier is burned on use — each credit is single-use.
 
 ## Privacy Model
 
-- Your wallet is only used to stake + register (one-time, onchain)
+- Your wallet is only used to buy credits + register (one-time, onchain)
 - Every chat request is unlinkable — no wallet, no session, no IP logging at the app layer
 - Proof generation happens in your browser — secrets never sent to the server
 - The server only sees: a valid proof, a nullifier, and your message

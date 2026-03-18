@@ -11,7 +11,7 @@ const AboutPage: NextPage = () => {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-3">How ZK LLM API Works</h1>
           <p className="text-base-content/60">
-            Full technical breakdown — from token stake to ZK proof to LLM response.
+            Full technical breakdown — from credit purchase to ZK proof to LLM response.
           </p>
         </div>
 
@@ -55,7 +55,7 @@ const AboutPage: NextPage = () => {
               {[
                 "Simple single-use nullifiers — 1 credit = 1 API call, burn and done",
                 "ZK Merkle membership proof — proves \"I know a commitment in the tree\"",
-                "Fixed cost per credit — stake once, each credit is one call",
+                "Fixed cost per credit — buy once, each credit is one call",
                 "Single provider integration (Venice AI) with E2EE support",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
@@ -220,8 +220,8 @@ const AboutPage: NextPage = () => {
               },
               {
                 step: "3",
-                title: "stakeAndRegister() — one transaction",
-                body: "You approve CLAWD, then call stakeAndRegister(amount, commitments[]) on the APICredits contract. This stakes N×1000 CLAWD and inserts your commitments into an onchain incremental Merkle tree. One transaction, N credits."
+                title: "Buy Credits — one transaction (calls stakeAndRegister())",
+                body: "You approve CLAWD, then the router purchases N credits by calling stakeAndRegister(amount, commitments[]) on the APICredits contract. This locks N×1000 CLAWD and inserts your commitments into an onchain incremental Merkle tree. One transaction, N credits."
               },
               {
                 step: "4",
@@ -370,7 +370,7 @@ fn main(
               ["✅ Server cannot link two API calls", "Each credit has a unique nullifier. There's no correlation between calls unless you reuse a credential."],
               ["✅ Server cannot identify which leaf you used", "The ZK proof proves membership in the set without revealing the index or commitment."],
               ["⚠️ Proof generation happens in your browser", "The API server handles LLM routing. When using Venice TEE/E2EE models, your prompt is encrypted end-to-end — even Venice and the GPU operator can't see it. For non-E2EE models, the server sees your plaintext message; for full privacy with those, self-host the server."],
-              ["⚠️ Credits are stored in localStorage", "If you clear your browser, unspent credits are gone (CLAWD stays staked onchain, but the credentials are lost). Back them up — or better yet, script the purchase and let your bot manage credits automatically via the skill.md API."],
+              ["⚠️ Credits are stored in localStorage", "If you clear your browser, unspent credits are gone (CLAWD is locked onchain, but the credentials are lost). Back them up — or better yet, script the purchase and let your bot manage credits automatically via the skill.md API."],
             ].map(([title, body]) => (
               <div key={title as string} className="bg-base-100 rounded-xl p-4 shadow">
                 <p className="font-bold text-sm mb-1">{title}</p>

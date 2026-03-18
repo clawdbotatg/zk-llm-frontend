@@ -27,7 +27,7 @@ export const StakeInfo = ({ stakedBalance, treeData, oracleData, pricePerCredit,
       {/* Main stats */}
       <div className="stats stats-vertical lg:stats-horizontal shadow w-full bg-base-100">
         <div className="stat">
-          <div className="stat-title">Staked Balance</div>
+          <div className="stat-title">Credit Balance</div>
           <div className="stat-value text-primary text-lg">
             {isConnected ? `${balance.toLocaleString(undefined, { maximumFractionDigits: 0 })} CLAWD` : "—"}
           </div>

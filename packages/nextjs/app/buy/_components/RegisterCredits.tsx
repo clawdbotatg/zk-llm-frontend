@@ -206,16 +206,16 @@ export const RegisterCredits = ({
         {/* Payment method toggle */}
         <div className="flex gap-2 mt-2">
           <button
-            className={`btn btn-sm ${paymentMethod === "clawd" ? "btn-primary" : "btn-outline"}`}
+            className={`cursor-pointer btn btn-sm ${paymentMethod === "clawd" ? "btn-primary" : "btn-outline"}`}
             onClick={() => setPaymentMethod("clawd")}
           >
             💰 Pay with CLAWD
           </button>
           <button
-            className={`btn btn-sm ${paymentMethod === "stake" ? "btn-primary" : "btn-outline"}`}
+            className={`cursor-pointer btn btn-sm ${paymentMethod === "stake" ? "btn-primary" : "btn-outline"}`}
             onClick={() => setPaymentMethod("stake")}
           >
-            📥 Use Staked Balance
+            📥 Use Existing Balance
           </button>
         </div>
 
@@ -234,7 +234,7 @@ export const RegisterCredits = ({
             />
           </div>
           <button
-            className={`btn btn-primary ${isGenerating || isPending ? "loading" : ""}`}
+            className={`cursor-pointer btn btn-primary ${isGenerating || isPending ? "loading" : ""}`}
             onClick={handleRegister}
             disabled={!canRegister || isGenerating || isPending || (paymentMethod === "stake" && !hasEnoughStake)}
           >
@@ -247,7 +247,7 @@ export const RegisterCredits = ({
                   : !canRegister
                     ? "Loading Price..."
                     : paymentMethod === "stake" && !hasEnoughStake
-                      ? "Insufficient Stake"
+                      ? "Insufficient Balance"
                       : `Buy ${count} Credit${count > 1 ? "s" : ""}`}
           </button>
         </div>

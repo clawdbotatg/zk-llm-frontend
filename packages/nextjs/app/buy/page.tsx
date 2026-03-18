@@ -22,7 +22,7 @@ const usdcAbi = externalContracts[8453].USDC.abi;
 /** Map contract revert reasons to friendly messages */
 const parseContractError = (e: any): string => {
   const msg = e?.shortMessage || e?.message || "";
-  if (msg.includes("InsufficientStake") || msg.includes("insufficient")) return "Not enough CLAWD staked. Stake at least 1000 CLAWD first.";
+  if (msg.includes("InsufficientStake") || msg.includes("insufficient")) return "Not enough CLAWD. You need at least 1000 CLAWD per credit.";
   if (msg.includes("CommitmentAlreadyRegistered")) return "This commitment is already registered.";
   if (msg.includes("AlreadyUsed") || msg.includes("nullifier")) return "This credit has already been spent.";
   if (msg.includes("rejected") || msg.includes("denied")) return "Transaction rejected.";
@@ -187,7 +187,7 @@ const StakePage: NextPage = () => {
       setApproveConfirmed(true); // override needsApproval immediately
       setApproveCooldown(false);
       refetchAllowance();
-      notification.success("Approved! You can now stake.");
+      notification.success("Approved! You can now buy credits.");
     }
   }, [isApproveConfirmed, approveTxHash, refetchAllowance]);
 
@@ -510,7 +510,7 @@ const StakePage: NextPage = () => {
           <div className="mb-4">
             <label className="text-xs font-mono text-base-content/40 block mb-2">HOW MANY CREDITS?</label>
             <div className="flex items-center gap-3">
-              <button className="font-mono text-xl px-4 py-3 border border-[#333] bg-[#111] hover:border-[#F14E47] transition-colors w-12 text-center"
+              <button className="cursor-pointer font-mono text-xl px-4 py-3 border border-[#333] bg-[#111] hover:border-[#F14E47] transition-colors w-12 text-center"
                 onClick={() => { setNumCreditsInput(n => String(Math.max(1, (parseInt(n)||1)-1))); setTxError(null); }}>−</button>
               <input
                 type="number"
@@ -519,7 +519,7 @@ const StakePage: NextPage = () => {
                 value={numCreditsInput}
                 onChange={e => { setNumCreditsInput(e.target.value); setTxError(null); }}
               />
-              <button className="font-mono text-xl px-4 py-3 border border-[#333] bg-[#111] hover:border-[#F14E47] transition-colors w-12 text-center"
+              <button className="cursor-pointer font-mono text-xl px-4 py-3 border border-[#333] bg-[#111] hover:border-[#F14E47] transition-colors w-12 text-center"
                 onClick={() => { setNumCreditsInput(n => String((parseInt(n)||0)+1)); setTxError(null); }}>+</button>
             </div>
           </div>
@@ -553,7 +553,7 @@ const StakePage: NextPage = () => {
             {(['clawd', 'usdc', 'eth'] as const).map(m => (
               <button
                 key={m}
-                className={`flex-1 font-mono text-xs py-2 border transition-colors ${paymentMethod === m ? 'border-[#F14E47] text-[#F14E47] bg-[#F14E47]/10' : 'border-[#333] text-base-content/40 hover:border-[#555]'}`}
+                className={`cursor-pointer flex-1 font-mono text-xs py-2 border transition-colors ${paymentMethod === m ? 'border-[#F14E47] text-[#F14E47] bg-[#F14E47]/10' : 'border-[#333] text-base-content/40 hover:border-[#555]'}`}
                 onClick={() => { setPaymentMethod(m); setApproveConfirmed(false); setTxError(null); }}
               >
                 {m.toUpperCase()}
@@ -566,14 +566,14 @@ const StakePage: NextPage = () => {
             <RainbowKitCustomConnectButton />
           ) : wrongNetwork ? (
             <button
-              className="w-full font-mono text-sm border border-yellow-500/50 text-yellow-400 px-6 py-3 hover:bg-yellow-500/10 transition-colors"
+              className="cursor-pointer w-full font-mono text-sm border border-yellow-500/50 text-yellow-400 px-6 py-3 hover:bg-yellow-500/10 transition-colors"
               onClick={() => switchChain({ chainId: 8453 })}
             >
               SWITCH TO BASE →
             </button>
           ) : needsApproval ? (
             <button
-              className="w-full font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-3 hover:bg-[#d43d37] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="cursor-pointer w-full font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-3 hover:bg-[#d43d37] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={approveLoading || stakeAmountBigInt === 0n}
               onClick={handleApprove}
             >
@@ -582,7 +582,7 @@ const StakePage: NextPage = () => {
             </button>
           ) : (
             <button
-              className="w-full font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-3 hover:bg-[#d43d37] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="cursor-pointer w-full font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-3 hover:bg-[#d43d37] transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={isStaking || stakeAmountBigInt === 0n || numCredits === 0}
               onClick={handleStake}
             >
@@ -639,7 +639,7 @@ const StakePage: NextPage = () => {
               {/* Bulk actions */}
               <div className="flex gap-2 mb-4">
                 <button
-                  className="flex-1 font-mono text-xs py-2 border border-[#333] text-[#42F38F]/60 hover:border-[#42F38F] hover:text-[#42F38F] transition-colors"
+                  className="cursor-pointer flex-1 font-mono text-xs py-2 border border-[#333] text-[#42F38F]/60 hover:border-[#42F38F] hover:text-[#42F38F] transition-colors"
                   onClick={async () => {
                     const allKeys = availableCredits.map(c => toApiKey(c)).join("\n");
                     try {
@@ -659,7 +659,7 @@ const StakePage: NextPage = () => {
                   COPY ALL KEYS
                 </button>
                 <button
-                  className="flex-1 font-mono text-xs py-2 border border-[#333] text-[#42F38F]/60 hover:border-[#42F38F] hover:text-[#42F38F] transition-colors"
+                  className="cursor-pointer flex-1 font-mono text-xs py-2 border border-[#333] text-[#42F38F]/60 hover:border-[#42F38F] hover:text-[#42F38F] transition-colors"
                   onClick={() => {
                     const allKeys = availableCredits.map(c => toApiKey(c)).join("\n");
                     const blob = new Blob([allKeys], { type: "text/plain" });
@@ -684,13 +684,13 @@ const StakePage: NextPage = () => {
                   <div key={i} className="border border-[#222] bg-[#111]">
                     <div className="px-3 py-2 flex justify-between items-center">
                       <button
-                        className="text-xs font-mono text-base-content/30 hover:text-base-content/60 transition-colors"
+                        className="cursor-pointer text-xs font-mono text-base-content/30 hover:text-base-content/60 transition-colors"
                         onClick={() => setExpandedKeyIndex(expandedKeyIndex === i ? null : i)}
                       >
                         KEY #{i + 1} {expandedKeyIndex === i ? "▲" : "▶"}
                       </button>
                       <button
-                        className="text-xs font-mono text-[#42F38F]/60 hover:text-primary transition-colors"
+                        className="cursor-pointer text-xs font-mono text-[#42F38F]/60 hover:text-primary transition-colors"
                         onClick={async () => {
                           try {
                             await navigator.clipboard.writeText(toApiKey(credit));
@@ -759,7 +759,7 @@ const StakePage: NextPage = () => {
         <div className="mb-6">
           <a
             href="/chat"
-            className="block w-full text-center font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-4 hover:bg-[#d43d37] transition-colors tracking-wider"
+            className="cursor-pointer block w-full text-center font-mono text-sm bg-[#F14E47] text-black font-bold px-6 py-4 hover:bg-[#d43d37] transition-colors tracking-wider"
           >
             GO CHAT →
           </a>
@@ -788,7 +788,7 @@ const StakePage: NextPage = () => {
           href={`https://basescan.org/address/${API_CREDITS_ADDRESS}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-[#42F38F]/60 transition-colors"
+          className="cursor-pointer hover:text-[#42F38F]/60 transition-colors"
         >
           VIEW CONTRACT ON BASESCAN ↗
         </a>

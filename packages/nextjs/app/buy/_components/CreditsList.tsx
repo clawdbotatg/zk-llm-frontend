@@ -41,7 +41,7 @@ export const CreditsList = () => {
         <div className="flex justify-between items-center">
           <h2 className="card-title">📋 Your Credits ({credits.length})</h2>
           <button
-            className="btn btn-sm btn-ghost"
+            className="cursor-pointer btn btn-sm btn-ghost"
             onClick={() => setShowSecrets(!showSecrets)}
           >
             {showSecrets ? "🙈 Hide" : "👁️ Show"} Secrets
@@ -92,7 +92,7 @@ export const CreditsList = () => {
         </div>
 
         <button
-          className="btn btn-sm btn-outline mt-2"
+          className="cursor-pointer btn btn-sm btn-outline mt-2"
           onClick={() => {
             const blob = new Blob([JSON.stringify(credits, null, 2)], { type: "application/json" });
             const url = URL.createObjectURL(blob);

@@ -100,7 +100,7 @@ const ChatPage: NextPage = () => {
   const handleSend = async () => {
     if (!message.trim()) return;
     if (availableCredits.length === 0) {
-      setError("No available credits. Go to the Stake page to register more.");
+      setError("No available credits. Go to the Buy page to purchase more.");
       return;
     }
 
@@ -151,7 +151,7 @@ const ChatPage: NextPage = () => {
     }
 
     if (!creditToUse) {
-      setError("No valid unspent credits found. Please register a new one on the Stake page.");
+      setError("No valid unspent credits found. Please buy a new one on the Buy page.");
       setIsSending(false);
       return;
     }
@@ -235,7 +235,7 @@ const ChatPage: NextPage = () => {
           );
           setCredits(updatedCredits);
           localStorage.setItem("zk-credits", JSON.stringify(updatedCredits));
-          throw new Error("This credit was already used. Please register a new one on the Stake page.");
+          throw new Error("This credit was already used. Please buy a new one on the Buy page.");
         }
         throw new Error(`API error (${apiRes.status}): ${errText}`);
       }
@@ -277,7 +277,7 @@ const ChatPage: NextPage = () => {
           </span>
           {messages.length > 0 && (
             <button
-              className="text-xs font-mono text-base-content/20 hover:text-error transition-colors"
+              className="cursor-pointer text-xs font-mono text-base-content/20 hover:text-error transition-colors"
               onClick={clearChat}
             >
               CLEAR
@@ -339,7 +339,7 @@ const ChatPage: NextPage = () => {
       {error && (
         <div className="border-t border-error/20 bg-error/5 px-6 py-3 flex items-center justify-between flex-shrink-0">
           <span className="text-xs font-mono text-error">{error}</span>
-          <button className="text-xs font-mono text-base-content/30 hover:text-base-content transition-colors" onClick={() => setError(null)}>
+          <button className="cursor-pointer text-xs font-mono text-base-content/30 hover:text-base-content transition-colors" onClick={() => setError(null)}>
             DISMISS
           </button>
         </div>
@@ -378,7 +378,7 @@ const ChatPage: NextPage = () => {
             rows={1}
           />
           <button
-            className="font-mono text-sm bg-primary text-black font-bold px-5 py-3 hover:bg-primary/80 transition-colors disabled:opacity-30 disabled:cursor-not-allowed self-end flex items-center gap-2"
+            className="cursor-pointer font-mono text-sm bg-primary text-black font-bold px-5 py-3 hover:bg-primary/80 transition-colors disabled:opacity-30 disabled:cursor-not-allowed self-end flex items-center gap-2"
             disabled={isSending || !message.trim() || availableCredits.length === 0}
             onClick={handleSend}
           >
