@@ -42,6 +42,88 @@ const AboutPage: NextPage = () => {
           </p>
         </section>
 
+        {/* Privacy Stack */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold mb-4">🔐 The Privacy Stack</h2>
+          <p className="text-base-content/70 leading-relaxed mb-4">
+            ZK LLM API now combines <strong>two independent, orthogonal privacy layers</strong> — our
+            zero-knowledge proofs plus Venice&apos;s new{" "}
+            <a
+              href="https://venice.ai/blog/venice-launches-end-to-end-encrypted-ai"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[#42F38F] transition-colors"
+            >
+              end-to-end encrypted AI inference
+            </a>
+            . Together they form a killer combination: <strong>nobody knows both WHO you are AND WHAT
+            you&apos;re asking</strong>.
+          </p>
+
+          <div className="space-y-3 mb-4">
+            <div className="bg-base-100 rounded-xl p-5 shadow">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">🛡️</span>
+                <div>
+                  <h3 className="font-bold mb-1">Layer 1: ZK Proofs — Hides <em>WHO</em></h3>
+                  <p className="text-base-content/60 text-sm leading-relaxed">
+                    Our zero-knowledge proof breaks the link between your wallet and your API call.
+                    The server verifies a proof of valid credit — it never learns your identity,
+                    wallet address, or which onchain commitment you used.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="bg-base-100 rounded-xl p-5 shadow">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">🔒</span>
+                <div>
+                  <h3 className="font-bold mb-1">Layer 2: Venice TEE/E2EE — Hides <em>WHAT</em></h3>
+                  <p className="text-base-content/60 text-sm leading-relaxed">
+                    Venice now offers hardware-enclave inference (TEE) and full end-to-end encryption (E2EE).
+                    Your prompt is encrypted on your device, stays encrypted through Venice&apos;s proxy,
+                    and is only decrypted inside a secure hardware enclave. Venice literally cannot see
+                    your prompts — verified by cryptographic remote attestation. Each response is
+                    cryptographically signed.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-base-100 rounded-xl p-5 shadow">
+            <p className="font-bold text-sm mb-2">Combined result:</p>
+            <div className="overflow-x-auto">
+              <table className="table table-sm w-full">
+                <thead>
+                  <tr>
+                    <th>Layer</th>
+                    <th>What it hides</th>
+                    <th>Mechanism</th>
+                  </tr>
+                </thead>
+                <tbody className="text-base-content/70 text-sm">
+                  <tr>
+                    <td className="font-medium">ZK proof (us)</td>
+                    <td><strong>WHO</strong> is paying / calling</td>
+                    <td>Breaks wallet ↔ API call link on-chain</td>
+                  </tr>
+                  <tr>
+                    <td className="font-medium">Venice TEE/E2EE</td>
+                    <td><strong>WHAT</strong> you&apos;re asking</td>
+                    <td>Hardware enclave + cryptographic attestation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-base-content/50 text-sm mt-3">
+              No one — not us, not Venice, not the GPU operator, not the blockchain — knows both
+              who you are and what you&apos;re asking. These are orthogonal privacy guarantees that
+              reinforce each other.
+            </p>
+          </div>
+        </section>
+
         {/* Flow */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold mb-4">End-to-End Flow</h2>
@@ -208,7 +290,7 @@ fn main(
               ["✅ Server never sees your wallet address", "The proof is generated client-side. The server receives only the proof, nullifier_hash, and your message."],
               ["✅ Server cannot link two API calls", "Each credit has a unique nullifier. There's no correlation between calls unless you reuse a credential."],
               ["✅ Server cannot identify which leaf you used", "The ZK proof proves membership in the set without revealing the index or commitment."],
-              ["⚠️ Proof generation happens in your browser", "The API server handles LLM routing — it sees your plaintext message. For full privacy, self-host the server."],
+              ["⚠️ Proof generation happens in your browser", "The API server handles LLM routing. When using Venice TEE/E2EE models, your prompt is encrypted end-to-end — even Venice and the GPU operator can't see it. For non-E2EE models, the server sees your plaintext message; for full privacy with those, self-host the server."],
               ["⚠️ Credits are stored in localStorage", "If you clear your browser, unspent credits are gone (CLAWD stays staked onchain, but the credentials are lost). Back them up — or better yet, script the purchase and let your bot manage credits automatically via the skill.md API."],
             ].map(([title, body]) => (
               <div key={title as string} className="bg-base-100 rounded-xl p-4 shadow">
@@ -261,6 +343,7 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
               ["Noir language", "https://noir-lang.org"],
               ["Barretenberg (bb.js)", "https://github.com/AztecProtocol/aztec-packages"],
               ["CLAWD token", "https://basescan.org/address/0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07"],
+              ["Venice E2EE announcement", "https://venice.ai/blog/venice-launches-end-to-end-encrypted-ai"],
             ].map(([label, url]) => (
               <a
                 key={url}
