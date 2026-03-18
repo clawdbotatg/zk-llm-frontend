@@ -42,6 +42,110 @@ const AboutPage: NextPage = () => {
           </p>
         </section>
 
+        {/* This Is Step One */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold mb-4">📍 This Is Step One</h2>
+          <p className="text-base-content/70 leading-relaxed mb-4">
+            This project is a <strong>baby step prototype</strong> — the first working implementation
+            of the ideas described in{" "}
+            <a
+              href="https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[#42F38F] transition-colors"
+            >
+              &ldquo;ZK API Usage Credits: LLMs and Beyond&rdquo;
+            </a>{" "}
+            by <strong>Vitalik Buterin</strong> and <strong>Davide Crapis</strong>. We shipped
+            something real that proves the concept works. But the paper describes a much deeper
+            system, and we haven&apos;t implemented most of it yet.
+          </p>
+
+          <div className="bg-base-100 rounded-xl p-5 shadow mb-4">
+            <p className="font-bold text-sm mb-3">What we built:</p>
+            <ul className="space-y-2 text-base-content/60 text-sm">
+              <li>✅ Simple single-use nullifiers — 1 credit = 1 API call, burn and done</li>
+              <li>✅ ZK Merkle membership proof — proves &ldquo;I know a commitment in the tree&rdquo;</li>
+              <li>✅ Working end-to-end flow — stake, register, prove, chat — all live on Base</li>
+              <li>✅ Single provider integration (Venice AI) with E2EE support</li>
+            </ul>
+          </div>
+
+          <div className="bg-base-100 rounded-xl p-5 shadow mb-4">
+            <p className="font-bold text-sm mb-3">What the paper proposes that we haven&apos;t built:</p>
+            <ul className="space-y-2 text-base-content/60 text-sm">
+              <li>
+                <strong>Rate-Limit Nullifiers (RLN)</strong> — users make many anonymous calls
+                per single deposit. Double-spending a ticket index mathematically reveals your
+                secret key, enabling slashing. We use simple one-time nullifiers instead.
+              </li>
+              <li>
+                <strong>Variable cost &amp; refund tickets</strong> — user sets a max cost per
+                call; server issues signed refund tickets for unused capacity. We use fixed
+                1-credit-per-call pricing with no refunds.
+              </li>
+              <li>
+                <strong>ZK solvency proof</strong> — the circuit should prove{" "}
+                <code className="text-xs bg-base-200 px-1 rounded">
+                  (ticket_index + 1) × C_max ≤ deposit + Σ(refunds)
+                </code>
+                , verifying server signatures on refund tickets as private inputs. Our circuit
+                only proves Merkle membership.
+              </li>
+              <li>
+                <strong>RLN slashing</strong> — mathematical double-spend detection that reveals
+                the cheater&apos;s secret key so anyone can slash their deposit. We just check a
+                database.
+              </li>
+              <li>
+                <strong>Dual staking (Policy Stake)</strong> — a separate stake the server can
+                burn but not claim, preventing servers from profiting off false bans. Not
+                implemented.
+              </li>
+              <li>
+                <strong>Homomorphic refund accumulation</strong> — Pedersen Commitments let the
+                server update your balance without learning the total. Constant-size client state.
+                Not implemented.
+              </li>
+              <li>
+                <strong>Parallelizable requests</strong> — generate tickets i, i+1, i+2
+                simultaneously. We process one credit at a time.
+              </li>
+              <li>
+                <strong>Generalized API support</strong> — the paper applies to any fixed-cost
+                API: RPC nodes, image generation, cloud compute, VPNs. We only support LLM
+                inference via Venice.
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-base-100 rounded-xl p-5 shadow">
+            <p className="text-base-content/60 text-sm leading-relaxed">
+              <strong className="text-base-content">This is open source.</strong> Every item above
+              is something someone could build next. If you want to help implement the full vision
+              from the paper, check the{" "}
+              <a
+                href="https://github.com/clawdbotatg/zk-api-credits"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-[#42F38F] transition-colors"
+              >
+                backend repo
+              </a>{" "}
+              and{" "}
+              <a
+                href="https://github.com/clawdbotatg/zk-llm-frontend"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-[#42F38F] transition-colors"
+              >
+                frontend repo
+              </a>
+              . We shipped step one. The roadmap is the paper.
+            </p>
+          </div>
+        </section>
+
         {/* Privacy Stack */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold mb-4">🔐 The Privacy Stack</h2>
