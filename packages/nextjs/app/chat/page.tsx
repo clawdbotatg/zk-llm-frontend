@@ -127,21 +127,32 @@ const ChatPage: NextPage = () => {
     const treeData: TreeData = await treeRes.json();
     const treeLeafSet = new Set(treeData.leaves);
 
+    // Compute all nullifier hashes upfront
+    const nullifierHashes = new Map<string, string>(); // commitment → nullifierHashHex
     for (const credit of availableCredits) {
-      // Check commitment exists in tree (local lookup — no server request per commitment)
       if (!treeLeafSet.has(credit.commitment)) { staleCredits.push(credit.commitment); continue; }
-
-      // Check nullifier not spent
       const nullifierHash = frToBI(await bbCheck.poseidon2Hash([new Fr2(BigInt(credit.nullifier))]));
-      const nullifierHashHex = "0x" + nullifierHash.toString(16).padStart(64, "0");
-      const spentCheck = await fetch(`${API_URL}/nullifier/${nullifierHashHex}`);
-      const spentData = await spentCheck.json();
-      if (spentData.spent) { staleCredits.push(credit.commitment); continue; }
-
-      creditToUse = credit;
-      break;
+      nullifierHashes.set(credit.commitment, "0x" + nullifierHash.toString(16).padStart(64, "0"));
     }
     await bbCheck.destroy();
+
+    // Check all nullifiers in parallel (privacy: server sees them all at once,
+    // can't tell which one you're about to use)
+    const creditsToCheck = availableCredits.filter(c => nullifierHashes.has(c.commitment));
+    if (creditsToCheck.length > 0) {
+      const spentResults = await Promise.all(
+        creditsToCheck.map(c =>
+          fetch(`${API_URL}/nullifier/${nullifierHashes.get(c.commitment)}`).then(r => r.json())
+        )
+      );
+      for (let i = 0; i < creditsToCheck.length; i++) {
+        if (spentResults[i].spent) {
+          staleCredits.push(creditsToCheck[i].commitment);
+        } else if (!creditToUse) {
+          creditToUse = creditsToCheck[i];
+        }
+      }
+    }
 
     // Mark stale credits as spent in localStorage
     if (staleCredits.length > 0) {
@@ -298,6 +309,14 @@ const ChatPage: NextPage = () => {
                   ? "→ Go to /buy to get credits first"
                   : `${availableCredits.length} credit${availableCredits.length !== 1 ? "s" : ""} ready. Start typing below.`}
               </p>
+            </div>
+          </div>
+        )}
+
+        {availableCredits.length > 0 && availableCredits.length <= 5 && (
+          <div className="max-w-3xl mx-auto mb-4">
+            <div className="border border-yellow-500/20 bg-yellow-500/5 px-4 py-2 text-center">
+              <span className="text-xs font-mono text-yellow-500/70">⚠️ Small anonymity set — privacy improves as more people use the system</span>
             </div>
           </div>
         )}

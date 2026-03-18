@@ -562,6 +562,13 @@ const BuyPage: NextPage = () => {
         </div>
       </div>
 
+      {/* Privacy warning for small anonymity set */}
+      {availableCredits.length > 0 && availableCredits.length <= 5 && (
+        <div className="border border-yellow-500/20 bg-yellow-500/5 px-5 py-3 mb-6">
+          <span className="text-xs font-mono text-yellow-500/70">⚠️ Small anonymity set — privacy improves as more people use the system</span>
+        </div>
+      )}
+
       {/* API Keys */}
       {availableCredits.length > 0 && (
         <div className="border border-[#222] mb-6">
