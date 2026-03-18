@@ -205,7 +205,7 @@ const AboutPage: NextPage = () => {
 
         {/* Flow */}
         <section className="mb-10">
-          <h2 className="text-2xl font-bold mb-4">End-to-End Flow</h2>
+          <h2 className="text-2xl font-bold mb-4">End-to-End Flow (So Far)</h2>
           <div className="space-y-4">
             {[
               {
@@ -363,7 +363,7 @@ fn main(
 
         {/* Privacy */}
         <section className="mb-10">
-          <h2 className="text-2xl font-bold mb-4">Privacy Guarantees</h2>
+          <h2 className="text-2xl font-bold mb-4">Privacy Guarantees (Current)</h2>
           <div className="space-y-3">
             {[
               ["✅ Server never sees your wallet address", "The proof is generated client-side. The server receives only the proof, nullifier_hash, and your message."],
