@@ -423,6 +423,91 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
           </div>
         </section>
 
+        {/* The Roadmap */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold mb-4">🗺️ The Roadmap</h2>
+          <p className="text-base-content/70 leading-relaxed mb-4">
+            The build order toward the full paper vision, roughly ordered by complexity.
+          </p>
+          <div className="space-y-4">
+            {[
+              {
+                step: "1",
+                title: "Generalized API Support",
+                difficulty: "Low",
+                badge: "badge-success",
+                body: "The contract is already generic. Swap the hardcoded Venice routing for a pluggable proxy layer — any OpenAI-compatible endpoint, any fixed-cost API. RPC nodes, image generation, VPNs, data APIs. Makes this a platform, not just an LLM wrapper."
+              },
+              {
+                step: "2",
+                title: "Dual Staking (Policy Stake)",
+                difficulty: "Low–Medium",
+                badge: "badge-success",
+                body: "Split the deposit into D (RLN stake) and S (policy stake). The server can burn S but never claim it — removing any incentive to falsely ban users. Pure contract change, no circuit modifications."
+              },
+              {
+                step: "3",
+                title: "Variable Cost + Refund Tickets",
+                difficulty: "Medium",
+                badge: "badge-warning",
+                body: "Venice returns token counts on every response. The server signs a refund ticket for unused capacity (C_max - C_actual). The client accumulates these locally. Unlocks efficient per-token pricing instead of fixed credits."
+              },
+              {
+                step: "4",
+                title: "Rate-Limit Nullifiers (RLN)",
+                difficulty: "Medium–High",
+                badge: "badge-warning",
+                body: "Replace single-use nullifiers with RLN. Each request uses a ticket index i; the signal is y = secret + Hash(secret, i) × Hash(message). Reusing the same index with a different message reveals the secret key mathematically. Requires porting the RLN circuit to Noir and updating the contract, server, and frontend."
+              },
+              {
+                step: "5",
+                title: "RLN Slashing",
+                difficulty: "Medium",
+                badge: "badge-warning",
+                body: "Once RLN is in place, slashing is a contract function: submit two (nullifier, x, y) pairs for the same index, recover the secret key, verify it matches a tree leaf, burn the deposit. Anyone can slash — no trusted arbiter needed."
+              },
+              {
+                step: "6",
+                title: "ZK Solvency Proof",
+                difficulty: "Very High",
+                badge: "badge-error",
+                body: "The circuit proves (ticket_index + 1) × C_max ≤ deposit + Σ(refunds), verifying server signatures on refund tickets as private inputs. Requires a ZK-friendly signing scheme and is the most complex circuit change in the roadmap. The full paper vision lives here."
+              },
+              {
+                step: "7",
+                title: "Homomorphic Refund Accumulation",
+                difficulty: "High",
+                badge: "badge-error",
+                body: "Replace the growing refund ticket list with a single Pedersen Commitment the server updates homomorphically — without learning the user's balance. Constant client-side state regardless of call count. An optimization on top of Step 6."
+              },
+            ].map(({ step, title, difficulty, badge, body }) => (
+              <div key={step} className="flex gap-4 bg-base-100 rounded-xl p-5 shadow">
+                <div className="w-8 h-8 rounded-full bg-primary text-primary-content flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">
+                  {step}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-bold">{title}</h3>
+                    <span className={`badge badge-sm ${badge}`}>{difficulty}</span>
+                  </div>
+                  <p className="text-base-content/60 text-sm leading-relaxed">{body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-base-content/60 text-sm mt-6 text-center italic">
+            We shipped step zero.{" "}
+            <a
+              href="https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-[#42F38F] transition-colors"
+            >
+              The paper is the map.
+            </a>
+          </p>
+        </section>
+
         {/* Links */}
         <section className="mb-10">
           <h2 className="text-2xl font-bold mb-4">Links</h2>
