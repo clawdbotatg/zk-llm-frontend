@@ -19,18 +19,14 @@ POST https://backend.zkllmapi.com/v1/chat
   "depth": 16,
   "messages": [
     { "role": "user", "content": "your message here" }
-  ],
-  "model": "hermes-3-llama-3.1-405b"
+  ]
 }
 \`\`\`
 
-## Available Models
+## Model
 
-- hermes-3-llama-3.1-405b (default — 405B open-weight, private inference)
-- llama-3.3-70b
-- kimi-k2-thinking
-- qwen3-235b-a22b-thinking-2507
-- deepseek-v3.2
+hermes-3-llama-3.1-405b — 405B open-weight, private Venice inference.
+Model is fixed: one credit = one call to this model.
 
 ## How to Get a Credit
 
