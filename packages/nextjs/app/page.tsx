@@ -150,7 +150,7 @@ const Home: NextPage = () => {
 
         {/* Code snippet */}
         <div className="mb-20">
-          <p className="text-xs font-mono text-base-content/30 mb-4 tracking-widest">USE ANYWHERE</p>
+          <p className="text-xs font-mono text-base-content/30 mb-4 tracking-widest">DIRECT API ACCESS</p>
           <div className="border border-[#333] bg-black/90 backdrop-blur-sm overflow-x-auto">
             <div className="border-b border-[#333] px-4 py-2 flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-[#333]"></div>
@@ -158,13 +158,19 @@ const Home: NextPage = () => {
               <div className="w-2 h-2 rounded-full bg-[#333]"></div>
               <span className="text-xs font-mono text-base-content/30 ml-2">example.sh</span>
             </div>
-            <pre className="p-6 text-xs font-mono text-base-content/70 leading-relaxed overflow-x-auto">{`# Get your key from zkllmapi.com/buy
-API_KEY="zk-llm-<your-key>"
+            <pre className="p-6 text-xs font-mono text-base-content/70 leading-relaxed overflow-x-auto">{`# Requires a ZK proof generated from your credit secret.
+# Generate your proof at zkllmapi.com/chat or integrate the circuit — see /fork
 
 curl -X POST https://backend.zkllmapi.com/v1/chat \\
   -H 'Content-Type: application/json' \\
-  -H "Authorization: Bearer $API_KEY" \\
-  -d '{"messages": [{"role": "user", "content": "Hello"}]}'`}</pre>
+  -d '{
+    "proof": "<hex — UltraHonk ZK proof from your browser>",
+    "nullifier_hash": "0x...",
+    "root": "0x...",
+    "depth": 16,
+    "messages": [{"role": "user", "content": "Hello"}],
+    "model": "hermes-3-llama-3.1-405b"
+  }'`}</pre>
           </div>
         </div>
 

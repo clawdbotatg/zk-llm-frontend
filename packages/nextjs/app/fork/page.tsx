@@ -204,14 +204,14 @@ cd packages/api-server && yarn start`}
 │             │     │   (onchain)  │     │  (offchain)  │
 └──────┬──────┘     └──────┬───────┘     └──────┬───────┘
        │                   │                    │
-       │  1. stake(CLAWD)  │                    │
+       │  1. buyWithCLAWD() │                    │
+       │     [or ETH/USDC  │                    │
+       │      via Router]  │                    │
        │──────────────────>│                    │
        │                   │                    │
-       │  2. register(     │                    │
-       │     commitment)   │                    │
-       │──────────────────>│                    │
-       │                   │                    │
-       │                   │  commitment        │
+       │                   │  Router calls      │
+       │                   │  stakeAndRegister() │
+       │                   │  → commitments     │
        │                   │  inserted into     │
        │                   │  Merkle tree       │
        │                   │                    │
@@ -232,7 +232,7 @@ cd packages/api-server && yarn start`}
             </pre>
           </div>
           <p className="text-xs opacity-40 mt-2 font-mono">
-            Steps 1-2 require a wallet. Steps 3-9 are anonymous — no wallet, no identity.
+            Step 1 requires a wallet. Steps 2-8 are anonymous — no wallet, no identity.
           </p>
         </div>
 

@@ -225,13 +225,13 @@ const AboutPage: NextPage = () => {
               },
               {
                 step: "4",
-                title: "API server reads the Merkle tree",
-                body: "The API server watches the contract. When you call /chat, it fetches your commitment's Merkle path (siblings + indices) from the onchain tree and sends it back to your client."
+                title: "Client fetches the Merkle tree",
+                body: "Your browser fetches the full Merkle tree from the API server's /tree endpoint. It finds your commitment's leaf index locally and computes the sibling path — the server never learns which commitment you're using."
               },
               {
                 step: "5",
                 title: "Client generates a ZK proof",
-                body: "Your browser runs the Noir circuit via Barretenberg UltraHonk. The proof shows: (a) you know a nullifier+secret whose Poseidon2 hash is in the Merkle tree, and (b) the nullifier hash is correct. All private inputs stay on-device."
+                body: "Using the locally computed Merkle path, your browser runs the Noir circuit via Barretenberg UltraHonk. The proof shows: (a) you know a nullifier+secret whose Poseidon2 hash is in the Merkle tree, and (b) the nullifier hash is correct. All private inputs stay on-device."
               },
               {
                 step: "6",
@@ -324,7 +324,7 @@ fn main(
             original Poseidon hash used by iden3/Circom.
           </p>
           <p className="text-base-content/70 mb-3">
-            We use Barretenberg&apos;s implementation (<code className="text-xs bg-base-200 px-1 rounded">@aztec/bb.js v0.72.1</code>),
+            We use Barretenberg&apos;s implementation (<code className="text-xs bg-base-200 px-1 rounded">@aztec/bb.js v0.82.0</code>),
             which must match exactly between the circuit, the API server, and the frontend client.
             Using any other Poseidon implementation will produce different hashes and invalid proofs.
           </p>
@@ -503,7 +503,7 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
               ["Original paper — Vitalik & Davide Crapis", "https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"],
               ["GitHub — zk-api-credits", "https://github.com/clawdbotatg/zk-api-credits"],
               ["GitHub — frontend", "https://github.com/clawdbotatg/zk-llm-frontend"],
-              ["Contract on Basescan", "https://basescan.org/address/0x4A6782D251e12c06e1f16450D8b28f6C857cFdd1#code"],
+              ["Contract address (live)", "https://zkllmapi.com/contract"],
               ["Noir language", "https://noir-lang.org"],
               ["Barretenberg (bb.js)", "https://github.com/AztecProtocol/aztec-packages"],
               ["CLAWD token", "https://basescan.org/address/0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07"],

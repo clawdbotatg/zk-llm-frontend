@@ -38,7 +38,7 @@ interface StoredCredit {
   spent: boolean;
 }
 
-const StakePage: NextPage = () => {
+const BuyPage: NextPage = () => {
   const { address: connectedAddress, chain } = useAccount();
   const { switchChain } = useSwitchChain();
   const [numCreditsInput, setNumCreditsInput] = useState("1");
@@ -367,49 +367,6 @@ const StakePage: NextPage = () => {
     }
   };
 
-  const handleRegister = async () => {
-    if (!connectedAddress) return;
-    setIsRegistering(true);
-    setTxError(null);
-    setRegisteredCredit(null);
-    try {
-      // Generate random nullifier and secret
-      const randomBytes = new Uint8Array(32);
-      crypto.getRandomValues(randomBytes);
-      const nullifier = BigInt("0x" + Array.from(randomBytes).map(b => b.toString(16).padStart(2, "0")).join(""));
-      
-      const randomBytes2 = new Uint8Array(32);
-      crypto.getRandomValues(randomBytes2);
-      const secret = BigInt("0x" + Array.from(randomBytes2).map(b => b.toString(16).padStart(2, "0")).join(""));
-
-      // Field modulus for BN254 — values must be < this
-      const FIELD_MODULUS = 21888242871839275222246405745257275088548364400416034343698204186575808495617n;
-      const nullifierMod = nullifier % FIELD_MODULUS;
-      const secretMod = secret % FIELD_MODULUS;
-
-      // Compute commitment using bb.js Poseidon2 (Noir/Barretenberg compatible)
-      const { Barretenberg, Fr } = await import("@aztec/bb.js");
-      const bbInstance = await Barretenberg.new({ threads: 1 });
-      const frToBigInt = (fr: { value: Uint8Array }) => BigInt("0x" + Array.from(fr.value).map((b: number) => b.toString(16).padStart(2, "0")).join(""));
-      const commitment = frToBigInt(await bbInstance.poseidon2Hash([new Fr(nullifierMod), new Fr(secretMod)]));
-      await bbInstance.destroy();
-
-      // Send register tx
-      await writeContractAsync({
-        address: API_CREDITS_ADDRESS,
-        abi: apiCreditsAbi,
-        functionName: "register",
-        args: [commitment],
-      });
-
-      // Save to localStorage
-      const newCredit: StoredCredit = {
-        nullifier: nullifierMod.toString(),
-        secret: secretMod.toString(),
-        commitment: commitment.toString(),
-        leafIndex: -1, // Will be updated from events
-        spent: false,
-      };
 
       const existingCredits = JSON.parse(localStorage.getItem("zk-credits") || "[]");
       const updatedCredits = [...existingCredits, newCredit];
@@ -799,4 +756,4 @@ const StakePage: NextPage = () => {
   );
 };
 
-export default StakePage;
+export default BuyPage;
