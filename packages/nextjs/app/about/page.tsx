@@ -28,18 +28,6 @@ const AboutPage: NextPage = () => {
             own contract, point it at any LLM provider, and run the same privacy-preserving
             access control.
           </p>
-          <p className="text-base-content/50 leading-relaxed mt-3 text-sm">
-            Inspired by{" "}
-            <a
-              href="https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-[#42F38F] transition-colors"
-            >
-              ZK API Usage Credits: LLMs and Beyond
-            </a>{" "}
-            by Vitalik Buterin & Davide Crapis.
-          </p>
         </section>
 
         {/* This Is Step One */}
