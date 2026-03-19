@@ -8,7 +8,7 @@ import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
 import externalContracts from "~~/contracts/externalContracts";
 
-const API_CREDITS_ADDRESS = "0xFc137f8a2E4ca655084731B5eeeF424BEcdae86C";
+const API_CREDITS_ADDRESS = "0xE476F94c93FF5385F84a29b4647fE122604814AB";
 const CLAWD_ROUTER_ADDRESS = "0x1b60CfCe6ddBD2A8f4c5bf83b8bc66f9ef683BC7";
 const CLAWD_ADDRESS = "0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07";
 const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";

@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   8453: {
     APICredits: {
-      address: "0xFc137f8a2E4ca655084731B5eeeF424BEcdae86C",
+      address: "0xE476F94c93FF5385F84a29b4647fE122604814AB",
       abi: [
         {
           inputs: [

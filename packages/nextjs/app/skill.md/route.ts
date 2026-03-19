@@ -55,7 +55,7 @@ The nullifier is burned on use — each credit is single-use.
 
 ## Contracts (Base mainnet, chain 8453)
 
-- APICredits: 0xFc137f8a2E4ca655084731B5eeeF424BEcdae86C
+- APICredits: 0xE476F94c93FF5385F84a29b4647fE122604814AB
 - CLAWDPricing: 0xaca9733Cc19aD837899dc7D1170aF1d5367C332E
 - CLAWDRouter: 0x1b60CfCe6ddBD2A8f4c5bf83b8bc66f9ef683BC7
 - CLAWD token: 0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07
