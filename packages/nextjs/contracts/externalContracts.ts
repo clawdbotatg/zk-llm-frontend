@@ -3,7 +3,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const externalContracts = {
   8453: {
     APICredits: {
-      address: "0x1A1e099EC15db29e2B87057cBC5a0bcc282ADf61",
+      address: "0xE476F94c93FF5385F84a29b4647fE122604814AB",
       abi: [
         {
           type: "function",
@@ -139,7 +139,7 @@ const externalContracts = {
       ],
     },
     CLAWDRouter: {
-      address: "0x08a60AAdaF9461A1a2832439643Ade56531EF91B",
+      address: "0x4a7884c1D02fD711DA9fc8611764eAdb5E0A7c24",
       abi: [
         {
           type: "function",
