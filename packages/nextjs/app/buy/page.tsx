@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import type { NextPage } from "next";
-import { formatEther, parseEther, parseUnits, formatUnits } from "viem";
+import { formatEther, formatUnits } from "viem";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useSwitchChain, useBalance } from "wagmi";
 import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { notification } from "~~/utils/scaffold-eth";
@@ -45,9 +45,9 @@ const BuyPage: NextPage = () => {
   const [paymentMethod, setPaymentMethod] = useState<'clawd'|'usdc'|'eth'>('clawd');
   const [isApproving, setIsApproving] = useState(false);
   const [isStaking, setIsStaking] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [_isRegistering, setIsRegistering] = useState(false);
   const [txError, setTxError] = useState<string | null>(null);
-  const [registeredCredit, setRegisteredCredit] = useState<StoredCredit | null>(null);
+  const [_registeredCredit, setRegisteredCredit] = useState<StoredCredit | null>(null);
   const [savedCredits, setSavedCredits] = useState<StoredCredit[]>([]);
   const [clawdPriceUsd, setClawdPriceUsd] = useState<number | null>(null);
   const [keysExpanded, setKeysExpanded] = useState(false);
@@ -78,7 +78,7 @@ const BuyPage: NextPage = () => {
     fetchPrice();
   }, []);
 
-  const formatUsd = (clawdAmount: bigint | undefined): string => {
+  const _formatUsd = (clawdAmount: bigint | undefined): string => {
     if (!clawdAmount || clawdPriceUsd === null) return "";
     const amount = Number(formatEther(clawdAmount)) * clawdPriceUsd;
     return `(~$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`;
@@ -105,7 +105,7 @@ const BuyPage: NextPage = () => {
   });
 
   // Read staked balance
-  const { data: stakedBalance, refetch: refetchStaked } = useReadContract({
+  const { data: _stakedBalance, refetch: refetchStaked } = useReadContract({
     address: API_CREDITS_ADDRESS,
     abi: apiCreditsAbi,
     functionName: "stakedBalance",
@@ -276,7 +276,7 @@ const BuyPage: NextPage = () => {
       setApproveCooldown(true);
       setTimeout(() => setApproveCooldown(false), 10000);
       notification.success("Approval submitted! Waiting for confirmation...");
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
       setTxError(parseContractError(e));
       setIsApproving(false);
@@ -358,31 +358,11 @@ const BuyPage: NextPage = () => {
       setTimeout(() => setPurchaseFlash(false), 6000);
       setTimeout(() => setCreditsFlash(false), 6500);
       setTimeout(() => { refetchStaked(); refetchBalance(); refetchAllowance(); refetchUsdcBalance(); refetchUsdcAllowance(); }, 3000);
-    } catch (e: any) {
+    } catch (e) {
       console.error(e);
       setTxError(parseContractError(e));
     } finally {
       setIsStaking(false);
-      setIsRegistering(false);
-    }
-  };
-
-
-      const existingCredits = JSON.parse(localStorage.getItem("zk-credits") || "[]");
-      const updatedCredits = [...existingCredits, newCredit];
-      localStorage.setItem("zk-credits", JSON.stringify(updatedCredits));
-      setSavedCredits(updatedCredits);
-      setRegisteredCredit(newCredit);
-
-      notification.success("Credit registered! Save your credentials.");
-      setTimeout(() => {
-        refetchStaked();
-        refetchBalance();
-      }, 5000);
-    } catch (e: any) {
-      console.error(e);
-      setTxError(parseContractError(e));
-    } finally {
       setIsRegistering(false);
     }
   };
