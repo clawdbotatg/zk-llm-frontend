@@ -158,7 +158,7 @@ export const ProofGenerator = ({
 
   const { data: leafEvents } = useScaffoldEventHistory({
     contractName: "APICredits",
-    eventName: "NewLeaf",
+    eventName: "NewLeaf" as any,
     fromBlock: 0n,
   });
 
@@ -212,7 +212,7 @@ export const ProofGenerator = ({
 
       if (leafEvents) {
         for (const event of leafEvents) {
-          tree.addLeaf(BigInt(event.args.value?.toString() || "0"));
+          tree.addLeaf(BigInt((event.args as any).value?.toString() || "0"));
         }
       }
 
