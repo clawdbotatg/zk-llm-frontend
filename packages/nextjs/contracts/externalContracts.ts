@@ -3,26 +3,32 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const externalContracts = {
   8453: {
     APICredits: {
-      address: "0xE476F94c93FF5385F84a29b4647fE122604814AB",
+      address: "0xE7cc1F41Eb59775bD201Bb943d2230BA52294608",
       abi: [
         {
           type: "function",
           name: "stake",
-          inputs: [{ name: "amount", type: "uint256", internalType: "uint256" }],
+          inputs: [
+            { name: "amount", type: "uint256", internalType: "uint256" },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
         {
           type: "function",
           name: "unstake",
-          inputs: [{ name: "amount", type: "uint256", internalType: "uint256" }],
+          inputs: [
+            { name: "amount", type: "uint256", internalType: "uint256" },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
         {
           type: "function",
           name: "register",
-          inputs: [{ name: "commitment", type: "uint256", internalType: "uint256" }],
+          inputs: [
+            { name: "commitment", type: "uint256", internalType: "uint256" },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
@@ -31,7 +37,11 @@ const externalContracts = {
           name: "stakeAndRegister",
           inputs: [
             { name: "amount", type: "uint256", internalType: "uint256" },
-            { name: "commitments", type: "uint256[]", internalType: "uint256[]" },
+            {
+              name: "commitments",
+              type: "uint256[]",
+              internalType: "uint256[]",
+            },
           ],
           outputs: [],
           stateMutability: "nonpayable",
@@ -71,22 +81,48 @@ const externalContracts = {
         {
           type: "function",
           name: "setPricePerCredit",
-          inputs: [{ name: "newPrice", type: "uint256", internalType: "uint256" }],
+          inputs: [
+            { name: "newPrice", type: "uint256", internalType: "uint256" },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
         { type: "error", name: "APICredits__EmptyTree", inputs: [] },
         { type: "error", name: "APICredits__InsufficientStake", inputs: [] },
         { type: "error", name: "APICredits__ZeroAmount", inputs: [] },
-        { type: "error", name: "APICredits__CommitmentAlreadyUsed", inputs: [{ name: "commitment", type: "uint256" }] },
+        {
+          type: "error",
+          name: "APICredits__CommitmentAlreadyUsed",
+          inputs: [{ name: "commitment", type: "uint256" }],
+        },
         {
           type: "event",
           name: "CreditRegistered",
           inputs: [
-            { name: "user", type: "address", indexed: true, internalType: "address" },
-            { name: "index", type: "uint256", indexed: true, internalType: "uint256" },
-            { name: "commitment", type: "uint256", indexed: false, internalType: "uint256" },
-            { name: "newStakedBalance", type: "uint256", indexed: false, internalType: "uint256" },
+            {
+              name: "user",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+            {
+              name: "index",
+              type: "uint256",
+              indexed: true,
+              internalType: "uint256",
+            },
+            {
+              name: "commitment",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+            {
+              name: "newStakedBalance",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
           ],
           anonymous: false,
         },
@@ -139,13 +175,17 @@ const externalContracts = {
       ],
     },
     CLAWDRouter: {
-      address: "0x4a7884c1D02fD711DA9fc8611764eAdb5E0A7c24",
+      address: "0x9302e14c54fbA35A96457f6dD7A3AF5c082D5C24",
       abi: [
         {
           type: "function",
           name: "buyWithETH",
           inputs: [
-            { name: "commitments", type: "uint256[]", internalType: "uint256[]" },
+            {
+              name: "commitments",
+              type: "uint256[]",
+              internalType: "uint256[]",
+            },
             { name: "minCLAWDOut", type: "uint256", internalType: "uint256" },
           ],
           outputs: [],
@@ -155,7 +195,11 @@ const externalContracts = {
           type: "function",
           name: "buyWithUSDC",
           inputs: [
-            { name: "commitments", type: "uint256[]", internalType: "uint256[]" },
+            {
+              name: "commitments",
+              type: "uint256[]",
+              internalType: "uint256[]",
+            },
             { name: "usdcAmount", type: "uint256", internalType: "uint256" },
             { name: "minCLAWDOut", type: "uint256", internalType: "uint256" },
           ],
@@ -166,7 +210,11 @@ const externalContracts = {
           type: "function",
           name: "buyWithCLAWD",
           inputs: [
-            { name: "commitments", type: "uint256[]", internalType: "uint256[]" },
+            {
+              name: "commitments",
+              type: "uint256[]",
+              internalType: "uint256[]",
+            },
             { name: "maxCLAWD", type: "uint256", internalType: "uint256" },
           ],
           outputs: [],
@@ -175,7 +223,9 @@ const externalContracts = {
         {
           type: "function",
           name: "quoteCredits",
-          inputs: [{ name: "numCredits", type: "uint256", internalType: "uint256" }],
+          inputs: [
+            { name: "numCredits", type: "uint256", internalType: "uint256" },
+          ],
           outputs: [
             { name: "clawdNeeded", type: "uint256", internalType: "uint256" },
             { name: "usdEquivalent", type: "uint256", internalType: "uint256" },
@@ -208,7 +258,9 @@ const externalContracts = {
           type: "function",
           name: "getCreditPriceInCLAWD",
           inputs: [],
-          outputs: [{ name: "priceInCLAWD", type: "uint256", internalType: "uint256" }],
+          outputs: [
+            { name: "priceInCLAWD", type: "uint256", internalType: "uint256" },
+          ],
           stateMutability: "view",
         },
         {
@@ -222,7 +274,9 @@ const externalContracts = {
           type: "function",
           name: "getClawdPerEth",
           inputs: [],
-          outputs: [{ name: "clawdPerEth", type: "uint256", internalType: "uint256" }],
+          outputs: [
+            { name: "clawdPerEth", type: "uint256", internalType: "uint256" },
+          ],
           stateMutability: "view",
         },
         {
@@ -232,7 +286,11 @@ const externalContracts = {
           outputs: [
             { name: "clawdPerEth", type: "uint256", internalType: "uint256" },
             { name: "ethUsd", type: "uint256", internalType: "uint256" },
-            { name: "pricePerCreditCLAWD", type: "uint256", internalType: "uint256" },
+            {
+              name: "pricePerCreditCLAWD",
+              type: "uint256",
+              internalType: "uint256",
+            },
             { name: "usdPerCredit", type: "uint256", internalType: "uint256" },
             { name: "clawdUsd", type: "uint256", internalType: "uint256" },
           ],
