@@ -337,7 +337,7 @@ const ChatPage: NextPage = () => {
             <span className="text-sm font-mono font-bold">ZK CHAT</span>
             <span className="text-xs font-mono text-base-content/30">·</span>
             <span className="text-xs font-mono text-base-content/50">
-              HERMES-3-405B
+              GLM-5
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -397,7 +397,7 @@ const ChatPage: NextPage = () => {
                   <p
                     className={`text-xs font-mono mb-2 ${msg.role === "user" ? "text-right text-base-content/30" : "text-[#42F38F]/60"}`}
                   >
-                    {msg.role === "user" ? "YOU" : "HERMES-3-405B"}
+                    {msg.role === "user" ? "YOU" : "GLM-5"}
                   </p>
                   <div
                     className={`font-mono text-sm leading-relaxed whitespace-pre-wrap px-4 py-3 border ${
