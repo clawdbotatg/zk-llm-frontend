@@ -362,7 +362,7 @@ const ChatPage: NextPage = () => {
         backgroundPosition: "center top",
       }}
     >
-      <div className="absolute inset-0 bg-black/85" />
+      <div className="absolute inset-0 bg-black/75" />
       <div className="relative z-10 flex flex-col h-full">
         {/* Top bar */}
         <div className="border-b border-[#1f1f1f] px-6 py-3 flex items-center justify-between flex-shrink-0">
