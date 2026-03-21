@@ -14,7 +14,9 @@ Built with [Scaffold-ETH 2](https://scaffoldeth.io) on **Base mainnet**.
 
 | Contract | Address |
 |----------|---------|
-| APICredits | `0x9991f959040De3c5df0515FFCe8B38b72cB7F26c` |
+| APICredits | `0xE7cc1F41Eb59775bD201Bb943d2230BA52294608` |
+| CLAWDRouter | `0x9302e14c54fbA35A96457f6dD7A3AF5c082D5C24` |
+| CLAWDPricing | `0xaca9733Cc19aD837899dc7D1170aF1d5367C332E` |
 | CLAWD Token | `0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07` |
 
 ## Getting Started
