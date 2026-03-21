@@ -56,6 +56,7 @@ const BuyPage: NextPage = () => {
   const { address: connectedAddress, chain } = useAccount();
   const { switchChain } = useSwitchChain();
   const publicClient = usePublicClient();
+  const MAX_CREDITS_PER_TX = 5;
   const [numCreditsInput, setNumCreditsInput] = useState("1");
   const [paymentMethod, setPaymentMethod] = useState<"clawd" | "usdc" | "eth">(
     "clawd",
@@ -644,9 +645,11 @@ const BuyPage: NextPage = () => {
                   <button
                     className="cursor-pointer font-mono text-xl px-4 py-3 border border-[#333] bg-[#111] hover:border-[#F14E47] transition-colors w-12 text-center"
                     onClick={() => {
-                      setNumCreditsInput((n) =>
-                        String(Math.max(1, (parseInt(n) || 1) - 1)),
+                      const next = Math.max(
+                        1,
+                        (parseInt(numCreditsInput) || 1) - 1,
                       );
+                      setNumCreditsInput(String(next));
                       setTxError(null);
                     }}
                   >
@@ -655,17 +658,24 @@ const BuyPage: NextPage = () => {
                   <input
                     type="number"
                     min="1"
+                    max={MAX_CREDITS_PER_TX}
                     className="flex-1 bg-[#111] border border-[#333] text-base-content font-mono text-xl px-4 py-3 focus:outline-none focus:border-[#F14E47] transition-colors text-center"
                     value={numCreditsInput}
                     onChange={(e) => {
-                      setNumCreditsInput(e.target.value);
+                      const val = parseInt(e.target.value) || 1;
+                      setNumCreditsInput(
+                        String(Math.min(Math.max(1, val), MAX_CREDITS_PER_TX)),
+                      );
                       setTxError(null);
                     }}
                   />
                   <button
                     className="cursor-pointer font-mono text-xl px-4 py-3 border border-[#333] bg-[#111] hover:border-[#F14E47] transition-colors w-12 text-center"
                     onClick={() => {
-                      setNumCreditsInput((n) => String((parseInt(n) || 0) + 1));
+                      const current = parseInt(numCreditsInput) || 0;
+                      setNumCreditsInput(
+                        String(Math.min(current + 1, MAX_CREDITS_PER_TX)),
+                      );
                       setTxError(null);
                     }}
                   >
@@ -673,6 +683,9 @@ const BuyPage: NextPage = () => {
                   </button>
                 </div>
               </div>
+              <p className="text-center text-xs font-mono text-base-content/30 mt-2">
+                Max 5 per transaction (Base gas limit)
+              </p>
 
               {/* Cost breakdown */}
               <div className="border border-[#222] bg-black/40 px-4 py-3 mb-5 font-mono text-sm">
