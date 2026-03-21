@@ -563,7 +563,7 @@ const BuyPage: NextPage = () => {
         backgroundPosition: "center",
       }}
     >
-      <div className="absolute inset-0 bg-black/80" />
+      <div className="absolute inset-0 bg-black/75" />
 
       {/* Purchase success flash overlay */}
       {purchaseFlash && (
