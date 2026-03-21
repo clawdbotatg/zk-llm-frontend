@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import deployedContracts from "../../../contracts/deployedContracts";
+import externalContracts from "~~/contracts/externalContracts";
 
 export async function GET() {
-  const address = deployedContracts[8453].APICredits.address;
+  const address = externalContracts[8453].APICredits.address;
   return NextResponse.json({
     address,
     chainId: 8453,

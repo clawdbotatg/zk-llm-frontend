@@ -18,7 +18,7 @@ const Home: NextPage = () => {
   >(undefined);
 
   const { data: quoteData } = useReadContract({
-    address: "0x1b60CfCe6ddBD2A8f4c5bf83b8bc66f9ef683BC7",
+    address: externalContracts[8453].CLAWDRouter.address,
     abi: externalContracts[8453].CLAWDRouter.abi,
     functionName: "quoteCredits",
     args: [1n],
