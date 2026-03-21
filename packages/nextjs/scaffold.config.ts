@@ -26,9 +26,10 @@ const scaffoldConfig = {
     process.env.NEXT_PUBLIC_ALCHEMY_API_KEY || DEFAULT_ALCHEMY_API_KEY,
   // If you want to use a different RPC for a specific network, you can add it here.
   // The key is the chain ID, and the value is the HTTP RPC URL
+  // ⚠️ Alchemy key AlQf7KFYpAw_AlE4oCP85 is whitelisted for Base only — do NOT use it for Ethereum
   rpcOverrides: {
-    // Example:
-    // [chains.mainnet.id]: "https://mainnet.rpc.buidlguidl.com",
+    // Use public RPC for Ethereum mainnet — Alchemy key is Base-only
+    [chains.mainnet.id]: "https://rpc.ankr.com/eth",
   },
   // This is ours WalletConnect's default project ID.
   // You can get your own at https://cloud.walletconnect.com
