@@ -422,22 +422,95 @@ const BuyPage: NextPage = () => {
         });
       }
 
-      // Wait for the transaction to be mined and confirmed on-chain before saving.
-      // Without this, credits are saved to localStorage before the commitment is
-      // inserted into the Merkle tree — navigating to /chat immediately would show
-      // balance=0 because the chat page checks the live tree, not localStorage.
+      // Wait for the transaction to be mined and confirmed on-chain.
       notification.success("Waiting for confirmation...");
       if (!publicClient) throw new Error("Wallet not connected");
       console.log("[DEBUG buy] waiting for tx", hash, "to confirm...");
       await publicClient.waitForTransactionReceipt({ hash });
-      console.log("[DEBUG buy] tx confirmed! saving to localStorage now");
+      console.log(
+        "[DEBUG buy] tx confirmed! polling /tree until commitments are in Merkle tree...",
+      );
 
-      // Save all new credits to localStorage
+      // Poll the /tree endpoint until all commitments appear in the backend's Merkle tree.
+      // The backend inserts commitments asynchronously after CreditRegistered events.
+      // Saving to localStorage before this step would orphan credits: /chat checks the
+      // live tree and marks unseen commitments as stale (spent: true → balance=0).
+      const apiUrl =
+        typeof process !== "undefined"
+          ? process.env.NEXT_PUBLIC_API_URL || "https://backend.zkllmapi.com"
+          : "https://backend.zkllmapi.com";
+      const MAX_TREE_POLLS = 30; // 30 × 2s = 60s max wait
+      const POLL_INTERVAL_MS = 2000;
+
+      let treeInsertedCredits: StoredCredit[] = [];
+      for (let poll = 0; poll < MAX_TREE_POLLS; poll++) {
+        try {
+          const treeRes = await fetch(`${apiUrl}/tree`);
+          if (!treeRes.ok) throw new Error(`tree API ${treeRes.status}`);
+          const treeData: {
+            leaves: string[];
+            levels: string[][];
+            root: string;
+            zeros: string[];
+            depth: number;
+          } = await treeRes.json();
+
+          const leaves = treeData.leaves || [];
+          const foundIndices: number[] = [];
+
+          for (const credit of newCredits) {
+            const idx = leaves.findIndex((leaf) => leaf === credit.commitment);
+            if (idx >= 0) {
+              foundIndices.push(idx);
+            } else {
+              break; // not all found yet
+            }
+          }
+
+          if (foundIndices.length === newCredits.length) {
+            // All commitments are in the tree — stamp leaf indices and save
+            console.log(
+              `[DEBUG buy] all ${newCredits.length} commitments found in tree at indices:`,
+              foundIndices,
+            );
+            treeInsertedCredits = newCredits.map((c, i) => ({
+              ...c,
+              leafIndex: foundIndices[i],
+            }));
+            break;
+          }
+
+          console.log(
+            `[DEBUG buy] tree poll ${poll + 1}/${MAX_TREE_POLLS} — ${foundIndices.length}/${newCredits.length} commitments found, waiting...`,
+          );
+        } catch (e) {
+          console.warn("[DEBUG buy] tree poll error:", e);
+        }
+
+        if (poll < MAX_TREE_POLLS - 1) {
+          await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
+        }
+      }
+
+      if (treeInsertedCredits.length !== newCredits.length) {
+        // Timed out waiting for tree — commitments are on-chain but backend hasn't
+        // inserted them yet. Save with leafIndex=-1; /chat will recover once backend
+        // catches up (it does WebSocket + polling updates every ~2s).
+        console.warn(
+          "[DEBUG buy] timed out waiting for tree — saving with leafIndex=-1",
+        );
+        notification.warning(
+          "Commitments are on-chain but tree is still syncing. Try /chat in a few seconds.",
+        );
+        treeInsertedCredits = newCredits;
+      }
+
+      // Save to localStorage ONLY after commitments are confirmed in the Merkle tree
       const existing = JSON.parse(localStorage.getItem("zk-credits") || "[]");
-      const all = [...existing, ...newCredits];
+      const all = [...existing, ...treeInsertedCredits];
       localStorage.setItem("zk-credits", JSON.stringify(all));
       setSavedCredits(all);
-      setRegisteredCredit(newCredits[newCredits.length - 1]);
+      setRegisteredCredit(treeInsertedCredits[treeInsertedCredits.length - 1]);
 
       notification.success(
         `✅ ${numCredits} credit${numCredits > 1 ? "s" : ""} ready to use!`,
