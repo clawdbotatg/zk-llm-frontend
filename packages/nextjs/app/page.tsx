@@ -182,18 +182,22 @@ const Home: NextPage = () => {
                   example.sh
                 </span>
               </div>
-              <pre className="p-6 text-xs font-mono text-base-content/70 leading-relaxed overflow-x-auto">{`# Requires a ZK proof generated from your credit secret.
-# Generate your proof at zkllmapi.com/chat or integrate the circuit — see /fork
+              <pre className="p-6 text-xs font-mono text-base-content/70 leading-relaxed overflow-x-auto">{`# Buy a credit at zkllmapi.com/buy — it gives you a one-time API key.
+# The server generates the ZK proof for you. No circuit setup needed.
 
-curl -X POST https://backend.zkllmapi.com/v1/chat \\
+curl -X POST https://backend.zkllmapi.com/v1/chat/key \\
   -H 'Content-Type: application/json' \\
   -d '{
-    "proof": "<hex — UltraHonk ZK proof from your browser>",
-    "nullifier_hash": "0x...",
-    "root": "0x...",
-    "depth": 16,
+    "apiKey": "zk-llm-{nullifier}:{secret}:{commitment}",
     "messages": [{"role": "user", "content": "Hello"}]
-  }'`}</pre>
+  }'
+
+# With E2EE encryption (hides your prompts from Venice's TEE):
+# POST /v1/chat/key/encrypt to get { encrypted_body, e2ee_public_key,
+# rsa_encrypted_secret, ciphertext, tag }, then POST that to /v1/chat/key.
+
+# For maximum privacy (DIY ZK proof in your browser):
+# See https://zkllmapi.com/fork for the circuit + integration guide.`}</pre>
             </div>
           </div>
 
