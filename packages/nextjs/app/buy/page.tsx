@@ -428,7 +428,9 @@ const BuyPage: NextPage = () => {
       // balance=0 because the chat page checks the live tree, not localStorage.
       notification.success("Waiting for confirmation...");
       if (!publicClient) throw new Error("Wallet not connected");
+      console.log("[DEBUG buy] waiting for tx", hash, "to confirm...");
       await publicClient.waitForTransactionReceipt({ hash });
+      console.log("[DEBUG buy] tx confirmed! saving to localStorage now");
 
       // Save all new credits to localStorage
       const existing = JSON.parse(localStorage.getItem("zk-credits") || "[]");

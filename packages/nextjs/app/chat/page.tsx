@@ -132,14 +132,34 @@ const ChatPage: NextPage = () => {
     if (!treeRes.ok) throw new Error("Failed to fetch tree data");
     const treeData: TreeData = await treeRes.json();
     const treeLeafSet = new Set(treeData.leaves);
+    console.log(
+      "[DEBUG chat] credits from state:",
+      credits.length,
+      credits.map((c) => ({
+        commitment: c.commitment.slice(0, 20),
+        spent: c.spent,
+      })),
+    );
+    console.log("[DEBUG chat] availableCredits:", availableCredits.length);
+    console.log("[DEBUG chat] tree has", treeLeafSet.size, "leaves");
 
     // Compute all nullifier hashes upfront
     const nullifierHashes = new Map<string, string>(); // commitment → nullifierHashHex
     for (const credit of availableCredits) {
       if (!treeLeafSet.has(credit.commitment)) {
         staleCredits.push(credit.commitment);
+        console.log(
+          "[DEBUG chat] commitment",
+          credit.commitment.slice(0, 20),
+          "NOT in tree — marking stale",
+        );
         continue;
       }
+      console.log(
+        "[DEBUG chat] commitment",
+        credit.commitment.slice(0, 20),
+        "FOUND in tree",
+      );
       const nullifierHash = frToBI(
         await bbCheck.poseidon2Hash([new Fr2(BigInt(credit.nullifier))]),
       );
@@ -164,6 +184,12 @@ const ChatPage: NextPage = () => {
         ),
       );
       for (let i = 0; i < creditsToCheck.length; i++) {
+        console.log(
+          "[DEBUG chat] nullifier",
+          nullifierHashes.get(creditsToCheck[i].commitment)?.slice(0, 20),
+          "spent?",
+          spentResults[i].spent,
+        );
         if (spentResults[i].spent) {
           staleCredits.push(creditsToCheck[i].commitment);
         } else if (!creditToUse) {
@@ -171,6 +197,13 @@ const ChatPage: NextPage = () => {
         }
       }
     }
+
+    console.log(
+      "[DEBUG chat] staleCredits:",
+      staleCredits.length,
+      "creditToUse:",
+      creditToUse?.commitment?.slice(0, 20),
+    );
 
     // Mark stale credits as spent in localStorage
     if (staleCredits.length > 0) {
