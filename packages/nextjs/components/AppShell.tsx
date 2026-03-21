@@ -1,12 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SplashLoader } from "./SplashLoader";
 
 const ScaffoldEthAppWithProviders = dynamic(
   () =>
-    import("~~/components/ScaffoldEthAppWithProviders").then(m => {
+    import("~~/components/ScaffoldEthAppWithProviders").then((m) => {
       if (typeof window !== "undefined") {
         (window as any).__zkReady = true;
       }
@@ -16,7 +16,20 @@ const ScaffoldEthAppWithProviders = dynamic(
 );
 
 export function AppShell({ children }: { children: React.ReactNode }) {
-  const [splashDone, setSplashDone] = useState(false);
+  // Only show splash on the very first visit (sessionStorage survives page navigations
+  // but not browser close/tab close — appropriate since wallet state resets on close)
+  const [splashDone, setSplashDone] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.sessionStorage.getItem("zk-splash-done") === "1",
+  );
+
+  // Once splash is done, persist to sessionStorage so it doesn't re-appear on next navigation
+  useEffect(() => {
+    if (splashDone) {
+      window.sessionStorage.setItem("zk-splash-done", "1");
+    }
+  }, [splashDone]);
 
   return (
     <>
