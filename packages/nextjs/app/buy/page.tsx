@@ -56,7 +56,7 @@ const BuyPage: NextPage = () => {
   const { address: connectedAddress, chain } = useAccount();
   const { switchChain } = useSwitchChain();
   const publicClient = usePublicClient();
-  const MAX_CREDITS_PER_TX = 5;
+  const MAX_CREDITS_PER_TX = 32;
   const [numCreditsInput, setNumCreditsInput] = useState("1");
   const [paymentMethod, setPaymentMethod] = useState<"clawd" | "usdc" | "eth">(
     "clawd",
@@ -684,7 +684,7 @@ const BuyPage: NextPage = () => {
                 </div>
               </div>
               <p className="text-center text-xs font-mono text-base-content/30 mt-2">
-                Max 5 per transaction (Base gas limit)
+                Max 32 per transaction (Base 25M gas limit)
               </p>
 
               {/* Cost breakdown */}
