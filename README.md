@@ -14,10 +14,16 @@ Built with [Scaffold-ETH 2](https://scaffoldeth.io) on **Base mainnet**.
 
 | Contract | Address |
 |----------|---------|
-| APICredits | `0xE7cc1F41Eb59775bD201Bb943d2230BA52294608` |
-| CLAWDRouter | `0x9302e14c54fbA35A96457f6dD7A3AF5c082D5C24` |
-| CLAWDPricing | `0xaca9733Cc19aD837899dc7D1170aF1d5367C332E` |
+| APICredits | `0x799c5F602C357bc36379734bcd5D1438D50E4A80` |
+| CLAWDRouter | `0xbe1BD1956281075DFE5aB9FEde2B9A0d0AC17116` |
+| CLAWDPricing | `0x2B3c8bD1Db3fC52C58F416681e7F80e5f0f0597c` |
 | CLAWD Token | `0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07` |
+
+## Model Policy
+
+**The server runs `e2ee-glm-5` (GLM-5 via Venice's E2EE enclave) for all API calls.** The model is server-enforced — clients cannot change it. Any model name sent by the client is accepted but ignored; the server always proxies to `e2ee-glm-5`.
+
+> ⚠️ **Note:** If you pass `model: glm-4` or any other model in your API request, the server ignores it and runs `e2ee-glm-5` anyway. The response may show the requested model name in the JSON wrapper, but the actual inference is always `e2ee-glm-5`. This may be addressed in a future update.
 
 ## Getting Started
 

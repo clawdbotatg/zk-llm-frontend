@@ -502,6 +502,34 @@ fn main(
             </div>
           </section>
 
+          {/* Model Policy */}
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4">🎯 Model Policy</h2>
+            <p className="text-base-content/70 leading-relaxed mb-4">
+              The server runs <strong>e2ee-glm-5</strong> (GLM-5 via
+              Venice&apos;s end-to-end encrypted enclave) for all API calls. The
+              model is server-enforced — clients cannot override it. Any model
+              name sent by the client is accepted but ignored.
+            </p>
+            <div className="bg-base-100 rounded-xl p-5 shadow">
+              <p className="text-base-content/60 text-sm leading-relaxed">
+                <strong>⚠️ Note:</strong> If you pass{" "}
+                <code className="text-xs bg-base-200 px-1 rounded">
+                  model: glm-4
+                </code>{" "}
+                or any other model in your API request, the server ignores it
+                and runs{" "}
+                <code className="text-xs bg-base-200 px-1 rounded">
+                  e2ee-glm-5
+                </code>{" "}
+                anyway. The JSON response wrapper may show the requested model
+                name, but the actual inference is always{" "}
+                <strong>e2ee-glm-5</strong>. This may be addressed in a future
+                update.
+              </p>
+            </div>
+          </section>
+
           {/* Privacy */}
           <section className="mb-10">
             <h2 className="text-2xl font-bold mb-4">
@@ -558,16 +586,18 @@ cd zk-api-credits
 cp packages/api-server/.env.example packages/api-server/.env
 # Set: CONTRACT_ADDRESS, VENICE_API_KEY (or any OpenAI-compatible key), RPC_URL
 
-# Deploy contract
-cd packages/hardhat
-npx hardhat deploy --network base --tags APICredits
+# Compile contracts (Foundry)
+cd packages/contracts && forge build
+
+# Deploy contract (Foundry)
+# See packages/contracts/script/Deploy.s.sol for instructions
 
 # Run API server
 docker build -f packages/api-server/Dockerfile -t zk-api-server .
 docker run -p 3001:3001 --env-file packages/api-server/.env zk-api-server
 
 # Deploy frontend (Vercel)
-cd packages/nextjs
+cd ../zk-llm-frontend
 NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
             </div>
           </section>
