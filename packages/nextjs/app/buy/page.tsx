@@ -249,7 +249,7 @@ const BuyPage: NextPage = () => {
   // ETH cost estimate: numCredits * creditPriceUSD / ethUsdPrice (both 18 decimals)
   const creditPriceUSDVal = creditPriceUSD
     ? (creditPriceUSD as bigint)
-    : 10000000000000000n; // $0.01
+    : 5000000000000000n; // $0.05
   const ethUsdVal = ethUsdPrice ? (ethUsdPrice as bigint) : 1900n * 10n ** 18n;
   const ethCostExact =
     numCredits > 0
