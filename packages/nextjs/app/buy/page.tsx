@@ -22,7 +22,6 @@ const CLAWD_ROUTER_ADDRESS = externalContracts[8453].CLAWDRouter.address;
 const CLAWD_ADDRESS = externalContracts[8453].CLAWDToken.address;
 const USDC_ADDRESS = externalContracts[8453].USDC.address;
 
-const apiCreditsAbi = externalContracts[8453].APICredits.abi;
 const clawdAbi = externalContracts[8453].CLAWDToken.abi;
 const routerAbi = externalContracts[8453].CLAWDRouter.abi;
 const pricingAbi = externalContracts[8453].CLAWDPricing.abi;
@@ -128,17 +127,6 @@ const BuyPage: NextPage = () => {
     args: connectedAddress
       ? [connectedAddress, CLAWD_ROUTER_ADDRESS]
       : undefined,
-    chainId: 8453,
-    query: { enabled: !!connectedAddress },
-  });
-
-  // Read staked balance
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: __stakedBalance, refetch: refetchStaked } = useReadContract({
-    address: API_CREDITS_ADDRESS,
-    abi: apiCreditsAbi,
-    functionName: "stakedBalance",
-    args: connectedAddress ? [connectedAddress] : undefined,
     chainId: 8453,
     query: { enabled: !!connectedAddress },
   });
@@ -530,7 +518,6 @@ const BuyPage: NextPage = () => {
       setTimeout(() => setPurchaseFlash(false), 6000);
       setTimeout(() => setCreditsFlash(false), 6500);
       setTimeout(() => {
-        refetchStaked();
         refetchBalance();
         refetchAllowance();
         refetchUsdcBalance();
