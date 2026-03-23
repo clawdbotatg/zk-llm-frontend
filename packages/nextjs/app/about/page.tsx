@@ -506,7 +506,7 @@ fn main(
           <section className="mb-10">
             <h2 className="text-2xl font-bold mb-4">🎯 Model Policy</h2>
             <p className="text-base-content/70 leading-relaxed mb-4">
-              The server runs <strong>e2ee-glm-5</strong> (GLM-5 via
+              The server runs <strong>zai-org-glm-5</strong> (GLM-5 via
               Venice&apos;s end-to-end encrypted enclave) for all API calls. The
               model is server-enforced — clients cannot override it. Any model
               name sent by the client is accepted but ignored.
@@ -520,12 +520,12 @@ fn main(
                 or any other model in your API request, the server ignores it
                 and runs{" "}
                 <code className="text-xs bg-base-200 px-1 rounded">
-                  e2ee-glm-5
+                  zai-org-glm-5
                 </code>{" "}
                 anyway. The JSON response wrapper may show the requested model
                 name, but the actual inference is always{" "}
-                <strong>e2ee-glm-5</strong>. This may be addressed in a future
-                update.
+                <strong>zai-org-glm-5</strong>. This may be addressed in a
+                future update.
               </p>
             </div>
           </section>

@@ -21,9 +21,9 @@ Built with [Scaffold-ETH 2](https://scaffoldeth.io) on **Base mainnet**.
 
 ## Model Policy
 
-**The server runs `e2ee-glm-5` (GLM-5 via Venice's E2EE enclave) for all API calls.** The model is server-enforced — clients cannot change it. Any model name sent by the client is accepted but ignored; the server always proxies to `e2ee-glm-5`.
+**The server runs `zai-org-glm-5` (GLM-5 via Venice's E2EE enclave) for all API calls.** The model is server-enforced — clients cannot change it. Any model name sent by the client is accepted but ignored; the server always proxies to `zai-org-glm-5`.
 
-> ⚠️ **Note:** If you pass `model: glm-4` or any other model in your API request, the server ignores it and runs `e2ee-glm-5` anyway. The response may show the requested model name in the JSON wrapper, but the actual inference is always `e2ee-glm-5`. This may be addressed in a future update.
+> ⚠️ **Note:** If you pass `model: glm-4` or any other model in your API request, the server ignores it and runs `zai-org-glm-5` anyway. The response may show the requested model name in the JSON wrapper, but the actual inference is always `zai-org-glm-5`. This may be addressed in a future update.
 
 ## Getting Started
 

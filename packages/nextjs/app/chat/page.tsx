@@ -19,7 +19,7 @@ interface ChatMessage {
   content: string;
 }
 
-const MODEL = "e2ee-glm-5";
+const MODEL = "zai-org-glm-5";
 
 const CIRCUIT_URL = `${API_URL}/circuit`;
 const PROOF_DEPTH = 16;
@@ -370,7 +370,7 @@ const ChatPage: NextPage = () => {
             <span className="text-sm font-mono font-bold">ZK CHAT</span>
             <span className="text-xs font-mono text-base-content/30">·</span>
             <span className="text-xs font-mono text-base-content/50">
-              e2ee-glm-5
+              zai-org-glm-5
             </span>
           </div>
           <div className="flex items-center gap-4">
@@ -430,7 +430,7 @@ const ChatPage: NextPage = () => {
                   <p
                     className={`text-xs font-mono mb-2 ${msg.role === "user" ? "text-right text-base-content/30" : "text-[#42F38F]/60"}`}
                   >
-                    {msg.role === "user" ? "YOU" : "e2ee-glm-5"}
+                    {msg.role === "user" ? "YOU" : "zai-org-glm-5"}
                   </p>
                   <div
                     className={`font-mono text-sm leading-relaxed whitespace-pre-wrap px-4 py-3 border ${
