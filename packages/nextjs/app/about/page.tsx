@@ -39,9 +39,10 @@ const AboutPage: NextPage = () => {
           </section>
 
           <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4">About This Project</h2>
             <p className="text-base-content/70 leading-relaxed mb-4">
-              A <strong>working implementation</strong> of the anonymous API
-              credits concept from{" "}
+              A <strong>first working prototype</strong> implementing the
+              anonymous API credits concept from{" "}
               <a
                 href="https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"
                 target="_blank"
@@ -54,6 +55,21 @@ const AboutPage: NextPage = () => {
               <strong>Davide Crapis</strong>. MIT licensed, fully open source,
               fork it and deploy it for your own token, your own provider, your
               own chain.
+            </p>
+            <p className="text-base-content/70 leading-relaxed mb-4">
+              It works, but it has a real limitation: you pay a flat rate per
+              credit and get no refund if your actual API call uses fewer tokens
+              than the budget. The next step is variable-cost, session-scoped
+              API keys with a ZK counter — see{" "}
+              <a
+                href="https://github.com/clawdbotatg/zk-api-credits/issues/12"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-[#42F38F] transition-colors"
+              >
+                issue #12
+              </a>{" "}
+              for the full RFC.
             </p>
           </section>
 
