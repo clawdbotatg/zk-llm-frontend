@@ -5,6 +5,10 @@ const API_URL =
 
 import { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
+import externalContracts from "~~/contracts/externalContracts";
+
+// ⚠️ Use addresses from externalContracts — NEVER hardcode stale addresses
+const API_CREDITS_ADDRESS = externalContracts[8453].APICredits.address;
 
 interface StoredCredit {
   nullifier: string;
@@ -73,7 +77,7 @@ const ChatPage: NextPage = () => {
   // Load credits + persisted chat history from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("zk-credits");
+      const stored = localStorage.getItem(`zk-credits-${API_CREDITS_ADDRESS}`);
       if (stored) setCredits(JSON.parse(stored));
       const history = localStorage.getItem("zk-chat-history");
       if (history) setMessages(JSON.parse(history));
@@ -211,7 +215,10 @@ const ChatPage: NextPage = () => {
         staleCredits.includes(c.commitment) ? { ...c, spent: true } : c,
       );
       setCredits(updated);
-      localStorage.setItem("zk-credits", JSON.stringify(updated));
+      localStorage.setItem(
+        `zk-credits-${API_CREDITS_ADDRESS}`,
+        JSON.stringify(updated),
+      );
     }
 
     if (!creditToUse) {
@@ -316,7 +323,10 @@ const ChatPage: NextPage = () => {
             c.commitment === creditToUse.commitment ? { ...c, spent: true } : c,
           );
           setCredits(updatedCredits);
-          localStorage.setItem("zk-credits", JSON.stringify(updatedCredits));
+          localStorage.setItem(
+            `zk-credits-${API_CREDITS_ADDRESS}`,
+            JSON.stringify(updatedCredits),
+          );
           throw new Error(
             "This credit was already used. Please buy a new one on the Buy page.",
           );
@@ -340,7 +350,10 @@ const ChatPage: NextPage = () => {
         c.commitment === creditToUse.commitment ? { ...c, spent: true } : c,
       );
       setCredits(updatedCredits);
-      localStorage.setItem("zk-credits", JSON.stringify(updatedCredits));
+      localStorage.setItem(
+        `zk-credits-${API_CREDITS_ADDRESS}`,
+        JSON.stringify(updatedCredits),
+      );
 
       setProofStatus("");
     } catch (e: any) {

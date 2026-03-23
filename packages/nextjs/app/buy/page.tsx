@@ -227,7 +227,7 @@ const BuyPage: NextPage = () => {
   // Load saved credits from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem("zk-credits");
+      const stored = localStorage.getItem(`zk-credits-${API_CREDITS_ADDRESS}`);
       if (stored) {
         setSavedCredits(JSON.parse(stored));
       }
@@ -508,9 +508,14 @@ const BuyPage: NextPage = () => {
       }
 
       // Save to localStorage ONLY after commitments are confirmed in the Merkle tree
-      const existing = JSON.parse(localStorage.getItem("zk-credits") || "[]");
+      const existing = JSON.parse(
+        localStorage.getItem(`zk-credits-${API_CREDITS_ADDRESS}`) || "[]",
+      );
       const all = [...existing, ...treeInsertedCredits];
-      localStorage.setItem("zk-credits", JSON.stringify(all));
+      localStorage.setItem(
+        `zk-credits-${API_CREDITS_ADDRESS}`,
+        JSON.stringify(all),
+      );
       setSavedCredits(all);
       setRegisteredCredit(treeInsertedCredits[treeInsertedCredits.length - 1]);
 
