@@ -215,13 +215,16 @@ const AboutPage: NextPage = () => {
                       Layer 2: Venice TEE/E2EE — Hides <em>WHAT</em>
                     </h3>
                     <p className="text-base-content/60 text-sm leading-relaxed">
-                      Venice now offers hardware-enclave inference (TEE) and
-                      full end-to-end encryption (E2EE). Your prompt is
-                      encrypted on your device, stays encrypted through
-                      Venice&apos;s proxy, and is only decrypted inside a secure
-                      hardware enclave. Venice literally cannot see your prompts
-                      — verified by cryptographic remote attestation. Each
-                      response is cryptographically signed.
+                      Venice runs <strong>zai-org-glm-5</strong> inside a
+                      hardware-secured Trusted Execution Environment (TEE). The
+                      TEE provides strong isolation: Venice and the GPU operator
+                      cannot access the enclave memory or computation —
+                      inference happens inside a black box verified by
+                      cryptographic remote attestation. Your prompts are
+                      processed by the enclave; the raw prompt data is not
+                      accessible to Venice infrastructure outside the TEE
+                      boundary. Each response is cryptographically signed by the
+                      enclave.
                     </p>
                   </div>
                 </div>
@@ -248,11 +251,15 @@ const AboutPage: NextPage = () => {
                       <td>Breaks wallet ↔ API call link on-chain</td>
                     </tr>
                     <tr>
-                      <td className="font-medium">Venice TEE/E2EE</td>
+                      <td className="font-medium">Venice TEE</td>
                       <td>
                         <strong>WHAT</strong> you&apos;re asking
+                        (enclave-isolated inference)
                       </td>
-                      <td>Hardware enclave + cryptographic attestation</td>
+                      <td>
+                        Hardware enclave; Venice infrastructure cannot access
+                        TEE memory/computation
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -287,7 +294,7 @@ const AboutPage: NextPage = () => {
                   step: "3",
                   title:
                     "Buy Credits — one transaction (calls stakeAndRegister())",
-                  body: "You approve CLAWD, then the router purchases N credits by calling stakeAndRegister(amount, commitments[]) on the APICredits contract. This locks N×1000 CLAWD and inserts your commitments into an onchain incremental Merkle tree. One transaction, N credits.",
+                  body: "You approve CLAWD, then the router purchases N credits by calling stakeAndRegister(amount, commitments[]) on the APICredits contract. The router swaps ETH → CLAWD at market rate and locks N × pricePerCredit CLAWD. The USD cost per credit is fixed (~$0.05 via onchain oracle); the CLAWD amount varies with market price. One transaction, N credits.",
                 },
                 {
                   step: "4",
