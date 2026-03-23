@@ -604,7 +604,7 @@ const deployedContracts = {
       deployedOnBlock: 43403890,
     },
     CLAWDPricing: {
-      address: "0xaca9733Cc19aD837899dc7D1170aF1d5367C332E",
+      address: "0x2B3c8bD1Db3fC52C58F416681e7F80e5f0f0597c",
       abi: [
         {
           inputs: [
