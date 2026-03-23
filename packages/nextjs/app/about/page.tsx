@@ -235,6 +235,68 @@ const AboutPage: NextPage = () => {
             </div>
           </section>
 
+          {/* Two ways to use it */}
+          <section className="mb-10">
+            <h2 className="text-2xl font-bold mb-4">Two Ways to Use the API</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-base-100 rounded-xl p-5 shadow">
+                <h3 className="font-bold mb-2">DIY — Proof in your browser</h3>
+                <p className="text-base-content/60 text-sm mb-3">
+                  Your browser generates the ZK proof using Barretenberg WASM.
+                  The nullifier and secret never leave your device.
+                </p>
+                <ul className="text-base-content/50 text-xs space-y-1">
+                  <li>✅ Maximum privacy — server never sees your secret</li>
+                  <li>⚠️ Requires downloading the circuit (~500KB)</li>
+                  <li>⚠️ Proof takes 30–60s on first load</li>
+                </ul>
+                <p className="text-base-content/60 text-xs mt-3">
+                  Used by the{" "}
+                  <a
+                    href="https://zkllmapi.com/chat"
+                    className="underline hover:text-[#42F38F]"
+                  >
+                    web chat interface
+                  </a>{" "}
+                  and the{" "}
+                  <a
+                    href="https://github.com/clawdbotatg/zkllmapi-proxy"
+                    target="_blank"
+                    className="underline hover:text-[#42F38F]"
+                  >
+                    proxy
+                  </a>
+                  .
+                </p>
+              </div>
+              <div className="bg-base-100 rounded-xl p-5 shadow">
+                <h3 className="font-bold mb-2">
+                  API key — Proof on the server
+                </h3>
+                <p className="text-base-content/60 text-sm mb-3">
+                  Send your nullifier, secret, and commitment to the backend. It
+                  generates the proof for you.
+                </p>
+                <ul className="text-base-content/50 text-xs space-y-1">
+                  <li>✅ No circuit download, no setup</li>
+                  <li>✅ Proof in ~2–3s (server hardware)</li>
+                  <li>⚠️ The backend learns your nullifier and secret</li>
+                </ul>
+                <p className="text-base-content/60 text-xs mt-3">
+                  See{" "}
+                  <a
+                    href="https://github.com/clawdbotatg/zk-api-credits/blob/main/SKILL.md"
+                    target="_blank"
+                    className="underline hover:text-[#42F38F]"
+                  >
+                    SKILL.md
+                  </a>{" "}
+                  for the full API reference.
+                </p>
+              </div>
+            </div>
+          </section>
+
           {/* ZK Circuit */}
           <section className="mb-10">
             <h2 className="text-2xl font-bold mb-4">The ZK Circuit</h2>
