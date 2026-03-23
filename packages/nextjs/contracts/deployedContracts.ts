@@ -604,7 +604,7 @@ const deployedContracts = {
       deployedOnBlock: 43403890,
     },
     CLAWDPricing: {
-      address: "0x2B3c8bD1Db3fC52C58F416681e7F80e5f0f0597c",
+      address: "0x445DbaFC831940c252CAE3f04e35F9045616Ce19",
       abi: [
         {
           inputs: [
@@ -965,7 +965,7 @@ const deployedContracts = {
       deployedOnBlock: 43403893,
     },
     CLAWDRouter: {
-      address: "0xedeCFFec6E166f88a39DF452f9251f505a19Ef62",
+      address: "0xCB42c19bB4021C30960c45212E8A9162259ea3E5",
       abi: [
         {
           inputs: [
