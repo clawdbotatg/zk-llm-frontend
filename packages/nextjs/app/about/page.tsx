@@ -417,29 +417,12 @@ fn main(
           {/* Model Policy */}
           <section className="mb-10">
             <h2 className="text-2xl font-bold mb-4">🎯 Model Policy</h2>
-            <p className="text-base-content/70 leading-relaxed mb-4">
-              The server runs <strong>zai-org-glm-5</strong> (GLM-5 via
-              Venice&apos;s end-to-end encrypted enclave) for all API calls. The
-              model is server-enforced — clients cannot override it. Any model
-              name sent by the client is accepted but ignored.
+            <p className="text-base-content/70 leading-relaxed">
+              The server runs <strong>zai-org-glm-5</strong> for all API calls.
+              Any{" "}
+              <code className="text-xs bg-base-200 px-1 rounded">model</code>{" "}
+              field in your request is accepted but ignored.
             </p>
-            <div className="bg-base-100 rounded-xl p-5 shadow">
-              <p className="text-base-content/60 text-sm leading-relaxed">
-                <strong>⚠️ Note:</strong> If you pass{" "}
-                <code className="text-xs bg-base-200 px-1 rounded">
-                  model: glm-4
-                </code>{" "}
-                or any other model in your API request, the server ignores it
-                and runs{" "}
-                <code className="text-xs bg-base-200 px-1 rounded">
-                  zai-org-glm-5
-                </code>{" "}
-                anyway. The JSON response wrapper may show the requested model
-                name, but the actual inference is always{" "}
-                <strong>zai-org-glm-5</strong>. This may be addressed in a
-                future update.
-              </p>
-            </div>
           </section>
 
           {/* Privacy */}
