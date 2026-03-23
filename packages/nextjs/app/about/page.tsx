@@ -38,12 +38,10 @@ const AboutPage: NextPage = () => {
             </p>
           </section>
 
-          {/* This Is Step One */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">📍 This Is Step One</h2>
             <p className="text-base-content/70 leading-relaxed mb-4">
-              This project is a <strong>baby step prototype</strong> — the first
-              working implementation of the ideas described in{" "}
+              A <strong>working implementation</strong> of the anonymous API
+              credits concept from{" "}
               <a
                 href="https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"
                 target="_blank"
@@ -53,119 +51,10 @@ const AboutPage: NextPage = () => {
                 &ldquo;ZK API Usage Credits: LLMs and Beyond&rdquo;
               </a>{" "}
               by <strong>Vitalik Buterin</strong> and{" "}
-              <strong>Davide Crapis</strong>. We shipped something real that
-              proves the concept works. But the paper describes a much deeper
-              system, and we haven&apos;t implemented most of it yet.
+              <strong>Davide Crapis</strong>. MIT licensed, fully open source,
+              fork it and deploy it for your own token, your own provider, your
+              own chain.
             </p>
-
-            <div className="bg-base-100 rounded-xl p-5 shadow mb-4">
-              <p className="font-bold text-sm mb-3">What we built:</p>
-              <ul className="space-y-3 text-sm">
-                {[
-                  "Simple single-use nullifiers — 1 credit = 1 API call, burn and done",
-                  'ZK Merkle membership proof — proves "I know a commitment in the tree"',
-                  "Fixed cost per credit — buy once, each credit is one call",
-                  "Single provider integration (Venice AI) with E2EE support",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded border-2 border-success bg-success/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <svg
-                        className="w-3 h-3 text-success"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={3}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    </div>
-                    <span className="text-base-content/60">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-base-100 rounded-xl p-5 shadow mb-4">
-              <p className="font-bold text-sm mb-3">
-                What the paper proposes that we haven&apos;t built:
-              </p>
-              <ul className="space-y-3 text-sm">
-                {[
-                  [
-                    "Rate-Limit Nullifiers (RLN)",
-                    "Users make many anonymous calls per single deposit. Double-spending a ticket index mathematically reveals your secret key, enabling slashing. We use simple one-time nullifiers instead.",
-                  ],
-                  [
-                    "Variable cost & refund tickets",
-                    "User sets a max cost per call; server issues signed refund tickets for unused capacity. We use fixed 1-credit-per-call pricing with no refunds.",
-                  ],
-                  [
-                    "ZK solvency proof",
-                    "The circuit should prove (ticket_index + 1) × C_max ≤ deposit + Σ(refunds), verifying server signatures on refund tickets as private inputs. Our circuit only proves Merkle membership.",
-                  ],
-                  [
-                    "RLN slashing",
-                    "Mathematical double-spend detection that reveals the cheater's secret key so anyone can slash their deposit. We just check a database.",
-                  ],
-                  [
-                    "Dual staking (Policy Stake)",
-                    "A separate stake the server can burn but not claim, preventing servers from profiting off false bans. Not implemented.",
-                  ],
-                  [
-                    "Homomorphic refund accumulation",
-                    "Pedersen Commitments let the server update your balance without learning the total. Constant-size client state. Not implemented.",
-                  ],
-                  [
-                    "Parallelizable requests",
-                    "Generate tickets i, i+1, i+2 simultaneously. We process one credit at a time.",
-                  ],
-                  [
-                    "Generalized API support",
-                    "The paper applies to any fixed-cost API: RPC nodes, image generation, cloud compute, VPNs. We only support LLM inference via Venice.",
-                  ],
-                ].map(([title, desc]) => (
-                  <li key={title} className="flex items-start gap-3">
-                    <div className="w-5 h-5 rounded border-2 border-base-content/20 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-base-content/80">{title}</strong>
-                      <span className="text-base-content/50"> — {desc}</span>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-base-100 rounded-xl p-5 shadow">
-              <p className="text-base-content/60 text-sm leading-relaxed">
-                <strong className="text-base-content">
-                  This is open source.
-                </strong>{" "}
-                Every item above is something someone could build next. If you
-                want to help implement the full vision from the paper, check the{" "}
-                <a
-                  href="https://github.com/clawdbotatg/zk-api-credits"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-[#42F38F] transition-colors"
-                >
-                  backend repo
-                </a>{" "}
-                and{" "}
-                <a
-                  href="https://github.com/clawdbotatg/zk-llm-frontend"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-[#42F38F] transition-colors"
-                >
-                  frontend repo
-                </a>
-                . We shipped step one. The roadmap is the paper.
-              </p>
-            </div>
           </section>
 
           {/* Privacy Stack */}
@@ -611,7 +500,9 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
 
           {/* The Roadmap */}
           <section className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">🗺️ The Roadmap</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              What Else Is Left to Build
+            </h2>
             <p className="text-base-content/70 leading-relaxed mb-4">
               The build order toward the full paper vision, roughly ordered by
               complexity.
@@ -690,15 +581,16 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
               ))}
             </div>
             <p className="text-base-content/60 text-sm mt-6 text-center italic">
-              We shipped step zero.{" "}
+              See the{" "}
               <a
                 href="https://ethresear.ch/t/zk-api-usage-credits-llms-and-beyond/24104"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="underline hover:text-[#42F38F] transition-colors"
               >
-                The paper is the map.
-              </a>
+                paper
+              </a>{" "}
+              for the full concept. MIT licensed, fork to build it your way.
             </p>
           </section>
 
