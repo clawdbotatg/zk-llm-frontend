@@ -18,10 +18,26 @@ interface StoredCredit {
   spent: boolean;
 }
 
-interface ChatMessage {
-  role: "user" | "assistant";
-  content: string;
-}
+const ChatMessage = {
+  system: (content: string): ChatMessage => ({ role: "system", content }),
+  user: (content: string): ChatMessage => ({ role: "user", content }),
+  assistant: (content: string): ChatMessage => ({ role: "assistant", content }),
+};
+
+type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
+
+// System prompt injected into every conversation so the model knows about ZK LLM API
+const SYSTEM_PROMPT = `You are running inside the ZK LLM API chat interface at zkllmapi.com — a private, anonymous LLM API powered by zero-knowledge proofs on Base mainnet.
+
+Key facts about this project:
+- Model: zai-org-glm-5 (Z.AI's flagship, 198K context, reasoning-capable)
+- Hash function: Poseidon2 (ZK-friendly, used for Merkle tree and nullifier hashing)
+- How it works: Users stake CLAWD tokens, register a Poseidon2 commitment on-chain, then generate a ZK proof in-browser to call the API anonymously. The ZK proof breaks the link between the paying wallet and the API call.
+- Privacy: The server verifies the proof but never learns the user's nullifier or secret. Each credit is single-use (nullifier is burned after one API call).
+- Contract addresses (Base mainnet): APICredits=0x5954..., CLAWDPricing=0x445D..., CLAWDRouter=0xCB42..., CLAWD token=0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07
+- Website: https://zkllmapi.com | GitHub: https://github.com/clawdbotatg/zk-api-credits
+
+Answer questions about this project accurately. If asked about hash functions, cryptography, ZK proofs, or how the system works, explain clearly.`;
 
 const MODEL = "zai-org-glm-5";
 
@@ -79,7 +95,9 @@ const ChatPage: NextPage = () => {
     try {
       const stored = localStorage.getItem(`zk-credits-${API_CREDITS_ADDRESS}`);
       if (stored) setCredits(JSON.parse(stored));
-      const history = localStorage.getItem("zk-chat-history");
+      const history = localStorage.getItem(
+        `zk-chat-history-${API_CREDITS_ADDRESS}`,
+      );
       if (history) setMessages(JSON.parse(history));
     } catch (e) {
       console.error("Failed to load from localStorage:", e);
@@ -89,13 +107,16 @@ const ChatPage: NextPage = () => {
   // Persist chat history whenever messages change
   useEffect(() => {
     if (messages.length > 0) {
-      localStorage.setItem("zk-chat-history", JSON.stringify(messages));
+      localStorage.setItem(
+        `zk-chat-history-${API_CREDITS_ADDRESS}`,
+        JSON.stringify(messages),
+      );
     }
   }, [messages]);
 
   const clearChat = () => {
     setMessages([]);
-    localStorage.removeItem("zk-chat-history");
+    localStorage.removeItem(`zk-chat-history-${API_CREDITS_ADDRESS}`);
   };
 
   useEffect(() => {
@@ -311,7 +332,11 @@ const ChatPage: NextPage = () => {
           root: rootHex,
           depth: merkleData.depth,
           model: MODEL,
-          messages: [{ role: "user", content: userMessage }],
+          messages: [
+            ChatMessage.system(SYSTEM_PROMPT),
+            ...messages,
+            ChatMessage.user(userMessage),
+          ],
         }),
       });
 
@@ -434,29 +459,33 @@ const ChatPage: NextPage = () => {
           )}
 
           <div className="max-w-3xl mx-auto space-y-6">
-            {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div className={`max-w-[80%] ${msg.role === "user" ? "" : ""}`}>
-                  <p
-                    className={`text-xs font-mono mb-2 ${msg.role === "user" ? "text-right text-base-content/30" : "text-[#42F38F]/60"}`}
-                  >
-                    {msg.role === "user" ? "YOU" : "zai-org-glm-5"}
-                  </p>
+            {messages
+              .filter((msg) => msg.role !== "system")
+              .map((msg, i) => (
+                <div
+                  key={i}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                >
                   <div
-                    className={`font-mono text-sm leading-relaxed whitespace-pre-wrap px-4 py-3 border ${
-                      msg.role === "user"
-                        ? "border-primary/20 bg-primary/5 text-base-content/80 text-right"
-                        : "border-[#222] bg-[#111] text-base-content/80"
-                    }`}
+                    className={`max-w-[80%] ${msg.role === "user" ? "" : ""}`}
                   >
-                    {msg.content}
+                    <p
+                      className={`text-xs font-mono mb-2 ${msg.role === "user" ? "text-right text-base-content/30" : "text-[#42F38F]/60"}`}
+                    >
+                      {msg.role === "user" ? "YOU" : "zai-org-glm-5"}
+                    </p>
+                    <div
+                      className={`font-mono text-sm leading-relaxed whitespace-pre-wrap px-4 py-3 border ${
+                        msg.role === "user"
+                          ? "border-primary/20 bg-primary/5 text-base-content/80 text-right"
+                          : "border-[#222] bg-[#111] text-base-content/80"
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
             {proofStatus && (
               <div className="flex justify-start">
