@@ -188,13 +188,13 @@ const Home: NextPage = () => {
 curl -X POST https://backend.zkllmapi.com/v1/chat/key \\
   -H 'Content-Type: application/json' \\
   -d '{
-    "apiKey": "zk-llm-{nullifier}:{secret}:{commitment}",
+    "apiKey": "zk-llm-{base64url(\\"nullifier:secret:commitment\\")}",
     "messages": [{"role": "user", "content": "Hello"}]
   }'
 
-# With E2EE encryption (hides your prompts from Venice's TEE):
-# POST /v1/chat/key/encrypt to get { encrypted_body, e2ee_public_key,
-# rsa_encrypted_secret, ciphertext, tag }, then POST that to /v1/chat/key.
+# Or run the OpenAI-compatible proxy locally (auto-buys credits, pre-warms proofs):
+# git clone https://github.com/clawdbotatg/zkllmapi-proxy && npm install && npm start
+# Then point any OpenAI client at http://localhost:3100/v1/chat/completions
 
 # For maximum privacy (DIY ZK proof in your browser):
 # See https://zkllmapi.com/fork for the circuit + integration guide.`}</pre>
@@ -218,6 +218,22 @@ curl -X POST https://backend.zkllmapi.com/v1/chat/key \\
               className="hover:text-[#42F38F] transition-colors"
             >
               BACKEND GITHUB ↗
+            </a>
+            <a
+              href="https://github.com/clawdbotatg/zkllmapi-proxy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#42F38F] transition-colors"
+            >
+              PROXY GITHUB ↗
+            </a>
+            <a
+              href="https://github.com/clawdbotatg/zkllmapi-client"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#42F38F] transition-colors"
+            >
+              CLI GITHUB ↗
             </a>
             <a
               href={

@@ -607,8 +607,20 @@ NEXT_PUBLIC_API_URL=https://your-server.com vercel deploy`}</pre>
                   "https://github.com/clawdbotatg/zk-api-credits",
                 ],
                 [
-                  "GitHub — frontend",
+                  "GitHub — frontend (zkllmapi.com)",
                   "https://github.com/clawdbotatg/zk-llm-frontend",
+                ],
+                [
+                  "GitHub — API server",
+                  "https://github.com/clawdbotatg/zk-api-credits",
+                ],
+                [
+                  "GitHub — OpenAI-compatible proxy",
+                  "https://github.com/clawdbotatg/zkllmapi-proxy",
+                ],
+                [
+                  "GitHub — CLI tool",
+                  "https://github.com/clawdbotatg/zkllmapi-client",
                 ],
                 ["Contract address (live)", "https://zkllmapi.com/contract"],
                 ["Noir language", "https://noir-lang.org"],
